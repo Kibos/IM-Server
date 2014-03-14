@@ -58,12 +58,16 @@ var ServerFactory = (function () {
 
 // for test
 
-var ring = ServerFactory.getInstance().getServerHash(ServerType.PRedis);
+function getHash(stype, value){
+	var ring = ServerFactory.getInstance().getServerHash(stype);
+	return ring.getNode(value);
+}
+
 var time = (new Date()).getTime();
 var nodesAddr = {};
 
 for(var i=0; i<100000; i++){
-	var node = ring.getNode('a'+i+'b'+i+"c"+i);
+	var node = getHash(ServerType.PRedis, 'a'+i+'b'+i+"c"+i);
 	if(node in nodesAddr){
 		nodesAddr[node]++;
 	}
@@ -74,6 +78,4 @@ for(var i=0; i<100000; i++){
 for (var k in nodesAddr) {
 	console.log(nodesAddr[k]+":"+k);	
 }
-
-
 console.log('Time: '+((new Date()).getTime() - time)/100+' s');
