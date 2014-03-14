@@ -9,27 +9,40 @@
 
 var redis = require('redis');
 
+/**
+ * 根据服务器类型和用户的id，来获取该用户的个人redis服务器
+ */
 function getRedis (rtype, uid) {
 	return redis.createClient();
 }
 
-function  pushOffline (uid, msg) {
+function pushOffline (uid, msg) {
 	
 }
 
-function GroupSubscriber (gid) {
-	this.sub = redis.createClient();
+/**
+ * 群中心redis服务器
+ */
+var groupCenterRedis = redis.createClient();//redis.createClient(1213, "group center redis ip");
 
-	this.sub.on('message', function(channel, message) {
+function getGroupCenterRedis () {
+	return groupCenterRedis;
+}
+
+function GroupSubscriber (gid) {
+	var self = this;
+	self.gid = gid;
+	self.sub = redis.createClient();
+
+	/**
+	 * 群消息转发
+	 */
+	self.sub.on('message', function(channel, message) {
 		// channel name is gid
 		var gid = channel.replace("g::", "");
-		var groupUsers = [];
+		var groupUsers = getGroupUsers(gid);
 		for (var i = 0; i < groupUsers.length; i++) {
-			/**
-			 * 获取群用户（where block flag is false）
-			 */
 			var user = groupUsers[i];
-			
 			if(user.connected){
 				// 对于在线用户，消息直接推送到用户的channel。
 				var msg = JSON.stringify({action: 'control', user: current.user, msg: ' joined the channel' });
@@ -42,9 +55,15 @@ function GroupSubscriber (gid) {
 		};
 	});
 
-	this.sub.on('subscribe', function(channel, count) {
+	self.sub.on('subscribe', function(channel, count) {
 	});
-	this.sub.subscribe('g::' + gid);
+	self.sub.subscribe('g::' + gid);
+
+	self.quit = function() {
+		self.sub.unsubscribe('g::' + self.gid);
+		if (self.sub !== null) self.sub.quit();
+		return self.gid;
+	}
 }
 
 function isGidSameWithThisManager (gid) {
@@ -53,11 +72,39 @@ function isGidSameWithThisManager (gid) {
 }
 
 function GroupSubscriberManager () {
-	var allGids = [];
-	for (var i = 0; i < allGids.length; i++) {
-		var gid = allGids[i];
-		if(isGidSameWithThisManager(gid)){
-			new GroupSubscriber(gid);
+	var self = this;
+	self.sub = getGroupCenterRedis();
+	var groupDict = {};
+
+	self.sub.on('message', function(channel, message) {
+		if(message == "COMMAND_CHANGE"){
+			/**
+			 * 如果是接到了服务器变动的消息，就需要本服务器重新计算哪些群已经不在本进程伺服中。
+			 */
+			self.managerChanged();
+			return;
 		}
-	};
+		var gid = message;
+		groupDict[gid] = new GroupSubscriber(gid);
+	});
+	self.sub.on('subscribe', function(channel, count) {
+	});
+
+	self.sub.subscribe('gm::' + "this server ip and port");
+
+	/**
+	 * group manager集群发生变动
+	 */
+	self.managerChanged = function() {
+		for (var gid in groupDict) {
+			if(!isGidSameWithThisManager(gid)){
+				groupDict[gid].quit();
+				/**
+				 * 在退出时，需要发消息给群center，让群center来进行调度安排。
+				 */
+				var msg = JSON.stringify({action: 'QUIT', gid : gid });
+				getGroupCenterRedis().publish("gcenter", msg);
+			}
+		};
+	}
 }
