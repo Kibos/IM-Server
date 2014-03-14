@@ -1,7 +1,9 @@
 /* Region: 服务器类型配置及服务器ip port配置*/
 function ServerNode (id, ip, port) {
 	port = port || 0;
-	return {id : id, ip : ip, port : port, addr : (ip + ":" + port)};
+	return {id : id, ip : ip, port : port, addr : (ip + ":" + port), toString: function() {
+		return this.addr;
+	}};
 }
 
 var replicas = 80;
@@ -67,7 +69,7 @@ var time = (new Date()).getTime();
 var nodesAddr = {};
 
 for(var i=0; i<100000; i++){
-	var node = getHash(ServerType.PRedis, 'a'+i+'b'+i+"c"+i);
+	var node = getHash(ServerType.PRedis, 'a'+i+'b'+i+"c"+i).toString();
 	if(node in nodesAddr){
 		nodesAddr[node]++;
 	}
