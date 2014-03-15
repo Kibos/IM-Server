@@ -65,15 +65,17 @@ app.init = function(cluster) {
                         ybmpStr = ybmp.encode(order.order, 200, orderData);
                         socket.emit('ybmp', ybmpStr);
                     });
-                } else if(orderData.togroup){
+                } else if (orderData.togroup) {
                     var redisHost = hash.getHash('GRedis', orderData.togroup);
                     var client = redis.createClient(redisHost.port, redisHost.ip);
+                    var room = "Group." + orderData.togroup;
                     client.on("ready", function() {
                         var ret = {
                             "poster" : orderData.poster,
                             "touser" : orderData.touser,
                             "text" : orderData.text
                         }
+                        console.log(room)
                         client.publish(room, ybmp.encode(order.order, 200, orderData));
                         client.end();
 
