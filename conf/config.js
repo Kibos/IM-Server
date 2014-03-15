@@ -6,7 +6,7 @@ exports.redis = {
     servers : ['10.21.3.66:6379']
 };
 
-exports.Server = {
+exports.Server = { 
     PNode : {},
     PRedis : {
         'pr1' : {
@@ -14,8 +14,13 @@ exports.Server = {
             'port' : '6379'
         }
     },
+    GRedis : {
+        'gr1' : {
+            'ip' : '10.21.3.66',
+            'port' : '6379'
+        }
+    },
     GSub : {},
-    GRedis : {},
     URedis : {}
 };
  

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <meta charset="utf-8">
+        <title>Socket</title>
+        <meta name="description" content="">
+        <meta name="author" content="Mofei">
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="all.css" rel="stylesheet" type="text/css" />
+        <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+
+    </head>
+
+    <body>
+        <header>
+            This is a very beginning demo of Socket,built with Socket.io,Bootsrap.
+        </header>
+        <div class="container loginBox"  style="position: relative; z-index:1000;">
+            <div class="row">
+                <div class="col-md-*">
+                    <div class="jumbotron">
+                        <h1>Login</h1>
+                        <p>
+                            Please Login in before you use this Socket Demo
+                        </p>
+                        <div class="alert alert-info">
+                            <strong>TIPS:</strong> The console will give you some help,see the console.log which start with [S]
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Your name:</span>
+                            <input type="text" class="form-control" autofocus="true" placeholder="Mofei" id="username">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" id="savename">
+                                    Lat's Talk!
+                                </button> </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <section class="chatBox" id="chatBox" style="display:none;">
+            <title>CURRENT : Group</title>
+            <div class="chatListBox">
+                <ul class="chatList">
+                </ul>
+            </div>
+            <section class="chatMain">
+            </section>
+            <section class="chatPub">
+                <div class="input-group">
+                    <span class="input-group-addon">Guest:</span>
+                    <input type="text" class="form-control" placeholder="Hello Word :)" id="pubText">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="publish">
+                            Publish!
+                        </button> </span>
+                </div><!-- /input-group -->
+            </section>
+        </section>
+
+        <script src="bootstrap/js/jquery-1.10.2.min.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+
+        <script src="socket.io.js"></script>
+        <script src="backbone/underscore.js"></script>
+        <script src="backbone/backbone.js"></script>
+        <script src="all.js"></script>
+    </body>
+</html>
