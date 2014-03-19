@@ -1,26 +1,35 @@
-var conf = require('./conf/config');
+var appInfo = {
+    port : 4001,
+    type : 'PNode',
+    id : 'pn1',
+    ip : require('os').networkInterfaces()['eth0'][0].address
+}
+
 var clst = require('clst');
 var ybmp = require('./api/ybmp.js');
 var redis = require('redis');
 var hash = require('./lib/hash/hash.js');
+var brain = require('./lib/brain/brain');
 
-var redisConnetion = require('./lib/redisConnection');
 var app = new clst({
     cups : 1
 });
-app.init = function(cluster) {
-    var port = conf.socket.port;
 
-    var io = require('socket.io').listen(port);
+app.init = function(cluster) {
+
+    var io = require('socket.io').listen(appInfo.port);
+    brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port);
+
     io.sockets.on('connection', function(socket) {
         socket.on('ybmp', function(data) {
             var order = ybmp.decode(data);
             var orderData = order.data;
-            var host = orderData.host;
-            var type = orderData.type;
             //case
             if (order.order == 'REG') {
                 //the Reg part
+                var host = orderData.host;
+                var type = orderData.type;
+
                 var room = "Room." + orderData.host;
                 var redisHost = hash.getHash('PRedis', orderData.host);
                 //connect to the redis
@@ -30,9 +39,6 @@ app.init = function(cluster) {
                         socket.emit('ybmp', message);
                     });
                     client.subscribe(room);
-
-                    //TODO:save online info to cache
-
                     //return
                     var ret = {
                         "room" : room,
@@ -121,84 +127,6 @@ app.init = function(cluster) {
                 socket.emit('ybmp', ybmpStr);
             }
         });
-
-        // socket.on('reg', function(data) {
-        // if (user[data.username]) {
-        // socket.emit('regback', {
-        // 'sta' : 0,
-        // 'msg' : data.username + '已经被使用了:('
-        // });
-        // } else {
-        // user[data.username] = {
-        // 'login' : new Date(),
-        // 'socket' : socket
-        // };
-        // socket.store.username = data.username;
-        // socket.emit('regback', {
-        // 'sta' : 1,
-        // 'name' : data.username
-        // });
-        // for (i in user) {
-        // if (i !== data.username) {
-        // user[i].socket.emit('newuser', {
-        // username : data.username
-        // });
-        // }
-        // }
-        // }
-        // });
-        //
-        // socket.on('publish', function(data) {
-        // if (data.touser == 'all') {
-        // console.log('all')
-        // for (i in user) {
-        // user[i].socket.emit('receive', {
-        // 'poster' : data.username,
-        // 'touser' : data.touser,
-        // 'text' : data.text
-        // });
-        // }
-        // } else {
-        // if (user[data.touser]) {
-        // console.log('user', data.touser);
-        // user[data.touser].socket.emit('receive', {
-        // 'poster' : data.username,
-        // 'touser' : data.touser,
-        // 'text' : data.text
-        // });
-        // if (data.touser != data.poster) {
-        // socket.emit('receive', {
-        // 'poster' : data.username,
-        // 'touser' : data.touser,
-        // 'text' : data.text
-        // });
-        // }
-        // }
-        // }
-        //
-        // });
-        //
-        // socket.on('getUsersList', function() {
-        // var userList = [];
-        // for (i in user) {
-        // userList.push(i)
-        // };
-        // socket.emit('getUser', userList);
-        // });
-
-        // socket.on('disconnect', function(data) {
-        // if (user[socket.store.username]) {
-        // delete user[socket.store.username];
-        //
-        // var userList = [];
-        // for (i in user) {
-        // user[i].socket.emit('deleteUser', {
-        // username : socket.store.username
-        // });
-        // };
-        // };
-        // });
-        //
 
     });
 
