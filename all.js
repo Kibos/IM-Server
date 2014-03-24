@@ -3,7 +3,7 @@ var appInfo = {
     type : 'PNode',
     id : 'pn1',
     ip : require('os').networkInterfaces()['eth0'][0].address
-}
+};
 
 var clst = require('clst');
 var ybmp = require('./api/ybmp.js');
@@ -17,118 +17,130 @@ var app = new clst({
 
 app.init = function(cluster) {
 
-    var io = require('socket.io').listen(appInfo.port);
+    var io = require('socket.io').listen(appInfo.port, {
+        log : false
+    });
     brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port);
 
     io.sockets.on('connection', function(socket) {
-        socket.on('ybmp', function(data) {
-            var order = ybmp.decode(data);
-            var orderData = order.data;
-            //case
-            if (order.order == 'REG') {
-                //the Reg part
-                var host = orderData.host;
-                var type = orderData.type;
+        var host;
+        var PRedis = {};
+        var onLineRedis = null;
 
-                var room = "Room." + orderData.host;
-                var redisHost = hash.getHash('PRedis', orderData.host);
+        socket.on('ybmp', function(data) {
+            var rec = null;
+
+            if ( typeof (data) == "string") {
+                try {
+                    rec = JSON.parse(data);
+                } catch(e) {
+                    socket.emit('ybmp', 'wrong data format ：', data);
+                    return false;
+                }
+            } else {
+                rec = data
+            }
+
+            //case
+            if (rec.order == 'REG') {
+                //the Reg part
+                host = rec.host;
+
+                var room = "Room." + rec.host;
+
+                PRedis = hash.getHash('PRedis', rec.host);
+
                 //connect to the redis
-                var client = redis.createClient(redisHost.port, redisHost.ip);
+                //from，to，type，content
+                var client = redis.createClient(PRedis.port, PRedis.ip);
+                PRedis.connection = client;
+                onLineRedis = redis.createClient(PRedis.port, PRedis.ip);
+
                 client.on("ready", function() {
+                    //TODO:if the redis is down,what will you do?
+                    
+                    //set redis online
+                    onLineRedis.sadd("online", host);
+                    //
+
                     client.on('message', function(channel, message) {
-                        socket.emit('ybmp', message);
+                        try {
+                            socket.emit('ybmp', JSON.parse(message));
+                        } catch(e) {
+                            socket.emit('ybmp', message);
+                        }
                     });
                     client.subscribe(room);
                     //return
                     var ret = {
+                        "order" : "REG",
+                        "status" : 200,
                         "room" : room,
-                        "host" : host,
-                        "type" : type
-                    }
-                    ybmpStr = ybmp.encode(order.order, 200, ret);
-                    socket.emit('ybmp', ybmpStr);
+                        "host" : host
+                    };
+                    socket.emit('ybmp', ret);
 
-                    console.log('\x1B[31m \x1B[42m [S] REG Room:' + room + ' Reids', redisHost, ' \x1B[49m \x1B[39m')
                 });
 
-            } else if (order.order == 'MSG') {
+            } else if (rec.order == 'MSG') {
                 //the MSG part
-                if (orderData.touser) {
-                    var redisHost = hash.getHash('PRedis', orderData.touser);
-                    var text = orderData.text;
-                    var room = "Room." + orderData.touser;
+                if (rec.touser) {
+                    var redisHost = hash.getHash('PRedis', rec.touser);
+                    var text = rec.text;
+                    var room = "Room." + rec.touser;
                     //connect to the redis
                     var client = redis.createClient(redisHost.port, redisHost.ip);
                     client.on("ready", function() {
                         var ret = {
-                            "poster" : orderData.poster,
-                            "touser" : orderData.touser,
-                            "text" : orderData.text
-                        }
-                        client.publish(room, ybmp.encode(order.order, 200, orderData));
+                            "order" : rec.order,
+                            "status" : 200,
+                            "poster" : rec.poster,
+                            "touser" : rec.touser,
+                            "text" : rec.text
+                        };
+                        client.publish(room, JSON.stringify(ret));
                         client.end();
-
-                        ybmpStr = ybmp.encode(order.order, 200, orderData);
-                        socket.emit('ybmp', ybmpStr);
+                        socket.emit('ybmp', ret);
                     });
-                } else if (orderData.togroup) {
-                    var redisHost = hash.getHash('GRedis', orderData.togroup);
-                    var client = redis.createClient(redisHost.port, redisHost.ip);
-                    var room = "Group." + orderData.togroup;
+                } else if (rec.togroup) {
+                    var groupServer = hash.getHash('GNode', rec.togroup);
+                    console.log(groupServer);
+                    var groupRedis = hash.getHash('GRedis', groupServer.id.toString());
+                    var client = redis.createClient(groupRedis.port, groupRedis.ip);
+                    var room = "Group." + groupServer.id;
+                    //var redisHost = hash.getHash('GRedis', rec.togroup);
+                    //var client = redis.createClient(redisHost.port, redisHost.ip);
+                    //var room = "Group." + rec.togroup;
                     client.on("ready", function() {
                         var ret = {
-                            "poster" : orderData.poster,
-                            "touser" : orderData.touser,
-                            "text" : orderData.text
-                        }
-                        console.log(room)
-                        client.publish(room, ybmp.encode(order.order, 200, orderData));
+                            "order" : rec.order,
+                            "status" : 200,
+                            "poster" : rec.poster,
+                            "togroup" : rec.togroup,
+                            "text" : rec.text
+                        };
+                        client.publish(room, JSON.stringify(ret));
                         client.end();
 
-                        ybmpStr = ybmp.encode(order.order, 200, orderData);
-                        socket.emit('ybmp', ybmpStr);
+                        socket.emit('ybmp', ret);
                     });
                 }
-            } else if (order.order == "FRD") {
-                //get firend & group list
-                var ret = {
-                    "userid" : orderData.host,
-                    "friends" : {
-                        '1' : {
-                            name : 'Mofei'
-                        },
-                        '2' : {
-                            name : 'Song'
-                        },
-                        '3' : {
-                            name : 'Li'
-                        }
-                    }
-                }
-                ybmpStr = ybmp.encode(order.order, 200, ret);
-                socket.emit('ybmp', ybmpStr);
-            } else if (order.order == "GRP") {
-                //get grouplist
-                var ret = {
-                    "userid" : orderData.host,
-                    "friends" : {
-                        'G1' : {
-                            name : 'Group1'
-                        },
-                        'G2' : {
-                            name : 'Group2'
-                        },
-                        'G3' : {
-                            name : 'Group3'
-                        }
-                    }
-                }
-                ybmpStr = ybmp.encode(order.order, 200, ret);
-                socket.emit('ybmp', ybmpStr);
             }
         });
 
+        socket.on('disconnect', function(data) {
+            if (onLineRedis) {
+                onLineRedis.srem("online", host, function(err, res) {
+                    //TODO:if res is 1 ,that's mean delete filed,so...
+                    onLineRedis.end();
+                    PRedis.connection.end();
+                });
+            }
+        });
+        //
     });
+
+    //
 
 };
 
