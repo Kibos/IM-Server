@@ -31,37 +31,6 @@ mongoC.open(function(err, mongoclient) {
 });
 ////mongodb part end
 
-//redis pool
-// var redisConnect = (function() {
-    // var redisPool = {};
-    // return function(port, ip, callback) {
-        // var cid = port.toString() + ip.toString();
-        // redisPool[cid] = redisPool[cid] || {};
-        // if (redisPool[cid]['sta'] == 'ok') {
-            // callback && callback(redisPool[cid]['client']);
-        // } else {
-            // if (redisPool[cid]['sta'] == 'progress') {
-                // redisPool['stack'] = redisPool['stack'] || [];
-                // redisPool['stack'].push(callback);
-            // } else {
-                // redisPool[cid]['sta'] = 'progress';
-                // redisPool['stack'] = redisPool['stack'] || [];
-                // redisPool['stack'].push(callback);
-                // var client = redis.createClient(port, ip);
-                // client.on("ready", function() {
-                    // redisPool[cid]['sta'] = 'ok';
-                    // redisPool[cid]['client'] = client;
-                    // //do all the callback
-                    // for (var i = 0; i < redisPool['stack'].length; i++) {
-                        // redisPool['stack'][i](client);
-                    // }
-                    // redisPool['stack'] = [];
-                // });
-            // };
-        // }
-    // }
-// })();
-////redis pool
 
 var io = require('socket.io').listen(appInfo.port, {
     log : false
@@ -72,11 +41,12 @@ io.sockets.on('connection', function(socket) {
     var host;
     var PRedis = {};
     var onLineRedis = null;
-
     socket.on('ybmp', function(data) {
         console.log('----ybmp----', data)
         var rec = null;
-
+        var time = +new Date();
+        
+        
         if ( typeof (data) == "string") {
             try {
                 rec = JSON.parse(data);
@@ -136,25 +106,20 @@ io.sockets.on('connection', function(socket) {
                 var room = "Room." + rec.touser;
                 //connect to the redis
                 redisConnect.connect(redisHost.port, redisHost.ip, function(client) {
-                    var ret = {
-                        "order" : rec.order,
-                        "status" : 200,
-                        "poster" : rec.poster,
-                        "touser" : rec.touser,
-                        "text" : rec.text
-                    }
-                    client.publish(room, JSON.stringify(ret));
-
-                    if (rec.touser == host) {
+                    rec.status = 200;
+                    rec.time = time;
+                    
+                    client.publish(room, JSON.stringify(rec));
+                    if (rec.poster == host) {
                         //self replay
-                        socket.emit('ybmp', ret);
+                        socket.emit('ybmp', rec);
                     } else {
                         //send to other
                         client.sismember('online', rec.touser, function(err, isOnline) {
                             //console.log('user ' + rec.touser + ' online status : ' + isOnline);
                             if (isOnline) {
                                 //online
-                                socket.emit('ybmp', ret);
+                                socket.emit('ybmp', rec);
                             } else {
                                 //offline
                             };
@@ -169,46 +134,26 @@ io.sockets.on('connection', function(socket) {
                     "from" : rec.poster,
                     "to" : rec.touser,
                     "content" : rec.text,
-                    "time" : new Date()
+                    "time" : time
                 }
                 mongoLarvel.collection('Message').insert(msgData, function(err, res) {
                     //console.log('    [DB] ', err, res);
                 });
             } else if (rec.togroup) {
                 var groupServer = hash.getHash('GNode', rec.togroup);
-                if(!groupServer){
+                if (!groupServer) {
                     return false;
                 }
                 var groupRedis = hash.getHash('GRedis', groupServer.id.toString());
                 var room = "Group." + groupServer.id;
-                
-                
-                redisConnect.connect(groupRedis.port, groupRedis.ip,function(client) {
-                    var ret = {
-                        "order" : rec.order,
-                        "status" : 200,
-                        "poster" : rec.poster,
-                        "togroup" : rec.togroup,
-                        "text" : rec.text
-                    }
-                    client.publish(room, JSON.stringify(ret));
 
-                    socket.emit('ybmp', ret);
+                redisConnect.connect(groupRedis.port, groupRedis.ip, function(client) {
+                    rec.status = 200;
+                    rec.time = time;
+                    client.publish(room, JSON.stringify(rec));
+
+                    socket.emit('ybmp', rec);
                 });
-                // var client = redis.createClient(groupRedis.port, groupRedis.ip);
-                // client.on("ready", function() {
-                    // var ret = {
-                        // "order" : rec.order,
-                        // "status" : 200,
-                        // "poster" : rec.poster,
-                        // "togroup" : rec.togroup,
-                        // "text" : rec.text
-                    // }
-                    // client.publish(room, JSON.stringify(ret));
-                    // client.end();
-// 
-                    // socket.emit('ybmp', ret);
-                // });
 
                 //log it to server (group msg)
                 var msgData = {
@@ -219,7 +164,6 @@ io.sockets.on('connection', function(socket) {
                     "time" : new Date()
                 }
                 mongoLarvel.collection('Message').insert(msgData, function(err, res) {
-                    //console.log('    [DB] ', err, res);
                 });
                 //
 
@@ -228,7 +172,7 @@ io.sockets.on('connection', function(socket) {
     });
 
     socket.on('disconnect', function(data) {
-        console.log('dis',data)
+        console.log('disa', data)
         if (onLineRedis) {
             onLineRedis.srem("online", host, function(err, res) {
                 //TODO:if res is 1 ,that's mean delete filed,so...
@@ -239,3 +183,4 @@ io.sockets.on('connection', function(socket) {
     });
 });
 
+console.log('   [ NodeServer ] start at '+appInfo['ip'] + appInfo['port'])
