@@ -15,6 +15,7 @@ var config = require('./conf/config');
 var mongoClient = require('mongodb').MongoClient;
 var Server = require('mongodb').Server
 var redisConnect = require('./lib/redis/connect');
+var conf = require('./conf/config');
 
 //mongodb part
 var mongoS = new Server("10.21.3.59", 27017);
@@ -31,7 +32,6 @@ mongoC.open(function(err, mongoclient) {
 });
 ////mongodb part end
 
-
 var io = require('socket.io').listen(appInfo.port, {
     log : false
 });
@@ -45,8 +45,7 @@ io.sockets.on('connection', function(socket) {
         console.log('----ybmp----', data)
         var rec = null;
         var time = +new Date();
-        
-        
+
         if ( typeof (data) == "string") {
             try {
                 rec = JSON.parse(data);
@@ -108,25 +107,34 @@ io.sockets.on('connection', function(socket) {
                 redisConnect.connect(redisHost.port, redisHost.ip, function(client) {
                     rec.status = 200;
                     rec.time = time;
-                    
+
                     client.publish(room, JSON.stringify(rec));
+                    
                     if (rec.poster == host) {
                         //self replay
                         socket.emit('ybmp', rec);
                     } else {
                         //send to other
                         client.sismember('online', rec.touser, function(err, isOnline) {
-                            //console.log('user ' + rec.touser + ' online status : ' + isOnline);
+                            
+                            console.log('user ' + rec.touser + ' online status : ' + isOnline);
                             if (isOnline) {
                                 //online
                                 socket.emit('ybmp', rec);
                             } else {
+                                offline(rec);
                                 //offline
                             };
                         })
                     }
 
                 });
+                function offline(msg) {
+                    console.log('offline',msg);
+                    redisConnect.connect(conf.sta.PPSH.pp1.port, conf.sta.PPSH.pp1.ip, function(client) {
+                        client.publish('plugpush',JSON.stringify(msg));
+                    });
+                };
 
                 //log it to server (psersonal msg)
                 var msgData = {
@@ -183,4 +191,4 @@ io.sockets.on('connection', function(socket) {
     });
 });
 
-console.log('   [ NodeServer ] start at '+appInfo['ip'] + appInfo['port'])
+console.log('   [ NodeServer ] start at ' + appInfo['ip'] + appInfo['port'])
