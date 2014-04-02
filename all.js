@@ -32,11 +32,19 @@ mongoC.open(function(err, mongoclient) {
 });
 ////mongodb part end
 
+//start the socket.io
 var io = require('socket.io').listen(appInfo.port, {
     log : false
 });
-brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port);
+////
 
+//add to the brain
+brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port);
+////
+
+//
+var users = {}
+////
 io.sockets.on('connection', function(socket) {
     var host;
     var PRedis = {};
@@ -66,38 +74,31 @@ io.sockets.on('connection', function(socket) {
 
             PRedis = hash.getHash('PRedis', rec.host);
 
-            //connect to the redis
-            var client = redis.createClient(PRedis.port, PRedis.ip);
-            PRedis.connection = client;
-            onLineRedis = redis.createClient(PRedis.port, PRedis.ip);
-
-            client.on("ready", function() {
-                //TODO:if the redis is disconnected by any reason,what will you do?
-
-                //set redis online
-                onLineRedis.sadd("online", host);
-                //
-
-                client.on('message', function(channel, message) {
-                    try {
-                        socket.emit('ybmp', JSON.parse(message));
-                    } catch(e) {
-                        socket.emit('ybmp', message);
-                    }
-                });
-                client.subscribe(room);
-                //return
-                var ret = {
-                    "order" : "REG",
-                    "status" : 200,
-                    "room" : room,
-                    "host" : host
+            //
+            redisConnect.sub(PRedis.port, PRedis.ip, room, function(message) {
+                try {
+                    socket.emit('ybmp', JSON.parse(message));
+                } catch(e) {
+                    socket.emit('ybmp', message);
                 }
-                socket.emit('ybmp', ret);
-
             });
 
+            onLineRedis = redis.createClient(PRedis.port, PRedis.ip);
+            onLineRedis.on("ready", function() {
+                onLineRedis.sadd("online", host);
+            });
+
+            var ret = {
+                "order" : "REG",
+                "status" : 200,
+                "room" : room,
+                "host" : host
+            }
+            socket.emit('ybmp', ret);
+            
+
         } else if (rec.order == 'MSG') {
+            console.log('    send MSG ', rec)
             //the MSG part
             if (rec.touser) {
                 var redisHost = hash.getHash('PRedis', rec.touser);
@@ -109,15 +110,16 @@ io.sockets.on('connection', function(socket) {
                     rec.time = time;
 
                     client.publish(room, JSON.stringify(rec));
-                    
+
                     if (rec.poster == host) {
                         //self replay
                         socket.emit('ybmp', rec);
                     } else {
                         //send to other
                         client.sismember('online', rec.touser, function(err, isOnline) {
-                            
-                            console.log('user ' + rec.touser + ' online status : ' + isOnline);
+
+                            console.log('    user ' + rec.touser + ' online status : ' + isOnline);
+
                             if (isOnline) {
                                 //online
                                 socket.emit('ybmp', rec);
@@ -130,9 +132,9 @@ io.sockets.on('connection', function(socket) {
 
                 });
                 function offline(msg) {
-                    console.log('offline',msg);
+                    console.log('offline', msg);
                     redisConnect.connect(conf.sta.PPSH.pp1.port, conf.sta.PPSH.pp1.ip, function(client) {
-                        client.publish('plugpush',JSON.stringify(msg));
+                        client.publish('plugpush', JSON.stringify(msg));
                     });
                 };
 
@@ -185,7 +187,7 @@ io.sockets.on('connection', function(socket) {
             onLineRedis.srem("online", host, function(err, res) {
                 //TODO:if res is 1 ,that's mean delete filed,so...
                 onLineRedis.end();
-                PRedis.connection.end();
+                //PRedis.connection.end();
             });
         }
     });
