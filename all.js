@@ -42,17 +42,22 @@ var io = require('socket.io').listen(appInfo.port, {
 brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port);
 ////
 
-//
+/**
+ * user.mobile
+ * user.disktop
+ */
 var users = {}
 ////
 io.sockets.on('connection', function(socket) {
     var host;
+    var divice;
     var PRedis = {};
     var onLineRedis = null;
     socket.on('ybmp', function(data) {
-        console.log('----ybmp----', data)
         var rec = null;
         var time = +new Date();
+
+        console.log('----ybmp----', data, time)
 
         if ( typeof (data) == "string") {
             try {
@@ -69,12 +74,13 @@ io.sockets.on('connection', function(socket) {
         if (rec.order == 'REG') {
             //the Reg part
             host = rec.host;
+            divice = rec.divice || 'mobile';
 
             var room = "Room." + rec.host;
 
             PRedis = hash.getHash('PRedis', rec.host);
 
-            //
+            //sub it's room
             redisConnect.sub(PRedis.port, PRedis.ip, room, function(message) {
                 try {
                     socket.emit('ybmp', JSON.parse(message));
@@ -83,11 +89,28 @@ io.sockets.on('connection', function(socket) {
                 }
             });
 
-            onLineRedis = redis.createClient(PRedis.port, PRedis.ip);
-            onLineRedis.on("ready", function() {
-                onLineRedis.sadd("online", host);
+            //reg online status (for single login)
+            users[host] = users[host] || {};
+            if (users[host]['mobile']) {
+
+                var ret = {
+                    "order" : "DIS",
+                    "status" : 200,
+                    "msg" : host + " 在新的设备 " + (rec.diviceinfo||"未知设备") + " 登陆，您已经被迫下线"
+                }
+                users[host][divice].emit('ybmp', ret);
+                users[host][divice].disconnect();
+            }
+            users[host]['mobile'] = socket;
+            ////
+
+            //mark online
+            redisConnect.connect(PRedis.port, PRedis.ip, function(client) {
+                onLineRedis = client;
+                client.sadd("online", host);
             });
 
+            //let client know the reg result
             var ret = {
                 "order" : "REG",
                 "status" : 200,
@@ -95,16 +118,16 @@ io.sockets.on('connection', function(socket) {
                 "host" : host
             }
             socket.emit('ybmp', ret);
-            
 
         } else if (rec.order == 'MSG') {
-            console.log('    send MSG ', rec)
+            console.log('    send MSG : ', rec)
             //the MSG part
             if (rec.touser) {
                 var redisHost = hash.getHash('PRedis', rec.touser);
                 var text = rec.text;
                 var room = "Room." + rec.touser;
                 //connect to the redis
+                console.log(rec.poster, rec.touser)
                 redisConnect.connect(redisHost.port, redisHost.ip, function(client) {
                     rec.status = 200;
                     rec.time = time;
@@ -182,13 +205,12 @@ io.sockets.on('connection', function(socket) {
     });
 
     socket.on('disconnect', function(data) {
-        console.log('disa', data)
+        console.log(host, ' disa ', data)
+        if (users[host] && users[host][divice]) {
+            delete users[host][divice];
+        }
         if (onLineRedis) {
-            onLineRedis.srem("online", host, function(err, res) {
-                //TODO:if res is 1 ,that's mean delete filed,so...
-                onLineRedis.end();
-                //PRedis.connection.end();
-            });
+            onLineRedis.srem("online", host);
         }
     });
 });
