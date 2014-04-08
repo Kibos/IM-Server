@@ -38,16 +38,36 @@ var io = require('socket.io').listen(appInfo.port, {
 });
 ////
 
-//add to the brain
-brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port);
-////
-
 /**
  * user.mobile
  * user.disktop
  */
 var users = {}
 ////
+
+//add to the brain
+brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port, function() {
+    for (i in users) {
+        //users[host]
+        for (j in users[i]) {
+            //j is divice
+            var isfit = appInfo['id'] == hash.getHash('PNode', i)['id'];
+            if (!isfit) {
+                var ret = {
+                    "order" : "DIS",
+                    "status" : 100,
+                    "code" : 200,
+                    "msg" : "服务器异动，该用户已经被分配到其他的服务器，请重新连接至其他的服务器"
+                }
+                users[i][j]['socket'].emit('ybmp', ret);
+                users[i][j]['socket'].disconnect();
+            }
+        }
+    }
+});
+////
+
+//
 io.sockets.on('connection', function(socket) {
     var host;
     var divice;
@@ -57,7 +77,9 @@ io.sockets.on('connection', function(socket) {
         var rec = null;
         var time = +new Date();
 
-        console.log('----ybmp----', data, time)
+        console.log('----ybmp----')
+        console.log('    ', data)
+        console.log('----'+ time +'----')
 
         if ( typeof (data) == "string") {
             try {
@@ -90,18 +112,23 @@ io.sockets.on('connection', function(socket) {
             });
 
             //reg online status (for single login)
+            //if this divice is already regiseted,disconected the old one
             users[host] = users[host] || {};
-            if (users[host]['mobile']) {
-
+            if (users[host][divice]) {
                 var ret = {
                     "order" : "DIS",
                     "status" : 200,
-                    "msg" : host + " 在新的设备 " + (rec.diviceinfo||"未知设备") + " 登陆，您已经被迫下线"
+                    "code" : 200,
+                    "msg" : host + " 在新的设备 " + (rec.diviceinfo || "未知设备") + " 登陆，您已经被迫下线"
                 }
-                users[host][divice].emit('ybmp', ret);
-                users[host][divice].disconnect();
+                users[host][divice]['socket'].emit('ybmp', ret);
+                users[host][divice]['socket'].disconnect();
+            } else {
+                users[host][divice] = {};
+                users[host][divice]['socket'] = socket;
+                users[host][divice]['PRedis'] = PRedis;
             }
-            users[host]['mobile'] = socket;
+
             ////
 
             //mark online
@@ -120,14 +147,12 @@ io.sockets.on('connection', function(socket) {
             socket.emit('ybmp', ret);
 
         } else if (rec.order == 'MSG') {
-            console.log('    send MSG : ', rec)
             //the MSG part
             if (rec.touser) {
                 var redisHost = hash.getHash('PRedis', rec.touser);
                 var text = rec.text;
                 var room = "Room." + rec.touser;
                 //connect to the redis
-                console.log(rec.poster, rec.touser)
                 redisConnect.connect(redisHost.port, redisHost.ip, function(client) {
                     rec.status = 200;
                     rec.time = time;
