@@ -1,6 +1,6 @@
 var app = app || {};
 var ENTER_KEY = 13;
-var socket = io.connect('http://' + location.hostname + ':5000');
+var socket = io.connect('http://' + location.hostname + ':4001');
 
 app.conf = {};
 app.conf.username = undefined;
@@ -21,7 +21,7 @@ ybmp.decode = function(order) {
             json = orders[1];
         }
         ret.order = orders[0];
-        ret.data = JSON.parse(orders[1]);
+        ret.data = JSON.parse(json);
         ret.server = server || '';
         return ret;
     } else {
@@ -96,14 +96,19 @@ ybmp.encode = function(order, server, data) {
         },
         ybmp : function(data) {
             var that = this;
-            var order = ybmp.decode(data);
-            console.log(data,order);
-            switch(order.order) {
+            if(typeof (data)==='string'){
+                var rec = JSON.parse(data);   
+            }else{
+                var rec=data;
+            }
+            
+            var order = rec.order;
+            switch(order) {
                 case "REG":
-                    ybmpRge(order.data);
+                    ybmpRge(rec);
                     break;
                 case "MSG":
-                    ybmpMeg(order.data);
+                    ybmpMeg(rec);
                     break;
             };
 
@@ -113,7 +118,7 @@ ybmp.encode = function(order, server, data) {
             };
 
             function ybmpMeg(info) {
-                console.log('ybmsg',info)
+                console.log('ybmsg', info)
                 that.receive(info);
             };
 
@@ -183,11 +188,12 @@ ybmp.encode = function(order, server, data) {
         pubtext : function() {
             var to = app.conf.username == 1 ? 2 : 1, text = this.$input.val();
             var info = {
+                "order":"MSG",
                 "poster" : app.conf.username,
                 "touser" : to,
                 "text" : text
             }
-            socket.emit('ybmp', ybmp.encode('MSG', info));
+            socket.emit('ybmp', info);
             this.$input.val('');
             this.$input.focus();
         },
@@ -200,13 +206,16 @@ ybmp.encode = function(order, server, data) {
         regName : function() {
             var $username = $('#login').find('#username');
             var val = $username.val();
+            var info = {
+                "order" : "REG",
+                "host" : val
+            }
             if (val) {
-                socket.emit('ybmp', 'REG:::{"host":"' + val + '","type":"point"}');
+                socket.emit('ybmp', info);
             }
         },
         receive : function(data) {
             app.chatMsg.add(data);
-            //console.log('receive', data);
         },
         readerAll : function() {
             this.$all.html('All (' + app.coll_users.length + ')')
@@ -225,17 +234,17 @@ ybmp.encode = function(order, server, data) {
             this.renderMsgOne(model);
         },
         renderMsgOne : function(model) {
-            console.log('------2',model)
+            console.log('------2', model)
             // var isAll = (app.conf.touser == 'all') && (model.toJSON().touser == 'all');
             // var isPoster = (model.toJSON().poster == app.conf.username) && (model.toJSON().touser == app.conf.touser);
             // var isRecerver = (model.toJSON().poster == app.conf.touser) && (model.toJSON().touser == app.conf.username);
 
             //if (isAll || isPoster || isRecerver) {
-                this.msgView = new app.ViewChat({
-                    model : model
-                });
-                this.$('.chatMain').append(this.msgView.reader().$el);
-                $('.chatMain').scrollTop($('.chatMain')[0].scrollHeight);
+            this.msgView = new app.ViewChat({
+                model : model
+            });
+            this.$('.chatMain').append(this.msgView.reader().$el);
+            $('.chatMain').scrollTop($('.chatMain')[0].scrollHeight);
             //}
         }
     });
