@@ -74,5 +74,5 @@ var Gm = function() {
         }
     };
 })(Gm);
-
-Gm();
+Gm()
+//exports.Gm=Gm;
