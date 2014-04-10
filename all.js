@@ -79,7 +79,7 @@ io.sockets.on('connection', function(socket) {
 
         console.log('----ybmp----')
         console.log('    ', data)
-        console.log('----'+ time +'----')
+        console.log('----' + time + '----')
 
         if ( typeof (data) == "string") {
             try {
@@ -112,9 +112,10 @@ io.sockets.on('connection', function(socket) {
             });
 
             //reg online status (for single login)
-            //if this divice is already regiseted,disconected the old one
+            
             users[host] = users[host] || {};
             if (users[host][divice]) {
+                //if this divice is already regiseted,disconected the old one
                 var ret = {
                     "order" : "DIS",
                     "status" : 200,
@@ -123,11 +124,10 @@ io.sockets.on('connection', function(socket) {
                 }
                 users[host][divice]['socket'].emit('ybmp', ret);
                 users[host][divice]['socket'].disconnect();
-            } else {
-                users[host][divice] = {};
-                users[host][divice]['socket'] = socket;
-                users[host][divice]['PRedis'] = PRedis;
-            }
+            } 
+            users[host][divice] = users[host][divice] || {};
+            users[host][divice]['socket'] = socket;
+            users[host][divice]['PRedis'] = PRedis;
 
             ////
 
@@ -230,7 +230,7 @@ io.sockets.on('connection', function(socket) {
     });
 
     socket.on('disconnect', function(data) {
-        console.log(host, ' disa ', data)
+        host&&console.log(host, ' disa ', data);
         if (users[host] && users[host][divice]) {
             delete users[host][divice];
         }
