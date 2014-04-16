@@ -17,6 +17,9 @@ var conf = require('./conf/config');
 
 var mongoConnect = require('./lib/mongodb/connect');
 
+var id = require('./lib/id/id');
+
+var offline = require('./lib/msg/offline');
 
 //start the socket.io
 var io = require('socket.io').listen(appInfo.port, {
@@ -62,6 +65,7 @@ io.sockets.on('connection', function(socket) {
   socket.on('ybmp', function(data) {
     var rec = null;
     var time = +new Date();
+    var msgId = id.id();
 
     console.log('----ybmp----')
     console.log('    ', data)
@@ -134,6 +138,7 @@ io.sockets.on('connection', function(socket) {
 
     } else if (rec.order == 'MSG') {
       console.log('----MSG')
+      rec.messageId = msgId;
       //the MSG part
       if (rec.touser) {
         var redisHost = hash.getHash('PRedis', rec.touser);
@@ -159,20 +164,14 @@ io.sockets.on('connection', function(socket) {
                 //online
                 socket.emit('ybmp', rec);
               } else {
-                offline(rec);
                 //offline
+                offline.setMsg(rec);
+
               };
             })
           }
 
         });
-
-        function offline(msg) {
-          console.log('offline', msg);
-          redisConnect.connect(conf.sta.PPSH.pp1.port, conf.sta.PPSH.pp1.ip, function(client) {
-            client.publish('plugpush', JSON.stringify(msg));
-          });
-        };
 
         //log it to server (psersonal msg) async
         var msgData = {
@@ -180,7 +179,8 @@ io.sockets.on('connection', function(socket) {
           "from" : rec.poster,
           "to" : rec.touser,
           "content" : rec.text,
-          "time" : time
+          "time" : time,
+          "messageId" : rec.messageId
         }
         mongoConnect.connect(function(mongoC) {
           mongoC.db("larvel").collection('Message').insert(msgData, function() {
@@ -209,7 +209,8 @@ io.sockets.on('connection', function(socket) {
           "from" : rec.poster,
           "to" : rec.togroup,
           "content" : rec.text,
-          "time" : time
+          "time" : time,
+          "messageId" : rec.messageId
         }
 
         mongoConnect.connect(function(mongoC) {
@@ -220,6 +221,11 @@ io.sockets.on('connection', function(socket) {
         //
 
       }
+    } else if (rec.order == 'OFL') {
+      offline.getMsg(rec.userid, function(data) {
+        rec.data = data;
+        socket.emit('ybmp', rec);
+      });
     }
   });
 
