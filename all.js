@@ -81,7 +81,7 @@ io.sockets.on('connection', function(socket) {
     } else {
       rec = data;
     }
-
+ 
     //case
     if (rec.order == 'REG') {
       //the Reg part
