@@ -22,7 +22,11 @@ exports.sta = {
     }
   },
   redis: {
-
+    'token':{
+        ip:'10.21.3.59',
+        port:'6379',
+        select:'1'
+    }
   }
 };
 
