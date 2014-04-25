@@ -17,11 +17,11 @@ var conf = require('./conf/config');
 
 var mongoConnect = require('./lib/mongodb/connect');
 
-var id = require('./lib/id/id');
-
 var offline = require('./lib/msg/offline');
 
 var reg = require('./lib/reg/reg');
+
+var msgsend = require('./lib/msg/msgsend');
 
 //start the socket.io
 var io = require('socket.io').listen(appInfo.port, {
@@ -65,12 +65,10 @@ io.sockets.on('connection', function(socket) {
   var onLineRedis = null;
   socket.on('ybmp', function(data) {
     var rec = null;
-    var time = +new Date();
-    var msgId = id.id();
 
     console.log('----ybmp----')
     console.log('    ', data)
-    console.log('----' + time + '----')
+    console.log('----' + (+new Date()) + '----')
 
     if (typeof(data) == "string") {
       try {
@@ -93,90 +91,24 @@ io.sockets.on('connection', function(socket) {
       });
 
     } else if (rec.order == 'MSG') {
-      console.log('----MSG')
-      rec.messageId = msgId;
-      //the MSG part
-      if (rec.touser) {
-        var redisHost = hash.getHash('PRedis', rec.touser);
-        var text = rec.text;
-        var room = "Room." + rec.touser;
-        //connect to the redis
-        redisConnect.connect(redisHost.port, redisHost.ip, function(client) {
-          rec.status = 200;
-          rec.time = time;
+      var haveToken = users[host] && users[host][divice] && users[host][divice]['token'];
 
-          client.publish(room, JSON.stringify(rec));
+      //TODO fix type is 6 or 7
 
-          if (rec.poster == host) {
-            //self replay
-            socket.emit('ybmp', rec);
-          } else {
-            //send to other
-            client.sismember('online', rec.touser, function(err, isOnline) {
-
-              console.log('    user ' + rec.touser + ' online status : ' + isOnline);
-
-              if (isOnline) {
-                //online
-                socket.emit('ybmp', rec);
-              } else {
-                //offline
-                offline.setMsg(rec);
-
-              };
-            })
-          }
-
-        });
-
-        //log it to server (psersonal msg) async
-        var msgData = {
-          "type": "0",
-          "from": rec.poster,
-          "to": rec.touser,
-          "content": rec.text,
-          "time": time,
-          "messageId": rec.messageId
+      if ((haveToken && users[host][divice]['token'] == rec.access_token) || rec.type == "6" || rec.type == "7") {
+        if (rec.touser) {
+          msgsend.person(rec, socket, host);
+        } else if (rec.togroup) {
+          msgsend.group(rec, socket);
         }
-        mongoConnect.connect(function(mongoC) {
-          mongoC.db("larvel").collection('Message').insert(msgData, function() {
-            //success
-          })
-        });
-      } else if (rec.togroup) {
-        var groupServer = hash.getHash('GNode', rec.togroup);
-        if (!groupServer) {
-          return false;
-        }
-        var groupRedis = hash.getHash('GRedis', groupServer.id.toString());
-        var room = "Group." + groupServer.id;
-
-        redisConnect.connect(groupRedis.port, groupRedis.ip, function(client) {
-          rec.status = 200;
-          rec.time = time;
-          client.publish(room, JSON.stringify(rec));
-
-          socket.emit('ybmp', rec);
-        });
-
-        //log it to server (group msg)
-        var msgData = {
-          "type": "1",
-          "from": rec.poster,
-          "to": rec.togroup,
-          "content": rec.text,
-          "time": time,
-          "messageId": rec.messageId
-        }
-
-        mongoConnect.connect(function(mongoC) {
-          mongoC.db("larvel").collection('Message').insert(msgData, function() {
-            //success
-          })
-        });
-        //
+      } else {
+        rec.status = 100;
+        rec.msg = "消息发送失败，请重新连接socket";
+        socket.emit('ybmp', rec);
 
       }
+
+
     } else if (rec.order == 'OFL') {
       offline.getMsg(rec.userid, function(data) {
         rec.data = data;
@@ -190,7 +122,7 @@ io.sockets.on('connection', function(socket) {
     if (users[host] && users[host][divice]) {
       delete users[host][divice];
     };
-    
+
     if (host) {
       var PRedis = hash.getHash('PRedis', host);
       redisConnect.connect(PRedis.port, PRedis.ip, function(client) {
