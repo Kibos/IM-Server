@@ -91,7 +91,7 @@ io.sockets.on('connection', function(socket) {
             });
 
         } else if (rec.order == 'MSG') {
-            console.log('11111',host)
+
             var haveToken = users[host] && users[host][divice] && users[host][divice].token;
 
             //TODO fix type is 6 or 7
