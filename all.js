@@ -46,7 +46,7 @@ brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port, function() {
             if (!isfit) {
                 var ret = {
                     "order": "DIS",
-                    "status": 100,
+                    "status": 200,
                     "code": 200,
                     "msg": "服务器异动，该用户已经被分配到其他的服务器，请重新连接至其他的服务器"
                 };
@@ -113,6 +113,15 @@ io.sockets.on('connection', function(socket) {
                 rec.data = data;
                 socket.emit('ybmp', rec);
             });
+        } else if (rec.order == 'DIS') {
+            var ret = {
+                "order": "DIS",
+                "status": 200,
+                "code": 300,
+                "msg": "用户主动离线"
+            };
+            socket.emit('ybmp', ret);
+            socket.disconnect();
         }
     });
 
