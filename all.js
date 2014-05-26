@@ -74,7 +74,7 @@ io.sockets.on('connection', function(socket) {
             try {
                 rec = JSON.parse(data);
             } catch (e) {
-                socket.emit('ybmp', 'wrong data format ：', data);
+                socket.emit('ybmp', 'wrong data format : ', data);
                 return false;
             }
         } else {
@@ -96,7 +96,9 @@ io.sockets.on('connection', function(socket) {
             //TODO fix type is 6 or 7
             if ((haveToken && users[host][divice].token == rec.access_token) || rec.type == "6" || rec.type == "7") {
                 if (rec.touser) {
-                    msgsend.person(rec, socket, host);
+                    msgsend.person(rec, socket, {
+                        user: users[host]
+                    });
                 } else if (rec.togroup) {
                     msgsend.group(rec, socket);
                 }
@@ -104,10 +106,7 @@ io.sockets.on('connection', function(socket) {
                 rec.status = 100;
                 rec.msg = "消息发送失败，请重新连接socket";
                 socket.emit('ybmp', rec);
-
             }
-
-
         } else if (rec.order == 'OFL') {
             offline.getMsg(rec.userid, function(data) {
                 rec.data = data;
@@ -122,6 +121,7 @@ io.sockets.on('connection', function(socket) {
             };
             socket.emit('ybmp', ret);
             socket.disconnect();
+        } else if (rec.order == 'SYS') {
         }
     });
 

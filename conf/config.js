@@ -1,7 +1,6 @@
 /**
  * mongodb
  */
-
 exports.mongodb = {
     // the defaulte mongodb
     mg1: {
@@ -13,6 +12,7 @@ exports.mongodb = {
 /**
  * the static host
  */
+
 exports.sta = {
     // the plugpush server
     PPSH: {
@@ -29,6 +29,12 @@ exports.sta = {
         }
     },
     group: {
+        'api': {
+            ip: '10.21.3.59',
+            port: '8888'
+        }
+    },
+    friend: {
         'api': {
             ip: '10.21.3.59',
             port: '8888'
@@ -57,3 +63,5 @@ exports.Server = {
     GSub: {},
     URedis: {}
 };
+
+exports.users = {};
