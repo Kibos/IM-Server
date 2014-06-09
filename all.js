@@ -51,6 +51,7 @@ brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port, function() {
                     "msg": "服务器异动，该用户已经被分配到其他的服务器，请重新连接至其他的服务器"
                 };
                 users[i][j].socket.emit('ybmp', ret);
+                console.log(i, '服务器异动，该用户已经被分配到其他的服务器，请重新连接至其他的服务器')
                 users[i][j].socket.disconnect();
             }
         }
@@ -120,9 +121,9 @@ io.sockets.on('connection', function(socket) {
                 "msg": "用户主动离线"
             };
             socket.emit('ybmp', ret);
+            console.log(host, '用户主动离线');
             socket.disconnect();
-        } else if (rec.order == 'SYS') {
-        }
+        } else if (rec.order == 'SYS') {}
     });
 
     socket.on('disconnect', function(data) {
