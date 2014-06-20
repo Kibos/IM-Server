@@ -16,12 +16,10 @@ var redisConnect = require('./lib/redis/connect');
 var conf = require('./conf/config');
 
 var mongoConnect = require('./lib/mongodb/connect');
-
 var offline = require('./lib/msg/offline');
-
 var reg = require('./lib/reg/reg');
-
 var msgsend = require('./lib/msg/msgsend');
+var sysMsg = require('./lib/msg/sysMsg');
 
 //start the socket.io
 var io = require('socket.io').listen(appInfo.port, {
@@ -123,7 +121,9 @@ io.sockets.on('connection', function(socket) {
             socket.emit('ybmp', ret);
             console.log(host, '用户主动离线');
             socket.disconnect();
-        } else if (rec.order == 'SYS') {}
+        } else if (rec.order == 'SYS') {
+            sysMsg.sys(rec);
+        }
     });
 
     socket.on('disconnect', function(data) {
