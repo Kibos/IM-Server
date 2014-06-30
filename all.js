@@ -25,6 +25,12 @@ var sysMsg = require('./lib/msg/sysMsg');
 var io = require('socket.io').listen(appInfo.port, {
     log: false
 });
+
+// io.set('heartbeat timeout', 1);
+// io.set('close timeout', 1);
+// io.configure('release', function(){
+//     io.set('transports', ['websocket']);
+// });
 ////
 
 /**
@@ -103,12 +109,13 @@ io.sockets.on('connection', function(socket) {
                 }
             } else {
                 rec.status = 100;
-                rec.msg = "消息发送失败，请重新连接socket";
+                rec.msg = "token error, please reconnect socket";
                 socket.emit('ybmp', rec);
             }
         } else if (rec.order == 'OFL') {
             offline.getMsg(rec.userid, function(data) {
                 rec.data = data;
+                rec.status = 200;
                 socket.emit('ybmp', rec);
             });
         } else if (rec.order == 'DIS') {
