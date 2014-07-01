@@ -1,0 +1,134 @@
+.
+|-- README.md
+|-- aap_socket.js
+|-- all.js
+|-- all_4001.js
+|-- all_4002.js
+|-- all_test.js
+|-- api
+|   |-- groupCenter.js
+|   |-- groupMenage.js
+|   |-- group_center.js
+|   |-- group_controller.js
+|   |-- group_subscriber.js
+|   |-- server_factory.js
+|   `-- ybmp.js
+|-- conf
+|   |-- config.js
+|   |-- config_online.js
+|   |-- config_online_92.js
+|   `-- config\345\211\257\346\234\254.js
+|-- lib
+|   |-- brain
+|   |   |-- brain.js
+|   |   |-- brainServer.js
+|   |   |-- brainServer_4998.js
+|   |   `-- brainServer_4999.js
+|   |-- dispatch
+|   |   |-- dispatch.js
+|   |   |-- dispatch_4201.js
+|   |   |-- dispatch_4202.js
+|   |   |-- dispatch_block.js
+|   |   |-- dispatch_friend.js
+|   |   |-- dispatch_group.js
+|   |   `-- dispatch_notification.js
+|   |-- example
+|   |   `-- hash_test.js
+|   |-- group
+|   |   |-- group.js
+|   |   |-- group_4101.js
+|   |   `-- group_4102.js
+|   |-- hash
+|   |   |-- hash.js
+|   |   |-- hash.test.js
+|   |   |-- rbtree.js
+|   |   |-- treebase.js
+|   |   `-- ybhash.js
+|   |-- id
+|   |   |-- id.js
+|   |   `-- idtest.js
+|   |-- mongodb
+|   |   `-- connect.js
+|   |-- msg
+|   |   |-- download.html
+|   |   |-- messageSafe.js
+|   |   |-- msgsave.js
+|   |   |-- msgsend.js
+|   |   |-- offline.js
+|   |   |-- settest.js
+|   |   `-- sysMsg.js
+|   |-- plugpush
+|   |   `-- plugpush.js
+|   |-- pubsub
+|   |   |-- client.js
+|   |   |-- index.js
+|   |   `-- server.js
+|   |-- redis
+|   |   `-- connect.js
+|   |-- redisConnection.js
+|   |-- redistest.js
+|   |-- reg
+|   |   |-- checktoken.js
+|   |   `-- reg.js
+|   |-- restful
+|   |   `-- restful.js
+|   |-- router
+|   |   `-- router.js
+|   |-- socketConnect
+|   |   |-- connect.js
+|   |   `-- connecttest.js
+|   `-- socketServer.js
+|-- model
+|   |-- placeholder.js
+|   `-- uesr.js
+|-- package.json
+|-- route
+|   `-- friend.js
+|-- sftp-config.json
+|-- test
+|   |-- test.js
+|   `-- testIO.js
+|-- tree.txt
+`-- view
+    |-- README.md
+    |-- all.css
+    |-- all.html
+    |-- all.js
+    |-- backbone
+    |   |-- backbone.js
+    |   `-- underscore.js
+    |-- bootstrap
+    |   |-- css
+    |   |   |-- bootstrap-theme.css
+    |   |   |-- bootstrap-theme.min.css
+    |   |   |-- bootstrap.css
+    |   |   `-- bootstrap.min.css
+    |   |-- fonts
+    |   |   |-- glyphicons-halflings-regular.eot
+    |   |   |-- glyphicons-halflings-regular.svg
+    |   |   |-- glyphicons-halflings-regular.ttf
+    |   |   `-- glyphicons-halflings-regular.woff
+    |   `-- js
+    |       |-- bootstrap.js
+    |       |-- bootstrap.min.js
+    |       `-- jquery-1.10.2.min.js
+    |-- index.css
+    |-- index.html
+    |-- index.js
+    |-- p2p.html
+    |-- p2p.js
+    |-- p2p_4001.html
+    |-- p2p_4001.js
+    |-- p2p_4002.html
+    |-- p2p_4002.js
+    |-- placeholder.js
+    |-- pressure.html
+    |-- pressure2.html
+    |-- socket.io.js
+    |-- socket.js
+    |-- socket_.js
+    |-- socket_cluster.js
+    `-- test
+        `-- cluster.js
+
+28 directories, 103 files
