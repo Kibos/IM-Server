@@ -7,7 +7,7 @@ exports.mongodb = {
     // the defaulte mongodb
     mg1: {
         port: 27017,
-        ip: "10.21.3.59"
+        ip: "store.1.mongo"
     }
 };
 
@@ -17,25 +17,25 @@ exports.mongodb = {
 exports.sta = {
     redis: {
         'token': {
-            ip: '10.21.3.59',
+            ip: 'session.1.redis',
             port: '6379',
             select: '1'
         },
-        'cache':{
-            ip: '10.21.3.59',
+        'cache': {
+            ip: 'session.1.redis',
             port: '6379'
         }
     },
     group: {
         'api': {
-            ip: '10.21.3.59',
-            port: '8888'
+            ip: 'api.1.php',
+            port: '80'
         }
     },
     friend: {
         'api': {
-            ip: '10.21.3.59',
-            port: '8888'
+            ip: 'api.1.php',
+            port: '80'
         }
     }
 };
@@ -47,18 +47,24 @@ exports.Server = {
     PNode: {},
     PRedis: {
         'pr1': {
-            'ip': '10.21.3.66',//gmsg.1.redis
+            'ip': 'msg.1.redis',
+            'port': '6379'
+        },
+        'pr2': {
+            'ip': 'msg.2.redis',
             'port': '6379'
         }
     },
     GRedis: {
         'gr1': {
-            'ip': '10.21.3.66',//gmsg.2.redis
+            'ip': 'gmsg.1.redis',
+            'port': '6379'
+        },
+        'gr2': {
+            'ip': 'gmsg.2.redis',
             'port': '6379'
         }
     },
     GSub: {},
     URedis: {}
 };
-
-exports.users = {};
