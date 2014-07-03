@@ -1,13 +1,18 @@
 /**
  * mongodb
  */
-
+exports.brain = {
+    brain1: {
+        ip: '10.21.3.62',
+        port: 4999
+    }
+};
 
 exports.mongodb = {
     // the defaulte mongodb
     mg1: {
         port: 27017,
-        ip: "10.21.3.59"
+        ip: '10.21.3.59'
     }
 };
 
@@ -21,7 +26,7 @@ exports.sta = {
             port: '6379',
             select: '1'
         },
-        'cache':{
+        'cache': {
             ip: '10.21.3.59',
             port: '6379'
         }
@@ -47,13 +52,13 @@ exports.Server = {
     PNode: {},
     PRedis: {
         'pr1': {
-            'ip': '10.21.3.66',//gmsg.1.redis
+            'ip': '10.21.3.66', //gmsg.1.redis
             'port': '6379'
         }
     },
     GRedis: {
         'gr1': {
-            'ip': '10.21.3.66',//gmsg.2.redis
+            'ip': '10.21.3.66', //gmsg.2.redis
             'port': '6379'
         }
     },
