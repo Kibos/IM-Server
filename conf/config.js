@@ -1,5 +1,5 @@
 /**
- * mongodb
+ * brain
  */
 exports.brain = {
     brain1: {
@@ -8,6 +8,9 @@ exports.brain = {
     }
 };
 
+/**
+ * mongodb
+ */
 exports.mongodb = {
     // the defaulte mongodb
     mg1: {
