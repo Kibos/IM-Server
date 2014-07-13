@@ -120,6 +120,7 @@ io.sockets.on('connection', function(socket) {
             console.log(host, '用户主动离线');
             socket.disconnect();
         } else if (rec.order == 'SYS') {
+            rec.userid = rec.userid || host;
             sysMsg.sys(rec);
         }
     });
