@@ -15,7 +15,8 @@ exports.mongodb = {
     // the defaulte mongodb
     mg1: {
         port: 27017,
-        ip: '10.21.3.59'
+        ip: '10.21.3.59',
+        dbname: 'larvel'
     }
 };
 
