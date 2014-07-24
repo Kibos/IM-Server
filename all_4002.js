@@ -110,13 +110,13 @@ io.sockets.on('connection', function(socket) {
                 socket.emit('ybmp', rec);
             });
         } else if (rec.order == 'DIS') {
-            var ret = {
-                'order': 'DIS',
-                'status': 200,
-                'code': 300,
-                'msg': '用户主动离线'
-            };
-            socket.emit('ybmp', ret);
+            // var ret = {
+            //     'order': 'DIS',
+            //     'status': 200,
+            //     'code': 300,
+            //     'msg': '用户主动离线'
+            // };
+            // socket.emit('ybmp', ret);
             console.log(host, '用户主动离线');
             socket.disconnect();
         } else if (rec.order == 'SYS') {
