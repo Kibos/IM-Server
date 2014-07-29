@@ -30,6 +30,44 @@ var io = require('socket.io').listen(appInfo.port, {
  * user.disktop
  */
 var users = {};
+var messageCount = {
+    group: 0,
+    person: 0
+};
+//auto logo sys info
+(function saveUserInfo() {
+    var fs = require('fs');
+    var filename = '/usr/local/app/www/logs/' + appIp + '_' + appPort + '_pn_' + new Date().toJSON().split('T')[0] + '.txt';
+    var total = 0;
+    var userArray = [];
+
+    for (var i in users) {
+        for (var j in users[i]) {
+            userArray.push(i + '@' + j);
+            total++;
+        }
+    }
+
+    var json = {
+        onlineCount: total,
+        onlineUsers: userArray.join(','),
+        personMessage: messageCount.person,
+        groupMessage: messageCount.group,
+        time: +new Date()
+    };
+
+    fs.writeFile(filename, JSON.stringify(json) + '\n', {
+        flag: 'a'
+    }, function(err) {
+        if (err) {
+            console.log(arguments);
+        }
+    });
+
+    setTimeout(function() {
+        saveUserInfo();
+    }, 45000);
+})();
 ////
 
 //add to the brain
@@ -95,8 +133,10 @@ io.sockets.on('connection', function(socket) {
                     msgsend.person(rec, socket, {
                         user: users[host]
                     });
+                    messageCount.person++;
                 } else if (rec.togroup) {
                     msgsend.group(rec, socket);
+                    messageCount.group++;
                 }
             } else {
                 rec.status = 100;
