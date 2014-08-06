@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf-8">
+		<title>Socket</title>
+		<meta name="description" content="">
+		<meta name="author" content="Mofei">
+		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+		<link href="index.css" rel="stylesheet" type="text/css" />
+	</head>
+
+	<body>
+		<header>
+			This is a very beginning demo of Socket,built with Socket.io,Bootsrap.
+		</header>
+		<span class="count"> </span>
+
+		<script src="bootstrap/js/jquery-1.10.2.min.js"></script>
+		<script src="bootstrap/js/bootstrap.min.js"></script>
+
+		<script src="socket.io.js"></script>
+		<script src="backbone/underscore.js"></script>
+		<script src="backbone/backbone.js"></script>
+		<script>
+            var socket = io.connect('http://' + location.hostname + ':4001');
+            var i = 0;
+            setInterval(function() {
+                socket.emit('ybmp', '{"order":"MSG","poster":"1","togroup":"G1","text":' + (i++) + '}')
+                $('.count').html(i)
+            }, 1)
+		</script>
+	</body>
+</html>
