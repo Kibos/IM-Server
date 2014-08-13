@@ -76,17 +76,25 @@ brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port, function() {
         //users[host]
         for (var j in users[i]) {
             //j is divice
-            var isfit = (appInfo.id == hash.getHash('PNode', i).id);
+            var hashId = hash.getHash('PNode', i).id;
+            var isfit = appInfo.id == hashId;
+
             if (!isfit) {
                 var ret = {
                     'order': 'DIS',
                     'status': 200,
                     'code': 200,
-                    'msg': '服务器异动，该用户已经被分配到其他的服务器，请重新连接至其他的服务器'
+                    'msg': '服务器异动，该用户已经被分配到其他的服务器，请重新连接至其他的服务器',
+                    'serverId': appInfo.id,
+                    'hashId': hashId
                 };
                 users[i][j].socket.emit('ybmp', ret);
-                console.log(i, '服务器异动，该用户已经被分配到其他的服务器，请重新连接至其他的服务器');
                 users[i][j].socket.disconnect();
+
+                console.log(i, appInfo.id, hash.getHash('PNode', i).id, '服务器异动，该用户已经被分配到其他的服务器，请重新连接至其他的服务器');
+                console.log('hashs', hash._hash());
+                console.log(ret);
+                console.log('*****************');
             }
         }
     }
@@ -141,6 +149,7 @@ io.sockets.on('connection', function(socket) {
             } else {
                 rec.status = 100;
                 rec.msg = 'token error, please reconnect socket';
+                console.log('token err', users[host][divice].token);
                 socket.emit('ybmp', rec);
             }
         } else if (rec.order == 'OFL') {
