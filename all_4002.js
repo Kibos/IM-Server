@@ -153,11 +153,19 @@ io.sockets.on('connection', function(socket) {
                 socket.emit('ybmp', rec);
             }
         } else if (rec.order == 'OFL') {
-            offline.getMsg(rec.userid, function(data) {
-                rec.data = data;
-                rec.status = 200;
-                socket.emit('ybmp', rec);
-            });
+            if (rec.action == "person") {
+                offline.getMoreByPerson(rec.userid, rec.poster, rec.limit, function(data) {
+                    rec.data = data;
+                    rec.status = 200;
+                    socket.emit('ybmp', rec);
+                });
+            } else {
+                offline.getMsg(rec.userid, function(data) {
+                    rec.data = data;
+                    rec.status = 200;
+                    socket.emit('ybmp', rec);
+                });
+            }
         } else if (rec.order == 'DIS') {
             // var ret = {
             //     'order': 'DIS',
