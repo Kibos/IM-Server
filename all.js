@@ -149,7 +149,7 @@ io.sockets.on('connection', function(socket) {
             } else {
                 rec.status = 100;
                 rec.msg = 'token error, please reconnect socket';
-                console.log('token err', users[host][divice].token);
+                //console.log('token err', users[host][divice].token);
                 socket.emit('ybmp', rec);
             }
         } else if (rec.order == 'OFL') {
