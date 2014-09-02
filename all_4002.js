@@ -34,23 +34,24 @@ var messageCount = {
     group: 0,
     person: 0
 };
+
 //auto logo sys info
 (function saveUserInfo() {
     var fs = require('fs');
     var filename = '/usr/local/app/www/logs/' + appIp + '_' + appPort + '_pn_' + new Date().toJSON().split('T')[0] + '.txt';
     var total = 0;
-    var userArray = [];
+    //var userArray = [];
 
     for (var i in users) {
         for (var j in users[i]) {
-            userArray.push(i + '@' + j);
+            //userArray.push(i + '@' + j);
             total++;
         }
     }
 
     var json = {
         onlineCount: total,
-        onlineUsers: userArray.join(','),
+        //onlineUsers: userArray.join(','),
         personMessage: messageCount.person,
         groupMessage: messageCount.group,
         time: +new Date()
@@ -109,9 +110,9 @@ io.sockets.on('connection', function(socket) {
     socket.on('ybmp', function(data) {
         var rec = null;
 
-        console.log('----ybmp----');
-        console.log('    ', data);
-        console.log('----' + (+new Date()) + '----');
+        // console.log('----ybmp----');
+        // console.log('    ', data);
+        // console.log('----' + (+new Date()) + '----');
 
         if (typeof(data) == 'string') {
             try {
@@ -153,7 +154,7 @@ io.sockets.on('connection', function(socket) {
                 socket.emit('ybmp', rec);
             }
         } else if (rec.order == 'OFL') {
-            if (rec.action == "person") {
+            if (rec.action == 'person') {
                 offline.getMoreByPerson(rec.userid, rec.poster, rec.limit, function(data) {
                     rec.data = data;
                     rec.status = 200;
