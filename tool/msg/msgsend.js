@@ -53,9 +53,6 @@ exports.sendToPerson = function(msg, touser, poster, socket) {
         msg.status = 200;
 
         client.publish(room, JSON.stringify(msg));
-        client.on('message', function(message) {
-            console.log('this is the message :', message);
-        });
 
         if (socket) socket.emit('ybmp', msg);
 
