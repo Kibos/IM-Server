@@ -1,0 +1,2689 @@
+{
+  "before": {
+    "nodes": 30149,
+    "time": "2014-09-24T06:45:19.000Z",
+    "size_bytes": 4884880,
+    "size": "4.66 mb"
+  },
+  "after": {
+    "nodes": 35725,
+    "time": "2014-09-24T06:45:19.000Z",
+    "size_bytes": 5904328,
+    "size": "5.63 mb"
+  },
+  "change": {
+    "size_bytes": 1019448,
+    "size": "995.55 kb",
+    "freed_nodes": 3078,
+    "allocated_nodes": 8654,
+    "details": [
+      {
+        "what": "ActiveXObfuscator",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Arguments",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Array",
+        "size_bytes": 109816,
+        "size": "107.24 kb",
+        "+": 2528,
+        "-": 955
+      },
+      {
+        "what": "Client",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Closure",
+        "size_bytes": 43344,
+        "size": "42.33 kb",
+        "+": 602,
+        "-": 0
+      },
+      {
+        "what": "Cluster",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Code",
+        "size_bytes": -115616,
+        "size": "-112.91 kb",
+        "+": 1048,
+        "-": 624
+      },
+      {
+        "what": "EventEmitter",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Flag",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "FlashSocket",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTMLFile",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPTransport",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JSONPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JS_Parse_Error",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Manager",
+        "size_bytes": 160,
+        "size": "160 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Memory",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Module",
+        "size_bytes": 3680,
+        "size": "3.59 kb",
+        "+": 46,
+        "-": 0
+      },
+      {
+        "what": "Native",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "NativeModule",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "NodeWithToken",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Number",
+        "size_bytes": 16,
+        "size": "16 bytes",
+        "+": 3,
+        "-": 2
+      },
+      {
+        "what": "Object",
+        "size_bytes": 17544,
+        "size": "17.13 kb",
+        "+": 406,
+        "-": 0
+      },
+      {
+        "what": "Parser",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "ProgressTracker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "ReadStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Redis",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "RegExp",
+        "size_bytes": 5472,
+        "size": "5.34 kb",
+        "+": 76,
+        "-": 0
+      },
+      {
+        "what": "Server",
+        "size_bytes": 104,
+        "size": "104 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "SlowBuffer",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "Socket",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "SocketNamespace",
+        "size_bytes": 168,
+        "size": "168 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "Static",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Store",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "String",
+        "size_bytes": 909680,
+        "size": "888.36 kb",
+        "+": 2405,
+        "-": 271
+      },
+      {
+        "what": "TCP",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timeout",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timer",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Transport",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "WebSocket",
+        "size_bytes": 96,
+        "size": "96 bytes",
+        "+": 4,
+        "-": 0
+      },
+      {
+        "what": "Worker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "WriteStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "XHRPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "f",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "module.exports",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 1,
+        "-": 0
+      }
+    ]
+  }
+}{
+  "before": {
+    "nodes": 30149,
+    "time": "2014-09-24T06:52:55.000Z",
+    "size_bytes": 4884880,
+    "size": "4.66 mb"
+  },
+  "after": {
+    "nodes": 35724,
+    "time": "2014-09-24T06:52:55.000Z",
+    "size_bytes": 5904296,
+    "size": "5.63 mb"
+  },
+  "change": {
+    "size_bytes": 1019416,
+    "size": "995.52 kb",
+    "freed_nodes": 3079,
+    "allocated_nodes": 8654,
+    "details": [
+      {
+        "what": "ActiveXObfuscator",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Arguments",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Array",
+        "size_bytes": 109816,
+        "size": "107.24 kb",
+        "+": 2528,
+        "-": 955
+      },
+      {
+        "what": "Client",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Closure",
+        "size_bytes": 43344,
+        "size": "42.33 kb",
+        "+": 602,
+        "-": 0
+      },
+      {
+        "what": "Cluster",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Code",
+        "size_bytes": -115616,
+        "size": "-112.91 kb",
+        "+": 1048,
+        "-": 624
+      },
+      {
+        "what": "EventEmitter",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Flag",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "FlashSocket",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTMLFile",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPTransport",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JSONPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JS_Parse_Error",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Manager",
+        "size_bytes": 160,
+        "size": "160 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Memory",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Module",
+        "size_bytes": 3680,
+        "size": "3.59 kb",
+        "+": 46,
+        "-": 0
+      },
+      {
+        "what": "Native",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "NativeModule",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "NodeWithToken",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Number",
+        "size_bytes": 16,
+        "size": "16 bytes",
+        "+": 3,
+        "-": 2
+      },
+      {
+        "what": "Object",
+        "size_bytes": 17544,
+        "size": "17.13 kb",
+        "+": 406,
+        "-": 0
+      },
+      {
+        "what": "Parser",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "ProgressTracker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "ReadStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Redis",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "RegExp",
+        "size_bytes": 5472,
+        "size": "5.34 kb",
+        "+": 76,
+        "-": 0
+      },
+      {
+        "what": "Server",
+        "size_bytes": 104,
+        "size": "104 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "SlowBuffer",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "Socket",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "SocketNamespace",
+        "size_bytes": 168,
+        "size": "168 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "Static",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Store",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "String",
+        "size_bytes": 909648,
+        "size": "888.33 kb",
+        "+": 2405,
+        "-": 272
+      },
+      {
+        "what": "TCP",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timeout",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timer",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Transport",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "WebSocket",
+        "size_bytes": 96,
+        "size": "96 bytes",
+        "+": 4,
+        "-": 0
+      },
+      {
+        "what": "Worker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "WriteStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "XHRPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "f",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "module.exports",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 1,
+        "-": 0
+      }
+    ]
+  }
+}{
+  "before": {
+    "nodes": 30149,
+    "time": "2014-09-24T06:52:56.000Z",
+    "size_bytes": 4884880,
+    "size": "4.66 mb"
+  },
+  "after": {
+    "nodes": 35724,
+    "time": "2014-09-24T06:52:56.000Z",
+    "size_bytes": 5904296,
+    "size": "5.63 mb"
+  },
+  "change": {
+    "size_bytes": 1019416,
+    "size": "995.52 kb",
+    "freed_nodes": 3079,
+    "allocated_nodes": 8654,
+    "details": [
+      {
+        "what": "ActiveXObfuscator",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Arguments",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Array",
+        "size_bytes": 109816,
+        "size": "107.24 kb",
+        "+": 2528,
+        "-": 955
+      },
+      {
+        "what": "Client",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Closure",
+        "size_bytes": 43344,
+        "size": "42.33 kb",
+        "+": 602,
+        "-": 0
+      },
+      {
+        "what": "Cluster",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Code",
+        "size_bytes": -115616,
+        "size": "-112.91 kb",
+        "+": 1048,
+        "-": 624
+      },
+      {
+        "what": "EventEmitter",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Flag",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "FlashSocket",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTMLFile",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPTransport",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JSONPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JS_Parse_Error",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Manager",
+        "size_bytes": 160,
+        "size": "160 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Memory",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Module",
+        "size_bytes": 3680,
+        "size": "3.59 kb",
+        "+": 46,
+        "-": 0
+      },
+      {
+        "what": "Native",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "NativeModule",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "NodeWithToken",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Number",
+        "size_bytes": 16,
+        "size": "16 bytes",
+        "+": 3,
+        "-": 2
+      },
+      {
+        "what": "Object",
+        "size_bytes": 17544,
+        "size": "17.13 kb",
+        "+": 406,
+        "-": 0
+      },
+      {
+        "what": "Parser",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "ProgressTracker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "ReadStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Redis",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "RegExp",
+        "size_bytes": 5472,
+        "size": "5.34 kb",
+        "+": 76,
+        "-": 0
+      },
+      {
+        "what": "Server",
+        "size_bytes": 104,
+        "size": "104 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "SlowBuffer",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "Socket",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "SocketNamespace",
+        "size_bytes": 168,
+        "size": "168 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "Static",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Store",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "String",
+        "size_bytes": 909648,
+        "size": "888.33 kb",
+        "+": 2405,
+        "-": 272
+      },
+      {
+        "what": "TCP",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timeout",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timer",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Transport",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "WebSocket",
+        "size_bytes": 96,
+        "size": "96 bytes",
+        "+": 4,
+        "-": 0
+      },
+      {
+        "what": "Worker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "WriteStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "XHRPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "f",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "module.exports",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 1,
+        "-": 0
+      }
+    ]
+  }
+}{
+  "before": {
+    "nodes": 30149,
+    "time": "2014-09-24T06:52:56.000Z",
+    "size_bytes": 4884880,
+    "size": "4.66 mb"
+  },
+  "after": {
+    "nodes": 35724,
+    "time": "2014-09-24T06:52:57.000Z",
+    "size_bytes": 5904296,
+    "size": "5.63 mb"
+  },
+  "change": {
+    "size_bytes": 1019416,
+    "size": "995.52 kb",
+    "freed_nodes": 3079,
+    "allocated_nodes": 8654,
+    "details": [
+      {
+        "what": "ActiveXObfuscator",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Arguments",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Array",
+        "size_bytes": 109816,
+        "size": "107.24 kb",
+        "+": 2528,
+        "-": 955
+      },
+      {
+        "what": "Client",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Closure",
+        "size_bytes": 43344,
+        "size": "42.33 kb",
+        "+": 602,
+        "-": 0
+      },
+      {
+        "what": "Cluster",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Code",
+        "size_bytes": -115616,
+        "size": "-112.91 kb",
+        "+": 1048,
+        "-": 624
+      },
+      {
+        "what": "EventEmitter",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Flag",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "FlashSocket",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTMLFile",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPTransport",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JSONPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JS_Parse_Error",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Manager",
+        "size_bytes": 160,
+        "size": "160 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Memory",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Module",
+        "size_bytes": 3680,
+        "size": "3.59 kb",
+        "+": 46,
+        "-": 0
+      },
+      {
+        "what": "Native",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "NativeModule",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "NodeWithToken",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Number",
+        "size_bytes": 16,
+        "size": "16 bytes",
+        "+": 3,
+        "-": 2
+      },
+      {
+        "what": "Object",
+        "size_bytes": 17544,
+        "size": "17.13 kb",
+        "+": 406,
+        "-": 0
+      },
+      {
+        "what": "Parser",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "ProgressTracker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "ReadStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Redis",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "RegExp",
+        "size_bytes": 5472,
+        "size": "5.34 kb",
+        "+": 76,
+        "-": 0
+      },
+      {
+        "what": "Server",
+        "size_bytes": 104,
+        "size": "104 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "SlowBuffer",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "Socket",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "SocketNamespace",
+        "size_bytes": 168,
+        "size": "168 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "Static",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Store",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "String",
+        "size_bytes": 909648,
+        "size": "888.33 kb",
+        "+": 2405,
+        "-": 272
+      },
+      {
+        "what": "TCP",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timeout",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timer",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Transport",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "WebSocket",
+        "size_bytes": 96,
+        "size": "96 bytes",
+        "+": 4,
+        "-": 0
+      },
+      {
+        "what": "Worker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "WriteStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "XHRPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "f",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "module.exports",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 1,
+        "-": 0
+      }
+    ]
+  }
+}{
+  "before": {
+    "nodes": 30209,
+    "time": "2014-09-24T06:52:57.000Z",
+    "size_bytes": 4886264,
+    "size": "4.66 mb"
+  },
+  "after": {
+    "nodes": 35761,
+    "time": "2014-09-24T06:52:57.000Z",
+    "size_bytes": 5904776,
+    "size": "5.63 mb"
+  },
+  "change": {
+    "size_bytes": 1018512,
+    "size": "994.64 kb",
+    "freed_nodes": 3098,
+    "allocated_nodes": 8650,
+    "details": [
+      {
+        "what": "ActiveXObfuscator",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Arguments",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Array",
+        "size_bytes": 110224,
+        "size": "107.64 kb",
+        "+": 2533,
+        "-": 969
+      },
+      {
+        "what": "Client",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Closure",
+        "size_bytes": 43344,
+        "size": "42.33 kb",
+        "+": 602,
+        "-": 0
+      },
+      {
+        "what": "Cluster",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Code",
+        "size_bytes": -123968,
+        "size": "-121.06 kb",
+        "+": 1039,
+        "-": 629
+      },
+      {
+        "what": "EventEmitter",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Flag",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "FlashSocket",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTMLFile",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPTransport",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JSONPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JS_Parse_Error",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Manager",
+        "size_bytes": 160,
+        "size": "160 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Memory",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Module",
+        "size_bytes": 3680,
+        "size": "3.59 kb",
+        "+": 46,
+        "-": 0
+      },
+      {
+        "what": "Native",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "NativeModule",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "NodeWithToken",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Number",
+        "size_bytes": 16,
+        "size": "16 bytes",
+        "+": 3,
+        "-": 2
+      },
+      {
+        "what": "Object",
+        "size_bytes": 17544,
+        "size": "17.13 kb",
+        "+": 406,
+        "-": 0
+      },
+      {
+        "what": "Parser",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "ProgressTracker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "ReadStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Redis",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "RegExp",
+        "size_bytes": 5472,
+        "size": "5.34 kb",
+        "+": 76,
+        "-": 0
+      },
+      {
+        "what": "Server",
+        "size_bytes": 104,
+        "size": "104 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "SlowBuffer",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "Socket",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "SocketNamespace",
+        "size_bytes": 168,
+        "size": "168 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "Static",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Store",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "String",
+        "size_bytes": 909648,
+        "size": "888.33 kb",
+        "+": 2405,
+        "-": 272
+      },
+      {
+        "what": "TCP",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timeout",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timer",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Transport",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "WebSocket",
+        "size_bytes": 96,
+        "size": "96 bytes",
+        "+": 4,
+        "-": 0
+      },
+      {
+        "what": "Worker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "WriteStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "XHRPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "f",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "module.exports",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 1,
+        "-": 0
+      }
+    ]
+  }
+}{
+  "before": {
+    "nodes": 30149,
+    "time": "2014-09-24T06:54:15.000Z",
+    "size_bytes": 4884880,
+    "size": "4.66 mb"
+  },
+  "after": {
+    "nodes": 35724,
+    "time": "2014-09-24T06:54:15.000Z",
+    "size_bytes": 5904296,
+    "size": "5.63 mb"
+  },
+  "change": {
+    "size_bytes": 1019416,
+    "size": "995.52 kb",
+    "freed_nodes": 3079,
+    "allocated_nodes": 8654,
+    "details": [
+      {
+        "what": "ActiveXObfuscator",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Arguments",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Array",
+        "size_bytes": 109816,
+        "size": "107.24 kb",
+        "+": 2528,
+        "-": 955
+      },
+      {
+        "what": "Client",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Closure",
+        "size_bytes": 43344,
+        "size": "42.33 kb",
+        "+": 602,
+        "-": 0
+      },
+      {
+        "what": "Cluster",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Code",
+        "size_bytes": -115616,
+        "size": "-112.91 kb",
+        "+": 1048,
+        "-": 624
+      },
+      {
+        "what": "EventEmitter",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Flag",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "FlashSocket",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTMLFile",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPTransport",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JSONPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JS_Parse_Error",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Manager",
+        "size_bytes": 160,
+        "size": "160 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Memory",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Module",
+        "size_bytes": 3680,
+        "size": "3.59 kb",
+        "+": 46,
+        "-": 0
+      },
+      {
+        "what": "Native",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "NativeModule",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "NodeWithToken",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Number",
+        "size_bytes": 16,
+        "size": "16 bytes",
+        "+": 3,
+        "-": 2
+      },
+      {
+        "what": "Object",
+        "size_bytes": 17544,
+        "size": "17.13 kb",
+        "+": 406,
+        "-": 0
+      },
+      {
+        "what": "Parser",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "ProgressTracker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "ReadStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Redis",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "RegExp",
+        "size_bytes": 5472,
+        "size": "5.34 kb",
+        "+": 76,
+        "-": 0
+      },
+      {
+        "what": "Server",
+        "size_bytes": 104,
+        "size": "104 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "SlowBuffer",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "Socket",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "SocketNamespace",
+        "size_bytes": 168,
+        "size": "168 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "Static",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Store",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "String",
+        "size_bytes": 909648,
+        "size": "888.33 kb",
+        "+": 2405,
+        "-": 272
+      },
+      {
+        "what": "TCP",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timeout",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timer",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Transport",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "WebSocket",
+        "size_bytes": 96,
+        "size": "96 bytes",
+        "+": 4,
+        "-": 0
+      },
+      {
+        "what": "Worker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "WriteStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "XHRPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "f",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "module.exports",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 1,
+        "-": 0
+      }
+    ]
+  }
+}{
+  "before": {
+    "nodes": 30149,
+    "time": "2014-09-24T06:54:15.000Z",
+    "size_bytes": 4884880,
+    "size": "4.66 mb"
+  },
+  "after": {
+    "nodes": 35724,
+    "time": "2014-09-24T06:54:16.000Z",
+    "size_bytes": 5904296,
+    "size": "5.63 mb"
+  },
+  "change": {
+    "size_bytes": 1019416,
+    "size": "995.52 kb",
+    "freed_nodes": 3079,
+    "allocated_nodes": 8654,
+    "details": [
+      {
+        "what": "ActiveXObfuscator",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Arguments",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Array",
+        "size_bytes": 109816,
+        "size": "107.24 kb",
+        "+": 2528,
+        "-": 955
+      },
+      {
+        "what": "Client",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Closure",
+        "size_bytes": 43344,
+        "size": "42.33 kb",
+        "+": 602,
+        "-": 0
+      },
+      {
+        "what": "Cluster",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Code",
+        "size_bytes": -115616,
+        "size": "-112.91 kb",
+        "+": 1048,
+        "-": 624
+      },
+      {
+        "what": "EventEmitter",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Flag",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "FlashSocket",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTMLFile",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPTransport",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JSONPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JS_Parse_Error",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Manager",
+        "size_bytes": 160,
+        "size": "160 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Memory",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Module",
+        "size_bytes": 3680,
+        "size": "3.59 kb",
+        "+": 46,
+        "-": 0
+      },
+      {
+        "what": "Native",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "NativeModule",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "NodeWithToken",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Number",
+        "size_bytes": 16,
+        "size": "16 bytes",
+        "+": 3,
+        "-": 2
+      },
+      {
+        "what": "Object",
+        "size_bytes": 17544,
+        "size": "17.13 kb",
+        "+": 406,
+        "-": 0
+      },
+      {
+        "what": "Parser",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "ProgressTracker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "ReadStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Redis",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "RegExp",
+        "size_bytes": 5472,
+        "size": "5.34 kb",
+        "+": 76,
+        "-": 0
+      },
+      {
+        "what": "Server",
+        "size_bytes": 104,
+        "size": "104 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "SlowBuffer",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "Socket",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "SocketNamespace",
+        "size_bytes": 168,
+        "size": "168 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "Static",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Store",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "String",
+        "size_bytes": 909648,
+        "size": "888.33 kb",
+        "+": 2405,
+        "-": 272
+      },
+      {
+        "what": "TCP",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timeout",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timer",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Transport",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "WebSocket",
+        "size_bytes": 96,
+        "size": "96 bytes",
+        "+": 4,
+        "-": 0
+      },
+      {
+        "what": "Worker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "WriteStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "XHRPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "f",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "module.exports",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 1,
+        "-": 0
+      }
+    ]
+  }
+}{
+  "before": {
+    "nodes": 30149,
+    "time": "2014-09-24T06:54:16.000Z",
+    "size_bytes": 4884880,
+    "size": "4.66 mb"
+  },
+  "after": {
+    "nodes": 35724,
+    "time": "2014-09-24T06:54:16.000Z",
+    "size_bytes": 5904296,
+    "size": "5.63 mb"
+  },
+  "change": {
+    "size_bytes": 1019416,
+    "size": "995.52 kb",
+    "freed_nodes": 3079,
+    "allocated_nodes": 8654,
+    "details": [
+      {
+        "what": "ActiveXObfuscator",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Arguments",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Array",
+        "size_bytes": 109816,
+        "size": "107.24 kb",
+        "+": 2528,
+        "-": 955
+      },
+      {
+        "what": "Client",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Closure",
+        "size_bytes": 43344,
+        "size": "42.33 kb",
+        "+": 602,
+        "-": 0
+      },
+      {
+        "what": "Cluster",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Code",
+        "size_bytes": -115616,
+        "size": "-112.91 kb",
+        "+": 1048,
+        "-": 624
+      },
+      {
+        "what": "EventEmitter",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Flag",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "FlashSocket",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTMLFile",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "HTTPTransport",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JSONPPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "JS_Parse_Error",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Manager",
+        "size_bytes": 160,
+        "size": "160 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Memory",
+        "size_bytes": 128,
+        "size": "128 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Module",
+        "size_bytes": 3680,
+        "size": "3.59 kb",
+        "+": 46,
+        "-": 0
+      },
+      {
+        "what": "Native",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "NativeModule",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "NodeWithToken",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Number",
+        "size_bytes": 16,
+        "size": "16 bytes",
+        "+": 3,
+        "-": 2
+      },
+      {
+        "what": "Object",
+        "size_bytes": 17544,
+        "size": "17.13 kb",
+        "+": 406,
+        "-": 0
+      },
+      {
+        "what": "Parser",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "ProgressTracker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "ReadStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Redis",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "RegExp",
+        "size_bytes": 5472,
+        "size": "5.34 kb",
+        "+": 76,
+        "-": 0
+      },
+      {
+        "what": "Server",
+        "size_bytes": 104,
+        "size": "104 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "SlowBuffer",
+        "size_bytes": 0,
+        "size": "0 bytes",
+        "+": 1,
+        "-": 1
+      },
+      {
+        "what": "Socket",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "SocketNamespace",
+        "size_bytes": 168,
+        "size": "168 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "Static",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "Store",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "String",
+        "size_bytes": 909648,
+        "size": "888.33 kb",
+        "+": 2405,
+        "-": 272
+      },
+      {
+        "what": "TCP",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timeout",
+        "size_bytes": 136,
+        "size": "136 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Timer",
+        "size_bytes": 32,
+        "size": "32 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "Transport",
+        "size_bytes": 48,
+        "size": "48 bytes",
+        "+": 2,
+        "-": 0
+      },
+      {
+        "what": "WebSocket",
+        "size_bytes": 96,
+        "size": "96 bytes",
+        "+": 4,
+        "-": 0
+      },
+      {
+        "what": "Worker",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "WriteStream",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "XHRPolling",
+        "size_bytes": 24,
+        "size": "24 bytes",
+        "+": 1,
+        "-": 0
+      },
+      {
+        "what": "f",
+        "size_bytes": 72,
+        "size": "72 bytes",
+        "+": 3,
+        "-": 0
+      },
+      {
+        "what": "module.exports",
+        "size_bytes": 112,
+        "size": "112 bytes",
+        "+": 1,
+        "-": 0
+      }
+    ]
+  }
+}

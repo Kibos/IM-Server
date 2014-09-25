@@ -1,28 +1,22 @@
-/**
- * brain
- */
-exports.brain = {
-    brain1: {
-        ip: '10.21.3.62',
-        port: 4999
-    }
-};
-
-/**
- * mongodb
- */
 exports.mongodb = {
     // the defaulte mongodb
     mg1: {
         port: 27017,
-        ip: '10.21.3.59',
+        ip: '10.21.3.64',
+        dbname: 'larvel'
+    },
+    mg2: {
+        port: 27018,
+        ip: '10.21.3.64',
+        dbname: 'larvel'
+    },
+    mg3: {
+        port: 27019,
+        ip: '10.21.3.64',
         dbname: 'larvel'
     }
 };
 
-/**
- * the static host
- */
 exports.sta = {
     redis: {
         'token': {
@@ -30,7 +24,7 @@ exports.sta = {
             port: '6379',
             select: '1'
         },
-        'cache': {
+         'cache': {
             ip: '10.21.3.59',
             port: '6379'
         }
@@ -49,9 +43,6 @@ exports.sta = {
     }
 };
 
-/**
- *redis、node server
- */
 exports.Server = {
     PNode: {},
     PRedis: {
@@ -70,4 +61,78 @@ exports.Server = {
     URedis: {}
 };
 
+exports.redisPwd = {
+    '10.21.67.115': 'mobile_master$%*115',
+    'msg.1.redis': 'mobile_master$%*115',
+    '10.21.67.116': 'mobile_master$%*116',
+    'msg.2.redis': 'mobile_master$%*116',
+    '10.21.67.117': 'mobile_master$%*117',
+    'gmsg.1.redis': 'mobile_master$%*117',
+    '10.21.67.118': 'mobile_master$%*118',
+    'gmsg.2.redis': 'mobile_master$%*118',
+    '10.21.67.119': 'mobile_master$%*119',
+    'session.1.redis': 'mobile_master$%*119',
+    '10.21.67.120': 'mobile_master$%*120',
+    'session.2.redis': 'mobile_master$%*120'
+};
+
+exports.replicas = 80;
+
+exports.legalIP = {
+    governmentIP : '10.21.67.',
+    developIp : '10.21.'
+};
+
 exports.users = {};
+
+//var appIp = require('os').networkInterfaces().eth0[0].address;
+var appIp = '10.21.3.63';
+
+exports.NodeInfo = {
+    BNode : {
+        ip: appIp,
+        port: 4999
+    },
+    PNode : {
+        ip: appIp,
+        port: 4001,
+        type: 'PNode',
+        id: 'pn_' + appIp + '_' + 4001
+    },
+    PNode2 : {
+        ip: appIp,
+        port: 4002,
+        type: 'PNode',
+        id: 'pn_' + appIp + '_' + 4002
+    },
+    DNode : {
+        ip: appIp,
+        port: 4008,
+        type: 'DNode',
+        id: 'dn_' + appIp + '_' + 4008
+    },
+    DNode2 : {
+        ip: appIp,
+        port: 4201,
+        type: 'DNode',
+        id: 'dn_' + appIp + '_' + 4201
+    },
+    DNode3 : {
+        ip: appIp,
+        port: 4202,
+        type: 'DNode',
+        id: 'dn_' + appIp + '_' + 4202
+    },
+    GNode : {
+        ip: appIp,
+        port: 4101,
+        type: 'GNode',
+        id: 'gn_' + appIp + '_' + 4101
+    },
+    GNode2 : {
+        ip: appIp,
+        port: 4102,
+        type: 'GNode',
+        id: 'gn_' + appIp + '_' + 4102
+    }
+};

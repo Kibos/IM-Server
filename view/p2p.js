@@ -1,6 +1,6 @@
 var app = app || {};
 var ENTER_KEY = 13;
-var socket = io.connect('http://' + location.hostname + ':4001');
+var socket = io.connect('http://10.21.3.63:4001');
 
 app.conf = {};
 app.conf.username = undefined;
