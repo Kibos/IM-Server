@@ -2,12 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b9e29e66-3a99-4489-b220-5984d39ac981" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/stress-test/logs.txt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/stress-test/publish.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/stress-test/subscribe.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data-mining-server/app.js" afterPath="$PROJECT_DIR$/data-mining-server/app.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node-server/app.js" afterPath="$PROJECT_DIR$/node-server/app.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node-server/log.txt" afterPath="$PROJECT_DIR$/node-server/log.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/stress-test/memwatch.js" afterPath="$PROJECT_DIR$/stress-test/memwatch.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ybmp.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -48,80 +50,34 @@
     </favorites_list>
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="app.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/node-server/app.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="143" column="30" selection-start="4103" selection-end="4103" vertical-scroll-proportion="0.0" vertical-offset="2622" max-vertical-offset="5129">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="reg.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/node-server/data/reg.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="43" column="23" selection-start="1191" selection-end="1191" vertical-scroll-proportion="0.0" vertical-offset="989" max-vertical-offset="2484">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="msgsend.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tool/msg/msgsend.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="63" column="31" selection-start="1880" selection-end="1880" vertical-scroll-proportion="0.0" vertical-offset="1020" max-vertical-offset="4324">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="redis.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/connect/redis.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="23" selection-start="337" selection-end="337" vertical-scroll-proportion="0.0" vertical-offset="322" max-vertical-offset="3174">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="package.json" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/package.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="1" selection-start="163" selection-end="163" vertical-scroll-proportion="0.0" vertical-offset="161" max-vertical-offset="759">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="app.js" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/data-mining-server/app.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="78" column="40" selection-start="2729" selection-end="2729" vertical-scroll-proportion="0.6294821" vertical-offset="688" max-vertical-offset="5750">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="logServer.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/data-mining-server/logServer.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="96" column="48" selection-start="2663" selection-end="2663" vertical-scroll-proportion="0.0" vertical-offset="1449" max-vertical-offset="5313">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="log.txt" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/node-server/log.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="3726" max-vertical-offset="10281">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5">
+      <split-first>
+        <leaf>
+          <file leaf-file-name="publish.js" pinned="false" current="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/stress-test/publish.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="18" column="0" selection-start="446" selection-end="446" vertical-scroll-proportion="0.40868706" vertical-offset="0" max-vertical-offset="1013">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file leaf-file-name="subscribe.js" pinned="false" current="true" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/stress-test/subscribe.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="15" column="11" selection-start="362" selection-end="362" vertical-scroll-proportion="0.29615006" vertical-offset="45" max-vertical-offset="1104">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -140,14 +96,12 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/dispatch-server/app_4201.js" />
-        <option value="$PROJECT_DIR$/manager.sh" />
-        <option value="$PROJECT_DIR$/tool/brain.js" />
         <option value="$PROJECT_DIR$/dispatch-server/data/notification.js" />
         <option value="$PROJECT_DIR$/group-server/app2.js" />
         <option value="$PROJECT_DIR$/group-server/app.js" />
         <option value="$PROJECT_DIR$/tool/msg/msgsave.js" />
         <option value="$PROJECT_DIR$/tool/msg/offline.js" />
+        <option value="$PROJECT_DIR$/connect/mongo.js" />
         <option value="$PROJECT_DIR$/stress-test/generator.js" />
         <option value="$PROJECT_DIR$/node-server/data/reg.js" />
         <option value="$PROJECT_DIR$/node-server/app.js" />
@@ -155,15 +109,17 @@
         <option value="$PROJECT_DIR$/node-server/log.txt" />
         <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/data-mining-server/app.js" />
-        <option value="$PROJECT_DIR$/connect/mongo.js" />
+        <option value="$PROJECT_DIR$/stress-test/publish.js" />
+        <option value="$PROJECT_DIR$/stress-test/subscribe.js" />
+        <option value="$PROJECT_DIR$/stress-test/logs.txt" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1195" />
-    <option name="y" value="2" />
-    <option name="width" value="1189" />
-    <option name="height" value="1920" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1176" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -191,6 +147,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -219,39 +176,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="data-mining-server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ybmp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ybmp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="connect" />
+              <option name="myItemId" value="stress-test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors" />
     <property name="recentsLimit" value="5" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors" />
     <property name="restartRequiresConfirmation" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="FullScreen" value="false" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -268,14 +210,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Node.js.node-server">
-    <configuration default="true" type="DartUnitRunConfigurationType" factoryName="DartUnit">
-      <option name="VMOptions" />
-      <option name="arguments" />
-      <option name="filePath" />
-      <option name="scope" value="ALL" />
-      <option name="testName" />
-      <method />
-    </configuration>
     <configuration default="true" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
       <option name="VMOptions" />
       <option name="arguments" />
@@ -286,15 +220,23 @@
       <option name="showConsoleOnStdOut" value="false" />
       <method />
     </configuration>
+    <configuration default="true" type="DartUnitRunConfigurationType" factoryName="DartUnit">
+      <option name="VMOptions" />
+      <option name="arguments" />
+      <option name="filePath" />
+      <option name="scope" value="ALL" />
+      <option name="testName" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma" singleton="true" config-file="">
+      <envs />
+      <method />
+    </configuration>
     <configuration default="true" type="JSTestDriver:ConfigurationType" factoryName="JsTestDriver">
       <setting name="configLocationType" value="CONFIG_FILE" />
       <setting name="settingsFile" value="" />
       <setting name="serverType" value="INTERNAL" />
       <setting name="preferredDebugBrowser" value="CHROME" />
-      <method />
-    </configuration>
-    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma" singleton="true" config-file="">
-      <envs />
       <method />
     </configuration>
     <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug" singleton="true">
@@ -367,14 +309,14 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1195" y="2" width="1189" height="1920" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23076923" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3071749" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20204604" sideWeight="0.7692308" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1234375" sideWeight="0.6701923" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298077" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
@@ -402,19 +344,14 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/tool/brain.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="203" column="0" selection-start="5622" selection-end="5622" vertical-scroll-proportion="3.5505702" vertical-offset="0" max-vertical-offset="4830" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node-server/data/checktoken.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="8" selection-start="188" selection-end="188" vertical-scroll-proportion="0.09163347" vertical-offset="0" max-vertical-offset="1757" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tool/msg/msgsave.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="14" column="39" selection-start="532" selection-end="532" vertical-scroll-proportion="0.0" vertical-offset="322" max-vertical-offset="1771" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/connect/mongo.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="39" column="32" selection-start="1000" selection-end="1009" vertical-scroll-proportion="0.0" vertical-offset="897" max-vertical-offset="1679" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/conf/config.js">
@@ -429,9 +366,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/group-server/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="22" selection-start="829" selection-end="829" vertical-scroll-proportion="0.0" vertical-offset="69" max-vertical-offset="7935">
-          <folding />
-        </state>
+        <state line="32" column="22" selection-start="829" selection-end="829" vertical-scroll-proportion="0.0" vertical-offset="69" max-vertical-offset="7935" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/node-server/app.js">
@@ -457,9 +392,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tool/msg/offline.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="170" column="15" selection-start="5524" selection-end="5524" vertical-scroll-proportion="0.6219151" vertical-offset="3280" max-vertical-offset="8303">
-          <folding />
-        </state>
+        <state line="170" column="15" selection-start="5524" selection-end="5524" vertical-scroll-proportion="0.6219151" vertical-offset="3280" max-vertical-offset="8303" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/connect/redis.js">
@@ -471,7 +404,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/node-server/log.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="3726" max-vertical-offset="10281">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-3.6781836" vertical-offset="3726" max-vertical-offset="10281">
           <folding />
         </state>
       </provider>
@@ -483,23 +416,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data-mining-server/logServer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="96" column="48" selection-start="2663" selection-end="2663" vertical-scroll-proportion="0.0" vertical-offset="1449" max-vertical-offset="5313">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/connect/mongo.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="39" selection-start="1191" selection-end="1191" vertical-scroll-proportion="0.5628913" vertical-offset="0" max-vertical-offset="1757">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/data-mining-server/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="78" column="40" selection-start="2729" selection-end="2729" vertical-scroll-proportion="0.6294821" vertical-offset="688" max-vertical-offset="5750">
+        <state line="70" column="52" selection-start="2545" selection-end="2545" vertical-scroll-proportion="0.887463" vertical-offset="711" max-vertical-offset="5658">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stress-test/publish.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="0" selection-start="446" selection-end="446" vertical-scroll-proportion="0.40868706" vertical-offset="0" max-vertical-offset="1013">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stress-test/logs.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1013">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stress-test/subscribe.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="11" selection-start="362" selection-end="362" vertical-scroll-proportion="0.29615006" vertical-offset="45" max-vertical-offset="1104">
           <folding />
         </state>
       </provider>

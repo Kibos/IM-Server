@@ -76,9 +76,10 @@ function main(mongod, redis) {
                     doPerson(result, i);
                 } else if (type === 1) {
                     doGroup(result, i);
-                } else if (type === 2) {
-                    msgResult();//TODO
                 }
+//                else if (type === 2) {
+//                    msgResult();//TODO
+//                }
             }
         } else {
             setTimeout(function() {

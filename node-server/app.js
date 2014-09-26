@@ -7,6 +7,7 @@ var reg = require('./data/reg.js');
 var offline = require('../tool/msg/offline.js');
 var msgsend = require('../tool/msg/msgsend.js');
 var sysMsg = require('../tool/msg/sysMsg.js');
+var redis = require('redis');
 
 var memwatch = require('memwatch');
 memwatch.gc();
@@ -93,6 +94,14 @@ brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port, function() {
         }
     }
 });
+
+//Monitoring Communications
+var redisClient = redis.createClient(port, ip);
+redisClient.subscribe(room);
+redisClient.on('message', function(room, message) {
+    console.log('Monitoring message is :', message);
+});
+redisClient.publish(room, 'this is Monitoring message');
 
 //
 io.sockets.on('connection', function(socket) {
