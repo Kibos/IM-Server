@@ -8,12 +8,14 @@ var conf = require('../conf/config');
 var redisInfo = conf.sta.redis.cache;
 var mongodb = conf.mongodb;
 
+
 //connect to the redis and mongodb
 redis.connect(redisInfo.port, redisInfo.ip, function(client) {
-    client.select('1', function() {
+    client.select('1', function(err) {
+        if (err) console.error('redis connect false');
         console.log('LogServer connected to redis ' + redisInfo.ip + ' and select 1');
         mongo.connect(function(mongoC) {
-            console.log('LogServer connected to mongodb');
+            console.log('LogServer connected to mongodb:Message');
             main(mongoC, client);
         }, {ip : mongodb.mg1.ip, port : mongodb.mg1.port, name : 'read_Message'});
     });
@@ -29,8 +31,7 @@ function main(mongod, redis) {
         }
     ],function(err, result) {
         if (err) {
-            console.log('[ log - app][getMessageRecord] result error!');
-            return false;
+            console.error('[ log - app][getMessageRecord] result error!');
         }
         var msgCount = result.length;
         var delCount = 0;
@@ -40,31 +41,41 @@ function main(mongod, redis) {
 
             if (delCount >= msgCount) {
                 sendLog(data, function() {
-                    setLaseLogId(redis, result[result.length - 1]._id, function(res) {
-                        if (!res) {
+                    setLaseLogId(redis, result[result.length - 1]._id, function(err, res) {
+                        if (err) {
                             console.log('setLaseLogId false !');
                             return false;
                         }
+                        console.log('@@@@@', res);
                         main(mongod, redis);
                     });
                 });
             }
         }
 
+        function doPerson(result, i) {
+            personMsg(result[i].content, function(data) {
+                msgResult(data);
+            });
+        }
+
+        function doGroup(result, i) {
+            mongo.connect(function(mongoC) {
+                console.log('LogServer connected to mongodb:Talks');
+                groupMsg(mongoC, result[i].content, function(data) {
+                    msgResult(data);
+                });
+            }, {ip : mongodb.mg3.ip, port : mongodb.mg3.port, name : 'read_Talks'});
+        }
+
         if (msgCount > 0) {
             for (var i = 0; i < msgCount; i++) {
                 var type = parseInt(result[i].type);
-
+                console.log(type);
                 if (type === 0) {
-                    personMsg(result[i].content, function(data) {
-                        msgResult(data);
-                    });
+                    doPerson(result, i);
                 } else if (type === 1) {
-                    mongo.connect(function(mongoC) {
-                        groupMsg(mongoC, result[i].content, function(data) {
-                            msgResult(data);
-                        });
-                    }, {ip : mongodb.mg3.ip, port : mongodb.mg3.port, name : 'read_Talks'});
+                    doGroup(result, i);
                 } else if (type === 2) {
                     msgResult();//TODO
                 }
@@ -84,9 +95,9 @@ function getLastLogId(redis, callback) {
         if (err) {
             console.log('[ log - app][getLastLogId] redis get false!');
             callback(null);
-            return false;
+        } else {
+            callback(null, res);
         }
-        callback(null, res);
     });
 }
 
@@ -94,14 +105,16 @@ function getLastLogId(redis, callback) {
 function setLaseLogId(redis, value, callback) {
     if (!value) {
         console.log('value is empty');
+        callback(null);
         return false;
     }
     redis.set('lastLogId', value, function(err, result) {
         if (err) {
             console.log('[app][setLaseLogId] set false!');
+            callback(null);
             return false;
         } else {
-            callback(result);
+            callback(null, result);
         }
     });
 }
