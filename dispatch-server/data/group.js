@@ -3,8 +3,6 @@
 var hash = require('../../tool/hash/hash.js');
 var redisConnect = require('../../connect/redis');
 var msgsend = require('../../tool/msg/msgsend');
-var return403 = require('./ret').ret403;
-var return200 = require('./ret').retJSON;
 
 exports.add = function() {};
 exports.remove = function() {};
@@ -32,10 +30,13 @@ exports.change = function(req, res, group) {
 
 exports.group = function(req, res, json) {
 
-    if (!json.action || !json.hostid) return403(req, res, 'json 不能为空');
+    if (!json.action) return403(req, res, 'action 不能为空');
+    if (!json.hostid) return403(req, res, 'hostid 不能为空');
 
     if (/^(request|accept|refused)$/.test(json.action)) {
-        if (!json.groupid || !json.groupname || !json.creatorid) return403(req, res, 'json 不能为空');
+        if (!json.groupid) return403(req, res, 'groupid 不能为空');
+        if (!json.groupname) return403(req, res, 'groupname 不能为空');
+        if (!json.creatorid) return403(req, res, 'creatorid 不能为空');
 
         var touser;
         if (json.action == 'request') {
@@ -60,3 +61,25 @@ exports.group = function(req, res, json) {
         return200(req, res, '发送成功，用户id：' + json.userids.toString());
     }
 };
+
+function return403(req, res, info) {
+    res.writeHead(403, {
+        'Content-Type': 'application/json'
+    });
+    var endJson = {
+        sta: 403,
+        msg: info || '403'
+    };
+    res.end(JSON.stringify(endJson));
+}
+
+function return200(req, res, info) {
+    res.writeHead(200, {
+        'Content-Type': 'application/json'
+    });
+    var endJson = {
+        sta: 200,
+        msg: info || '发送成功'
+    };
+    res.end(JSON.stringify(endJson));
+}

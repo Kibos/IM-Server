@@ -9,8 +9,6 @@ var notification = require('./data/notification');
 var friend = require('./data/friend');
 var router = require('./data/router');
 var disInfo = require('../conf/config').NodeInfo.DNode;
-var retJSON = require('./data/ret').retJSON;
-var ret403 = require('./data/ret').ret403;
 
 //getNode(GET)
 router.get('/getNode', function(req, res, search) {
@@ -172,6 +170,27 @@ router.post('/lightApp', {
         'message': 'messages send success'
     }));
 });
+
+function retJSON(req, res, JSON) {
+    if (!res) {
+        return false;
+    }
+    res.writeHead(200, {
+        'charset': 'UTF-8',
+        'Content-Type': 'application/json'
+    });
+    res.end(JSON);
+}
+
+function ret403(req, res, msg) {
+    if (!res) {
+        return false;
+    }
+    res.writeHead(403, {
+        'Content-Type': 'application/json'
+    });
+    res.end('{"response" : "403","message":"' + (msg || '') + '"}');
+}
 
 http.createServer(function(req, res) {
     router.server(req, res);

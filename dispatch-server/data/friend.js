@@ -1,8 +1,7 @@
 'use strict';
 
 var msgsend = require('../../tool/msg/msgsend');
-var return403 = require('./ret').ret403;
-var return200 = require('./ret').retJSON;
+
 /**
  * freind request for client
  **/
@@ -29,7 +28,6 @@ function friend(req, res, json) {
                 return false;
             }
         }
-
         msgsend.sys(touser, json);
         return200(req, res, '请求成功');
     } else {
@@ -55,6 +53,29 @@ function friendChange(req, res, json) {
     msgsend.sys(json.touser, json);
     return200(req, res, '请求成功');
 
+}
+
+
+function return403(req, res, info) {
+    res.writeHead(403, {
+        'Content-Type': 'application/json'
+    });
+    var endJson = {
+        sta: 403,
+        msg: info || '403'
+    };
+    res.end(JSON.stringify(endJson));
+}
+
+function return200(req, res, info) {
+    res.writeHead(200, {
+        'Content-Type': 'application/json'
+    });
+    var endJson = {
+        sta: 200,
+        msg: info || '发送成功'
+    };
+    res.end(JSON.stringify(endJson));
 }
 
 exports.friend = friend;

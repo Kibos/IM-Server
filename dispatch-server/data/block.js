@@ -2,8 +2,6 @@
 
 var conf = require('../../conf/config').sta.redis.cache;
 var redisClient = require('../../connect/redis');
-var ret403 = require('./ret').ret403;
-var retJSON = require('./ret').retJSON;
 var redisPort = conf.port;
 var redisIp = conf.ip;
 
@@ -44,6 +42,27 @@ function block(req, res, json) {
         'sta': 200,
         'msg': '发送成功'
     });
+}
+
+function retJSON(req, res, json) {
+    if (!res) {
+        return false;
+    }
+    res.writeHead(200, {
+        'charset': 'UTF-8',
+        'Content-Type': 'application/json'
+    });
+    res.end(JSON.stringify(json));
+}
+
+function ret403(req, res, msg) {
+    if (!res) {
+        return false;
+    }
+    res.writeHead(403, {
+        'Content-Type': 'application/json'
+    });
+    res.end('{"response" : "403","message":"' + (msg || '') + '"}');
 }
 
 exports.block = block;

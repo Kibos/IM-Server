@@ -23,7 +23,7 @@ function ret403(req, res, msg) {
     });
     var endJson = {
         sta: 403,
-        msg: msg || '403'
+        msg: msg || '发送失败'
     };
     res.end(JSON.stringify(endJson));
 }

@@ -5,29 +5,47 @@ var redisC = require('../../connect/redis');
 var mongoClient = require('../../connect/mongo');
 var msgsend = require('../../tool/msg/msgsend');
 var id = require('../../tool/id');
-var ret403 = require('./ret').ret403;
-var retJSON = require('./ret').retJSON;
 var conf = require('../../conf/config');
+
+/**
+ *
+ */
+
+function retJSON(req, res, JSON) {
+    res.writeHead(200, {
+        'charset': 'UTF-8',
+        'Content-Type': 'application/json'
+    });
+    res.end(JSON);
+}
+
+function ret404(req, res, msg) {
+    res.writeHead(404, {
+        'Content-Type': 'application/json'
+    });
+    res.end('{"response" : "404","message":"' + msg + '""}');
+}
 
 /**
  *  group notification
  */
 
+
 function group(req, res, json) {
 
     if (!json.togroup) {
-        ret403(req, res, 'togroup is necessary');
+        ret404(req, res, 'togroup is necessary');
         return false;
     }
 
     if (!json.groupNames) {
-        ret403(req, res, 'groupNames is necessary');
+        ret404(req, res, 'groupNames is necessary');
         return false;
     } else {
         try {
             json.groupNames = JSON.parse(json.groupNames);
         } catch (e) {
-            ret403(req, res, 'groupNames is not json string');
+            ret404(req, res, 'groupNames is not json string');
         }
     }
     //
@@ -54,6 +72,10 @@ function group(req, res, json) {
 
     }
 
+    var retjson = {
+        'response': '200',
+        'message': '请求成功'
+    };
     retJSON(req, res, JSON.stringify(retjson));
 
 }
@@ -64,7 +86,7 @@ function group(req, res, json) {
 
 function shareGroup(req, res, json) {
     if (!json.togroup) {
-        ret403(req, res, 'togroup is necessary');
+        ret404(req, res, 'togroup is necessary');
         return false;
     }
     //
@@ -87,6 +109,10 @@ function shareGroup(req, res, json) {
         msgsend.group(json);
     }
 
+    var retjson = {
+        'response': '200',
+        'message': '请求成功'
+    };
     retJSON(req, res, JSON.stringify(retjson));
 }
 
@@ -134,9 +160,13 @@ function person(req, res, json) {
 
         }
 
+        var retjson = {
+            'response': '200',
+            'message': '请求成功'
+        };
         retJSON(req, res, JSON.stringify(retjson));
     } else {
-        ret403(req, res, 'tousers is necessary!');
+        ret404(req, res, 'tousers is necessary!');
     }
 
     function pushmessage(redisHost, ids, json) {
