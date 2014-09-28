@@ -7,6 +7,7 @@ var reg = require('./data/reg.js');
 var offline = require('../tool/msg/offline.js');
 var msgsend = require('../tool/msg/msgsend.js');
 var sysMsg = require('../tool/msg/sysMsg.js');
+var redis = require('redis');
 
 //start the socket.io
 var io = require('socket.io').listen(appInfo.port, {
@@ -90,6 +91,37 @@ brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port, function() {
     }
 });
 
+//Monitoring Communications (subscribe)
+var PRedis = require('../conf/config').Server.PRedis;
+var PredisArr = [];
+var count = 0;
+var temp = {};
+
+for (i in PRedis) {
+    PredisArr.push(PRedis[i]);
+}
+
+var roomLocal = appInfo.ip  + ':' + appInfo.port;
+
+for (var j = 0; j < PredisArr.length; j++) {
+    var redisClient = redis.createClient(PredisArr[j].port, PredisArr[j].ip);
+    var roomRedis = PredisArr[j].ip  + ':' + PredisArr[j].port;
+    var room = roomLocal + '/' + roomRedis;
+    doSub(redisClient, room);
+    temp[roomLocal] = {};
+    temp[roomLocal][roomRedis] = false;
+}
+
+function doSub(redisClient, room) {
+    redisClient.subscribe(room);
+    redisClient.on('message', function(room, message) {
+        count ++;
+        var arr = room.split('/', 2);
+        temp[arr[0]][arr[1]] = true;
+        console.log('received ' + message + ' from ' + room);
+    });
+}
+
 //
 io.sockets.on('connection', function(socket) {
     var host;
@@ -113,10 +145,10 @@ io.sockets.on('connection', function(socket) {
             rec = data;
         }
 
-        //case
         if (rec.order == 'REG') {
 
             reg.reg(rec, users, socket, function(data) {
+                if (!data) console.log('[node][app]client reg false');
                 host = data.host;
                 divice = data.divice;
             });
@@ -138,7 +170,7 @@ io.sockets.on('connection', function(socket) {
             } else {
                 rec.status = 100;
                 rec.msg = 'token error, please reconnect socket';
-                console.log('[node server][send msg]token err');
+                console.log('[node server][send msg]token err, haveToken is ', haveToken);
                 socket.emit('ybmp', rec);
             }
         } else if (rec.order == 'OFL') {
@@ -156,15 +188,15 @@ io.sockets.on('connection', function(socket) {
                 });
             }
         } else if (rec.order == 'DIS') {
-            // var ret = {
-            //     'order': 'DIS',
-            //     'status': 200,
-            //     'code': 300,
-            //     'msg': '用户主动离线'
-            // };
-            // socket.emit('ybmp', ret);
+            var ret = {
+                 'order': 'DIS',
+                 'status': 200,
+                 'code': 300,
+                 'msg': '用户主动离线'
+            };
+            socket.emit('ybmp', ret);
             console.log(host, '用户主动离线');
-            socket.disconnect();
+//            socket.disconnect();
         } else if (rec.order == 'SYS') {
             rec.userid = rec.userid || host;
             sysMsg.sys(rec);
@@ -191,3 +223,29 @@ io.sockets.on('connection', function(socket) {
 });
 
 console.log('   [ NodeServer ] start at ' + appInfo.ip + ':' + appInfo.port);
+
+//monitor publish
+function monitor(req, res, NodeInfo) {
+    var ip = NodeInfo.ip;
+    var port = NodeInfo.port;
+
+    for (var k = 0; k < PredisArr.length; k++) {
+        doPub(k);
+    }
+
+    function doPub(k) {
+        var redisClient = redis.createClient(PredisArr[k].port, PredisArr[k].ip);
+        var room = ip  + ':' + port + '/' + PredisArr[k].ip  + ':' + PredisArr[k].port;
+        redisClient.publish(room, 'Monitoring message');
+    }
+
+    var id = setTimeout(function() {
+        res.end(JSON.stringify(temp));
+    }, 1000);
+    if (count === PredisArr.length) {
+        clearTimeout(id);
+        res.end(JSON.stringify(temp));
+    }
+}
+
+exports.monitor = monitor;

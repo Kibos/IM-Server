@@ -40,7 +40,8 @@ function main(mongod, redis) {
             delCount++;
 
             if (delCount >= msgCount) {
-                sendLog(data, function() {
+                sendLog(data, function(err) {
+                    if (err) console.log('[logs server][sendLog] false.');
                     setLaseLogId(redis, result[result.length - 1]._id, function(err, res) {
                         if (err) {
                             console.log('setLaseLogId false !');
@@ -76,10 +77,9 @@ function main(mongod, redis) {
                     doPerson(result, i);
                 } else if (type === 1) {
                     doGroup(result, i);
+                } else if (type === 2) {
+                    msgResult();//TODO
                 }
-//                else if (type === 2) {
-//                    msgResult();//TODO
-//                }
             }
         } else {
             setTimeout(function() {
@@ -236,11 +236,12 @@ var client = {
 
 //send to the server
 function sendLog(data, callback) {
+    if (data) callback(true);
     if (client.connected) {
         console.log(JSON.stringify(data));
         client.id.write(JSON.stringify(data));
+        if (callback) callback(client.connected);
+    } else {
+        if (callback) callback(client.connected);
     }
-
-    if (callback) callback();
-
 }

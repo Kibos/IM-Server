@@ -14,6 +14,7 @@ var mg3 = mongodb.mg3;
  */
 exports.pushMessage = function(message, touser, poster, option, callback) {
     if (!touser) {
+        console.log('[offline][pushMessage]touser is missing.');
         return false;
     }
     //deal with the message push , the touser can be like this 1,2,3 (multi)
@@ -98,7 +99,7 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
             };
             pushStack.insert(StackObj, function(err) {
                 if (err) {
-                    console.log("[offline][pushMessage] insert false");
+                    console.error("[offline][pushMessage] insert false");
                     return false;
                 }
                 if (callback) callback();
@@ -297,6 +298,9 @@ function notificationCallback(messages, toUser) {
  */
 exports.getMoreByPerson = function(userid, sendUserId, limit, callback) {
 
+    // TODO BUG
+    return false;
+    //
     if (!userid || !sendUserId) {
         console.log('[offline][getMoreByPerson] parameters error, userId: sendUserId:', userid, sendUserId);
         return false;

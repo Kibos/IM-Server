@@ -22,7 +22,7 @@ var mg1 = require('../../conf/config').mongodb.mg1;
 exports.person = function(rec, socket, options) {
 
     exports.sendToPerson(rec, rec.touser, rec.poster, socket);
-
+//TODO develop
 //    safe.friend(rec.poster, rec.touser, rec.access_token, {
 //        'catch': options.user
 //    }, function(isSafe) {

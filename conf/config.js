@@ -1,5 +1,6 @@
 exports.mongodb = {
     // the defaulte mongodb
+    //TODO develop
     mg1: {
         port: 27017,
         ip: '10.21.3.64',
@@ -15,6 +16,22 @@ exports.mongodb = {
         ip: '10.21.3.64',
         dbname: 'larvel'
     }
+    //TODO grow system
+//    mg1: {
+//        port: 27019,
+//        ip: '10.21.3.44',
+//        dbname: 'larvel'
+//    },
+//    mg2: {
+//        port: 27019,
+//        ip: '10.21.3.44',
+//        dbname: 'larvel'
+//    },
+//    mg3: {
+//        port: 27019,
+//        ip: '10.21.3.44',
+//        dbname: 'larvel'
+//    }
 };
 
 exports.sta = {
