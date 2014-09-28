@@ -9,10 +9,6 @@ var msgsend = require('../tool/msg/msgsend.js');
 var sysMsg = require('../tool/msg/sysMsg.js');
 var redis = require('redis');
 
-var memwatch = require('memwatch');
-memwatch.gc();
-var hd = new memwatch.HeapDiff();
-
 //start the socket.io
 var io = require('socket.io').listen(appInfo.port, {
     log: false
@@ -96,12 +92,30 @@ brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port, function() {
 });
 
 //Monitoring Communications
-var redisClient = redis.createClient(port, ip);
-redisClient.subscribe(room);
-redisClient.on('message', function(room, message) {
-    console.log('Monitoring message is :', message);
-});
-redisClient.publish(room, 'this is Monitoring message');
+var PRedis = require('../conf/config').Server.PRedis;
+var PredisArr = [];
+var count = 0;
+var temp = {};
+
+for (i in PRedis) {
+    PredisArr.push(PRedis[i]);
+}
+
+for (var j = 0; j < PredisArr.length; j++) {
+    var redisClient = redis.createClient(PredisArr[j].port, PredisArr[j].ip);
+    var room = '[' + appInfo.ip  + ':' + appInfo.port + '][' + PredisArr[j].ip  + ':' + PredisArr[j].port + ']';
+    doSub(redisClient, room);
+    temp[room] = false;
+}
+
+function doSub(redisClient, room) {
+    redisClient.subscribe(room);
+    redisClient.on('message', function(room, message) {
+        count ++;
+        temp[room] = true;
+        console.log('received ' + message + ' from ' + room);
+    });
+}
 
 //
 io.sockets.on('connection', function(socket) {
@@ -126,8 +140,27 @@ io.sockets.on('connection', function(socket) {
             rec = data;
         }
 
-        //case
-        if (rec.order == 'REG') {
+        if (rec.order == 'LIS') {
+            var PredisArr = [];
+
+            for (i in PRedis) {
+                PredisArr.push(PRedis[i]);
+            }
+
+            for (var k = 0; k < PredisArr.length; k++) {
+                var redisClient = redis.createClient(PredisArr[k].port, PredisArr[k].ip);
+                var room = '[' + appInfo.ip  + ':' + appInfo.port + '][' + PredisArr[k].ip  + ':' + PredisArr[k].port + ']';
+                redisClient.publish(room, 'Monitoring message');
+            }
+
+            var id = setTimeout(function() {
+                socket.emit('ybmp', {'order': 'LIS', 'status': 200, 'res': temp});
+            }, 2000);
+            if (count === PredisArr.length) {
+                clearTimeout(id);
+                socket.emit('ybmp', {'order': 'LIS', 'status': 200, 'res': temp});
+            }
+        }else if (rec.order == 'REG') {
 
             reg.reg(rec, users, socket, function(data) {
                 if (!data) console.log('[node][app]client reg false');
@@ -205,13 +238,3 @@ io.sockets.on('connection', function(socket) {
 });
 
 console.log('   [ NodeServer ] start at ' + appInfo.ip + ':' + appInfo.port);
-var hde = hd.end();
-var fs = require('fs');
-
-fs.writeFile('log.txt', JSON.stringify(hde, null, 2), {
-    flag: 'w'
-}, function(err) {
-    if (err) {
-        console.log(err);
-    }
-});
