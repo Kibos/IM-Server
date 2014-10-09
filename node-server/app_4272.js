@@ -92,7 +92,7 @@ brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port, function() {
 });
 
 //Monitoring Communications (subscribe)
-require('../data/monitor').MonitorSub(appInfo);
+require('./data/monitor').MonitorSub(appInfo);
 
 //
 io.sockets.on('connection', function(socket) {
