@@ -21,19 +21,19 @@ var mg1 = require('../../conf/config').mongodb.mg1;
  **/
 exports.person = function(rec, socket, options) {
 
-    exports.sendToPerson(rec, rec.touser, rec.poster, socket);
+//    exports.sendToPerson(rec, rec.touser, rec.poster, socket);
 //TODO develop
-//    safe.friend(rec.poster, rec.touser, rec.access_token, {
-//        'catch': options.user
-//    }, function(isSafe) {
-//        if (isSafe) {
-//            exports.sendToPerson(rec, rec.touser, rec.poster, socket);
-//        } else {
-//            rec.status = 100;
-//            rec.msg = '对方还不是你的好友，请添加好友之后再发送消息';
-//            if (socket) socket.emit('ybmp', rec);
-//        }
-//    });
+    safe.friend(rec.poster, rec.touser, rec.access_token, {
+        'catch': options.user
+    }, function(isSafe) {
+        if (isSafe) {
+            exports.sendToPerson(rec, rec.touser, rec.poster, socket);
+        } else {
+            rec.status = 100;
+            rec.msg = '对方还不是你的好友，请添加好友之后再发送消息';
+            if (socket) socket.emit('ybmp', rec);
+        }
+    });
 
 
 };

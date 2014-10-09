@@ -14,6 +14,7 @@ var disInfo = require('../conf/config').NodeInfo.DNode2;
 router.get('/getNode', function(req, res, search) {
     var userid = search.userid;
     if (userid) {
+        //if nodeJson == 0 means no node server is online
         var nodeJson = hash.getHash('PNode', userid);
         //TEMPLETE FIXED
         if (/10\.21\.67\.\d{1,3}$/.test(nodeJson.ip)) {
@@ -29,14 +30,6 @@ router.get('/getNode', function(req, res, search) {
     } else {
         ret403(req, res, 'userid is wrong, more information : http://10.21.118.240/wiki/doku.php?id=node_dispatch#获取node服务器地址_getnode');
     }
-});
-
-router.post('/monitor', function(req, res, NodeInfo) {
-    if (!NodeInfo.ip || !NodeInfo.port) {
-        ret403(req, res, 'NodeInfo is wrong, For example: 10.21.3.63:4001');
-    }
-
-    require('../node-server/app').monitor(req, res, NodeInfo);
 });
 
 //notification(POST)
@@ -132,7 +125,7 @@ router.post('/messages', {
 router.post('/explore', {
     safe: true
 }, function(req, res, json) {
-    if (/^((exploreComment)|(exploreStar)|(exploreBury))$/.test(json.action)) {
+    if (json.action === 'messageBox') {
         if (json.touser) {
             msgsend.sys(json.touser, json);
             retJSON(req, res, JSON.stringify({

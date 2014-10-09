@@ -6,7 +6,7 @@
 'use strict';
 
 var net = require('net');
-var conf = require('../conf/config').NodeInfo.BNode;
+var conf = require('../conf/config').NodeInfo.Brain;
 var hash = require('./hash/hash.js');
 
 var brain = {};

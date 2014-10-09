@@ -7,6 +7,7 @@ var ObjectID = require('mongodb').ObjectID;
 var conf = require('../conf/config');
 var redisInfo = conf.sta.redis.cache;
 var mongodb = conf.mongodb;
+var time = new Date(2014, 9, 8);
 
 
 //connect to the redis and mongodb
@@ -40,8 +41,7 @@ function main(mongod, redis) {
             delCount++;
 
             if (delCount >= msgCount) {
-                sendLog(data, function(err) {
-                    if (err) console.log('[logs server][sendLog] false.');
+                sendLog(data, function() {
                     setLaseLogId(redis, result[result.length - 1]._id, function(err, res) {
                         if (err) {
                             console.log('setLaseLogId false !');
@@ -78,7 +78,7 @@ function main(mongod, redis) {
                 } else if (type === 1) {
                     doGroup(result, i);
                 } else if (type === 2) {
-                    msgResult();//TODO
+                    msgResult();
                 }
             }
         } else {
@@ -135,6 +135,12 @@ function getMessageRecord(mongoC, lastLogId, callback) {
         } catch (e) {
 
         }
+    } else {
+        query = {
+            time: {
+                $gt: +time
+            }
+        };
     }
     mongoC.db(mongodb.mg1.dbname).collection('Message').find(query, {
         type: true,
@@ -236,7 +242,7 @@ var client = {
 
 //send to the server
 function sendLog(data, callback) {
-    if (data) callback(true);
+    if (!data) callback(true);//send sys message
     if (client.connected) {
         console.log(JSON.stringify(data));
         client.id.write(JSON.stringify(data));

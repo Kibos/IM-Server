@@ -20,22 +20,22 @@ exports.reg = function(rec, users, socket, callback) {
     var accessToken = rec.access_token;
 
     //TODO develop
-    checkSuccess();
+//    checkSuccess();
 
-//    checkToken.check(host, accessToken, divice, function(res) {
-//        if (res) {
-//            //access token correct
-//            checkSuccess();
-//        } else {
-//            //access token wrong
-//            var ret = {
-//                'order': 'REG',
-//                'status': 100,
-//                'msg': 'access_token error'
-//            };
-//            socket.emit('ybmp', ret);
-//        }
-//    });
+    checkToken.check(host, accessToken, divice, function(res) {
+        if (res) {
+            //access token correct
+            checkSuccess();
+        } else {
+            //access token wrong
+            var ret = {
+                'order': 'REG',
+                'status': 100,
+                'msg': 'access_token error'
+            };
+            socket.emit('ybmp', ret);
+        }
+    });
 
     function checkSuccess() {
         //sub it's room
@@ -79,23 +79,23 @@ function regOnline(users, rec, host, divice, accessToken, PRedis, socket) {
 
     users[host] = users[host] || {};
     //TODO develop
-//    if (users[host][divice]) {
-//        //if this divice is already regiseted,disconected the old one
-//        var time = new Date();
-//        ret = {
-//            'order': 'DIS',
-//            'status': 200,
-//            'code': 200,
-//            'msg': '您的帐号已于[最后次登录时间（' + time.getHours() + ':' + time.getMinutes() + '）]在其他地方登入，' +
-//                '登入设备是[' + (rec.diviceinfo || '未知设备') + ']，若不是您本人操作，您的密码可能泄露，' +
-//                '建议重置密码或联系易班客服',
-//            'time': +time,
-//            'diviceinfo': rec.diviceinfo
-//        };
-//        users[host][divice].socket.emit('ybmp', ret);
-//        console.log(host + ' 在新的设备 ' + (rec.diviceinfo || '未知设备') + ' 登陆，您已经被迫下线');
-//        users[host][divice].socket.disconnect();
-//    }
+    if (users[host][divice]) {
+        //if this divice is already regiseted,disconected the old one
+        var time = new Date();
+        ret = {
+            'order': 'DIS',
+            'status': 200,
+            'code': 300,
+            'msg': '您的帐号已于[最后次登录时间（' + time.getHours() + ':' + time.getMinutes() + '）]在其他地方登入，' +
+                '登入设备是[' + (rec.diviceinfo || '未知设备') + ']，若不是您本人操作，您的密码可能泄露，' +
+                '建议重置密码或联系易班客服',
+            'time': +time,
+            'diviceinfo': rec.diviceinfo
+        };
+        users[host][divice].socket.emit('ybmp', ret);
+        console.log(host + ' 在新的设备 ' + (rec.diviceinfo || '未知设备') + ' 登陆，您已经被迫下线');
+        users[host][divice].socket.disconnect();
+    }
     users[host][divice] = users[host][divice] || {};
     users[host][divice].token = accessToken;
     users[host][divice].socket = socket;

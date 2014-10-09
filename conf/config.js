@@ -102,25 +102,57 @@ exports.legalIP = {
 
 exports.users = {};
 
-//var appIp = require('os').networkInterfaces().eth0[0].address;
-var appIp = '10.21.3.63';
+var appIp = require('os').networkInterfaces().eth0[0].address;
+//var appIp = '10.21.3.63';
 
 exports.NodeInfo = {
+    Brain : {
+        ip: '10.21.67.200',
+        port: 4999
+    },
     BNode : {
         ip: appIp,
         port: 4999
     },
+    BNode2 : {
+        ip: appIp,
+        port: 4998
+    },
     PNode : {
         ip: appIp,
-        port: 4001,
+        port: 4251,
         type: 'PNode',
-        id: 'pn_' + appIp + '_' + 4001
+        id: 'pn_' + appIp + '_' + 4251
     },
     PNode2 : {
         ip: appIp,
-        port: 4002,
+        port: 4252,
         type: 'PNode',
-        id: 'pn_' + appIp + '_' + 4002
+        id: 'pn_' + appIp + '_' + 4252
+    },
+    PNode3 : {
+        ip: appIp,
+        port: 4261,
+        type: 'PNode',
+        id: 'pn_' + appIp + '_' + 4261
+    },
+    PNode4 : {
+        ip: appIp,
+        port: 4262,
+        type: 'PNode',
+        id: 'pn_' + appIp + '_' + 4262
+    },
+    PNode5 : {
+        ip: appIp,
+        port: 4271,
+        type: 'PNode',
+        id: 'pn_' + appIp + '_' + 4271
+    },
+    PNode6 : {
+        ip: appIp,
+        port: 4272,
+        type: 'PNode',
+        id: 'pn_' + appIp + '_' + 4272
     },
     DNode : {
         ip: appIp,

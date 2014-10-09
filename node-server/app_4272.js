@@ -1,5 +1,5 @@
 'use strict';
-var appInfo = require('../conf/config.js').NodeInfo.PNode2;
+var appInfo = require('../conf/config.js').NodeInfo.PNode6;
 var hash = require('../tool/hash/hash.js');
 var brain = require('../tool/brain.js');
 var redisConnect = require('../connect/redis.js');
@@ -188,15 +188,15 @@ io.sockets.on('connection', function(socket) {
                 });
             }
         } else if (rec.order == 'DIS') {
-            var ret = {
-                 'order': 'DIS',
-                 'status': 200,
-                 'code': 300,
-                 'msg': '用户主动离线'
-            };
-            socket.emit('ybmp', ret);
+//            var ret = {
+//                 'order': 'DIS',
+//                 'status': 200,
+//                 'code': 300,
+//                 'msg': '用户主动离线'
+//            };
+//            socket.emit('ybmp', ret);
             console.log(host, '用户主动离线');
-//            socket.disconnect();
+            socket.disconnect();
         } else if (rec.order == 'SYS') {
             rec.userid = rec.userid || host;
             sysMsg.sys(rec);
