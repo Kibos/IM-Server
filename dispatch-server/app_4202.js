@@ -37,7 +37,7 @@ router.post('/monitor', function(req, res, NodeInfo) {
         ret403(req, res, 'NodeInfo is wrong, For example: 10.21.3.63:4001');
     }
 
-    require('../node-server/app').monitor(req, res, NodeInfo);
+    require('../node-server/data/monitor').MonitorPub(res, NodeInfo);
 });
 
 //notification(POST)
