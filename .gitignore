@@ -6,9 +6,13 @@ lib-cov
 *.out
 *.pid
 *.gz
+*.txt
 
 pids
 results
+test
+stress-test
+view
 
 npm-debug.log
 node_modules
