@@ -83,12 +83,13 @@ var brainPort = conf.port;
     function datalisten(data, socket) {
         var dataStr = data.toString();
         if (!isLegalData(dataStr)) {
-            console.log('brain data is un legal');
+            console.error('[brain.js][datalisten isLegalData] brain data is un legal');
             return false;
         }
 
         var orders = legal.match(/(\{.+?\})(?={|$)/g);
         if (orders == null) {
+            console.error('[brain.js][datalisten orders] brain data is un legal');
             return false;
         }
         orders.forEach(function(data) {
