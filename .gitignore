@@ -13,6 +13,8 @@ results
 test
 stress-test
 view
+node_modules
+.idea
 
 npm-debug.log
 node_modules
