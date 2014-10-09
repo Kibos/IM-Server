@@ -1,5 +1,5 @@
 'use strict';
-var appInfo = require('../conf/config.js').NodeInfo.PNode2;
+var appInfo = require('../conf/config.js').NodeInfo.PNode1;
 var hash = require('../tool/hash/hash.js');
 var brain = require('../tool/brain.js');
 var redisConnect = require('../connect/redis.js');
