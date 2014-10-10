@@ -173,24 +173,25 @@ io.sockets.on('connection', function(socket) {
             rec.userid = rec.userid || host;
             sysMsg.sys(rec);
         } else {
-            console.log('###############' + new Date() + " socket io is falsed");
+            console.error('###############' + new Date() + " socket io is falsed");
         }
     });
 
     socket.on('disconnect', function(data) {
-        if (host) console.log(host, ' disa ', data);
+        if (!host) {
+            console.log('[nodeServer][socket disconnect] userid: ', host);
+            return false;
+        }
+        console.log('[nodeServer][socket disconnect] userid: ', host, ' dis reason: ', data);
 
         if (users[host] && users[host][divice]) {
             delete users[host][divice];
         }
 
-        if (host) {
-            var PRedis = hash.getHash('PRedis', host);
-            redisConnect.connect(PRedis.port, PRedis.ip, function(client) {
-                client.srem('online', host);
-            });
-        }
-
+        var PRedis = hash.getHash('PRedis', host);
+        redisConnect.connect(PRedis.port, PRedis.ip, function(client) {
+            client.srem('online', host);
+        });
     });
 });
 
