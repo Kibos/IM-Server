@@ -1,6 +1,4 @@
 exports.mongodb = {
-    // the defaulte mongodb
-    //TODO develop
     mg1: {
         port: 27017,
         ip: '10.21.3.64',
@@ -16,22 +14,6 @@ exports.mongodb = {
         ip: '10.21.3.64',
         dbname: 'larvel'
     }
-    //TODO grow system
-//    mg1: {
-//        port: 27019,
-//        ip: '10.21.3.44',
-//        dbname: 'larvel'
-//    },
-//    mg2: {
-//        port: 27019,
-//        ip: '10.21.3.44',
-//        dbname: 'larvel'
-//    },
-//    mg3: {
-//        port: 27019,
-//        ip: '10.21.3.44',
-//        dbname: 'larvel'
-//    }
 };
 
 exports.sta = {
@@ -102,12 +84,12 @@ exports.legalIP = {
 
 exports.users = {};
 
-var appIp = require('os').networkInterfaces().eth0[0].address;
-//var appIp = '10.21.3.63';
+//var appIp = require('os').networkInterfaces().eth0[0].address;
+var appIp = '10.21.3.63';
 
 exports.NodeInfo = {
     Brain : {
-        ip: '10.21.67.200',
+        ip: appIp,
         port: 4999
     },
     BNode : {
