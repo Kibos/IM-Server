@@ -242,7 +242,10 @@ var client = {
 
 //send to the server
 function sendLog(data, callback) {
-    if (!data) callback(true);//send sys message
+    if (!data) {
+        callback(true);
+        return false;
+    }//send sys message
     if (client.connected) {
         console.log(JSON.stringify(data));
         client.id.write(JSON.stringify(data));
