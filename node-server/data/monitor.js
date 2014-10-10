@@ -1,12 +1,29 @@
 var redis = require('redis');
 
 var PRedis = require('../../conf/config').Server.PRedis;
+var redisPwd = require('../../conf/config').redisPwd;
+
 var PredisArr = [];
 var count = 0;
 var temp = {};
 
 for (i in PRedis) {
     PredisArr.push(PRedis[i]);
+}
+
+function Authenticate(ip, redisClient, callback) {
+    if (redisPwd[ip]) {
+        redisClient.auth(redisPwd[ip] || '', function(err, res) {
+            if (res.toLowerCase() == 'ok') {
+                callback(redisClient);
+            } else {
+                console.log('[monitor][Authenticate] is false.');
+            }
+        });
+
+    } else {
+        callback(redisClient);
+    }
 }
 
 function MonitorSub(appInfo) {
@@ -17,7 +34,9 @@ function MonitorSub(appInfo) {
         var redisClient = redis.createClient(PredisArr[j].port, PredisArr[j].ip);
         var roomRedis = PredisArr[j].ip  + ':' + PredisArr[j].port;
         var room = roomLocal + '/' + roomRedis;
-        doSub(redisClient, room);
+        Authenticate(PredisArr[j].ip, redisClient,function(redisClient) {
+            doSub(redisClient, room);
+        });
         temp[roomLocal] = {};
         temp[roomLocal][roomRedis] = false;
     }
@@ -45,7 +64,9 @@ function MonitorPub(res, NodeInfo) {
     function doPub(k) {
         var redisClient = redis.createClient(PredisArr[k].port, PredisArr[k].ip);
         var room = ip  + ':' + port + '/' + PredisArr[k].ip  + ':' + PredisArr[k].port;
-        redisClient.publish(room, 'Monitoring message');
+        Authenticate(PredisArr[k].ip, redisClient, function(redisClient) {
+            redisClient.publish(room, 'Monitoring message');
+        });
     }
 
     var id = setTimeout(function() {
