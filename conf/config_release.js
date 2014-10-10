@@ -46,7 +46,7 @@ exports.sta = {
 };
 
 /**
- *redis¡¢node server
+ *redisï¿½ï¿½node server
  */
 exports.Server = {
     PNode: {},
@@ -111,6 +111,10 @@ exports.NodeInfo = {
     BNode2 : {
         ip: appIp,
         port: 4998
+    },
+    MNode : {
+        ip: appIp,
+        port: 4202
     },
     PNode : {
         ip: appIp,

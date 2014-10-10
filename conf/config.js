@@ -100,6 +100,10 @@ exports.NodeInfo = {
         ip: appIp,
         port: 4998
     },
+    MNode : {
+        ip: appIp,
+        port: 4202
+    },
     PNode1 : {
         ip: appIp,
         port: 4001,
