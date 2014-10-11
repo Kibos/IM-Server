@@ -46,7 +46,7 @@ exports.sta = {
 };
 
 /**
- *redis��node server
+ *redis、node server
  */
 exports.Server = {
     PNode: {},
