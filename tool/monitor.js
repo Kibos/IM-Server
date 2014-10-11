@@ -19,8 +19,8 @@ function MonitorSub(appInfo) {
 
         var redisClient = redis.createClient(port, ip);
         var roomRedis = ip  + ':' + port;
-        var channel1 = roomLocal + ' -> ' + roomRedis;
-        var channel2 = roomRedis + ' -> ' + roomLocal;
+        var channel1 = roomLocal + ' <=> ' + roomRedis;
+        var channel2 = roomRedis + ' <=> ' + roomLocal;
 
         if (redisPwd[ip]) {
             redisClient.auth(redisPwd[ip]);
@@ -29,7 +29,8 @@ function MonitorSub(appInfo) {
         redisClient.subscribe(channel1);
         redisClient.on('message', function(room, message) {
             var publisher = redis.createClient(port, ip);
-            publisher.publish(channel2, message + ' received');
+            publisher.publish(channel2, message + ' is received');
+	    
         });
 
     }
@@ -39,6 +40,7 @@ function MonitorPub(res, NodeInfo) {
     //Monitoring Communications (publish)
     var roomLocal = NodeInfo.ip  + ':' + NodeInfo.port;
     var ip, port;
+    var result = [];
 
     for (var k = 0; k < PredisArr.length; k++) {
         ip = PredisArr[k].ip;
@@ -46,8 +48,8 @@ function MonitorPub(res, NodeInfo) {
 
         var redisClient = redis.createClient(port, ip);
         var roomRedis = ip  + ':' + port;
-        var channel1 = roomLocal + ' -> ' + roomRedis;
-        var channel2 = roomRedis + ' -> ' + roomLocal;
+        var channel1 = roomLocal + ' <=> ' + roomRedis;
+        var channel2 = roomRedis + ' <=> ' + roomLocal;
 
         if (redisPwd[ip]) {
             redisClient.auth(redisPwd[ip]);
@@ -56,10 +58,14 @@ function MonitorPub(res, NodeInfo) {
         redisClient.subscribe(channel2);
         redisClient.on('message', function(room, message) {
             console.log(message);
-            res.end(message);
+	        result.push(message);
             redisClient.unsubscribe(channel2);
+            delete redisClient;
         });
     }
+	setTimeout(function(){
+            res.end(JSON.stringify(result));
+	}, 500);
 }
 
 exports.MonitorSub = MonitorSub;

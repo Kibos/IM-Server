@@ -48,6 +48,10 @@ exports.Server = {
         'pr1': {
             'ip': '10.21.3.66', //gmsg.1.redis
             'port': '6379'
+        },
+        'pr2': {
+            'ip': '10.21.3.66', //gmsg.1.redis
+            'port': '6380'
         }
     },
     GRedis: {
