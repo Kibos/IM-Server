@@ -297,7 +297,7 @@ var group = function() {
             'time': msg.time
         });
         //save only type is 6 or 7
-        if (msg.type != 6 || msg.type != 7) {
+        if (!(msg.type == 6 || msg.type == 7)) {
     	    console.log('[group] 6 ：groupNotification ', msg);
             return false;
         }

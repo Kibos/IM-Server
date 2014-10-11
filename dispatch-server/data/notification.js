@@ -74,7 +74,7 @@ function group(req, res, json) {
 
     var retjson = {
         'response': '200',
-        'message': '请求成功'
+        'message': '璇锋眰鎴愬姛'
     };
     retJSON(req, res, JSON.stringify(retjson));
 
@@ -111,7 +111,7 @@ function shareGroup(req, res, json) {
 
     var retjson = {
         'response': '200',
-        'message': '请求成功'
+        'message': '璇锋眰鎴愬姛'
     };
     retJSON(req, res, JSON.stringify(retjson));
 }
@@ -162,7 +162,7 @@ function person(req, res, json) {
 
         var retjson = {
             'response': '200',
-            'message': '请求成功'
+            'message': '璇锋眰鎴愬姛'
         };
         retJSON(req, res, JSON.stringify(retjson));
     } else {
@@ -231,5 +231,3 @@ function person(req, res, json) {
 exports.group = group;
 exports.person = person;
 exports.shareGroup = shareGroup;
-
-/////
