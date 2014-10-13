@@ -120,7 +120,11 @@ io.sockets.on('connection', function(socket) {
         if (rec.order == 'REG') {
 
             reg.reg(rec, users, socket, function(data) {
-                if (!data) console.log('[node][app]client reg false');
+                if (!data) {
+                    console.log('[node][app]client reg false');
+                    socket.emit('ybmp', 'wrong data format : ', data);
+                    return false;
+                }
                 host = data.host;
                 divice = data.divice;
             });

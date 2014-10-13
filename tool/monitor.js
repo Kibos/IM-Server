@@ -1,6 +1,7 @@
 var redis = require('redis');
 var PRedis = require('../conf/config').Server.PRedis;
 var redisPwd = require('../conf/config').redisPwd;
+var exec = require('child_process').exec;
 
 var PredisArr = [];
 
@@ -39,8 +40,13 @@ function MonitorSub(appInfo) {
 function MonitorPub(res, NodeInfo) {
     //Monitoring Communications (publish)
     var roomLocal = NodeInfo.ip  + ':' + NodeInfo.port;
+    var filename = NodeInfo.ip + '_' + NodeInfo.port + '_pn_' + new Date().toJSON().split('T')[0] + '.txt';
+    var cmd = "cd /usr/local/app/www/logs;sed -n '$p' " + filename;
     var ip, port;
-    var result = [];
+    var temp = {
+        'nodeToRedis': [],
+        'onlineInfo': null
+    };
 
     for (var k = 0; k < PredisArr.length; k++) {
         ip = PredisArr[k].ip;
@@ -58,13 +64,22 @@ function MonitorPub(res, NodeInfo) {
         redisClient.subscribe(channel2);
         redisClient.on('message', function(room, message) {
             console.log(message);
-	        result.push(message);
+            temp.nodeToRedis.push(message);
             redisClient.unsubscribe(channel2);
             delete redisClient;
         });
     }
+
+    exec(cmd, function(err, out, code) {
+        if (err) {
+            console.error('exec is falsed. err is ', code);
+            return false;
+        }
+        temp.onlineInfo = JSON.parse(out);
+    });
+
 	setTimeout(function(){
-            res.end(JSON.stringify(result));
+            res.end(JSON.stringify(temp));
 	}, 500);
 }
 
