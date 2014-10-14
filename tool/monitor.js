@@ -18,6 +18,10 @@ function MonitorSub(appInfo) {
         ip = PredisArr[j].ip;
         port = PredisArr[j].port;
 
+        doSub(ip, port);
+    }
+
+    function doSub(ip, port) {
         var redisClient = redis.createClient(port, ip);
         var roomRedis = ip  + ':' + port;
         var channel1 = roomLocal + ' <=> ' + roomRedis;
@@ -29,11 +33,16 @@ function MonitorSub(appInfo) {
 
         redisClient.subscribe(channel1);
         redisClient.on('message', function(room, message) {
-            var publisher = redis.createClient(port, ip);
-            publisher.publish(channel2, message + ' is received');
-	    
-        });
+            port = room.split(' <=> ', 2)[1].split(':', 2)[1];
+            ip = room.split(' <=> ', 2)[1].split(':', 2)[0];
 
+            var publisher = redis.createClient(port, ip);
+            if (redisPwd[ip]) {
+                publisher.auth(redisPwd[ip]);
+            }
+            publisher.publish(channel2, message + ' is received');
+            console.log('received message', message);
+        });
     }
 }
 
@@ -52,6 +61,10 @@ function MonitorPub(res, NodeInfo) {
         ip = PredisArr[k].ip;
         port = PredisArr[k].port;
 
+        doPub(ip, port);
+    }
+
+    function doPub(ip, port) {
         var redisClient = redis.createClient(port, ip);
         var roomRedis = ip  + ':' + port;
         var channel1 = roomLocal + ' <=> ' + roomRedis;
@@ -79,7 +92,10 @@ function MonitorPub(res, NodeInfo) {
     });
 
 	setTimeout(function(){
-            res.end(JSON.stringify(temp));
+        res.writeHead(200, {
+            'Content-Type': 'application/json'
+        });
+        res.end(JSON.stringify(temp));
 	}, 500);
 }
 

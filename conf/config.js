@@ -65,6 +65,8 @@ exports.Server = {
 };
 
 exports.redisPwd = {
+    '10.21.3.66': 'development',
+
     '10.21.67.115': 'mobile_master$%*115',
     'msg.1.redis': 'mobile_master$%*115',
     '10.21.67.116': 'mobile_master$%*116',
