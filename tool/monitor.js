@@ -40,7 +40,7 @@ function MonitorSub(appInfo) {
             if (redisPwd[ip]) {
                 publisher.auth(redisPwd[ip]);
             }
-            publisher.publish(channel2, message + ' is received');
+            publisher.publish(channel2, message + ' is received, cost time ');
             console.log('received message', message);
         });
     }
@@ -56,6 +56,7 @@ function MonitorPub(res, NodeInfo) {
         'nodeToRedis': [],
         'onlineInfo': null
     };
+    var time = {};
 
     for (var k = 0; k < PredisArr.length; k++) {
         ip = PredisArr[k].ip;
@@ -73,13 +74,22 @@ function MonitorPub(res, NodeInfo) {
         if (redisPwd[ip]) {
             redisClient.auth(redisPwd[ip]);
         }
+
+        time.start = +new Date();
+
         redisClient.publish(channel1, channel1);
         redisClient.subscribe(channel2);
         redisClient.on('message', function(room, message) {
             console.log(message);
-            temp.nodeToRedis.push(message);
+
+            time.end = +new Date();
+            var costTime = {};
+            costTime[message] = time.end - time.start;
+            temp.nodeToRedis.push(costTime);
+
             redisClient.unsubscribe(channel2);
             delete redisClient;
+            delete costTime;
         });
     }
 

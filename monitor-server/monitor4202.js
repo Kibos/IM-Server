@@ -3,7 +3,7 @@ var http = require('http');
 var router = require('../dispatch-server/data/router');
 var monitorInfo = require('../conf/config').NodeInfo.MNode;
 
-router.post('/monitor', function(req, res, NodeInfo) {
+router.get('/monitor', function(req, res, NodeInfo) {
     if (!NodeInfo.ip || !NodeInfo.port) {
         ret403(req, res, 'NodeInfo is wrong, For example: 10.21.3.63:4001');
     }
