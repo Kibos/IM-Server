@@ -268,10 +268,14 @@ function notificationCallback(messages, toUser) {
 
     function updateMongodb(msg, toUser, mongoC) {
         var pushObj = {};
-        pushObj['groups.' + msg.togroup + '.hasrecieved'] = toUser;
-
         var pullObj = {};
-        pullObj['groups.' + msg.togroup + '.unrecieved'] = toUser;
+
+        if (msg.togroup) {
+            pushObj['groups.' + msg.togroup + '.hasrecieved'] = toUser;
+            pullObj['groups.' + msg.togroup + '.unrecieved'] = toUser;
+        }
+        pushObj['tousers.hasrecieved'] = toUser;
+        pullObj['tousers.unrecieved'] = toUser;
 
         var collection = mongoC.db(mg3.dbname).collection('Notices');
         collection.update({
@@ -282,7 +286,7 @@ function notificationCallback(messages, toUser) {
             $pull: pullObj
         }, function(err, res) {
             if (err) {
-                console.log("[offline][notificationCallback] update false");
+                console.log("[offline][notificationCallback] update false", err);
                 return false;
             }
         });
