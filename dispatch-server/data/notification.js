@@ -261,6 +261,7 @@ function person(req, res, json) {
             client.sismember('online', touser, function(err, isOnline) {
                 if (isOnline) {
                     received.push(parseInt(touser));
+                    console.log('person-->', touser, 'isOnline', isOnline);
                 } else {
                     unreceived.push(parseInt(touser));
                     console.log(touser + ' is offline');

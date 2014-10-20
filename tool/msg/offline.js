@@ -273,9 +273,13 @@ function notificationCallback(messages, toUser) {
         if (msg.togroup) {
             pushObj['groups.' + msg.togroup + '.hasrecieved'] = toUser;
             pullObj['groups.' + msg.togroup + '.unrecieved'] = toUser;
+        } else if (msg.tousers) {
+            pushObj['tousers.hasrecieved'] = toUser;
+            pullObj['tousers.unrecieved'] = toUser;
+        } else {
+            console.err('[offline][notificationCallback] is false.');
+            return false;
         }
-        pushObj['tousers.hasrecieved'] = toUser;
-        pullObj['tousers.unrecieved'] = toUser;
 
         var collection = mongoC.db(mg3.dbname).collection('Notices');
         collection.update({
