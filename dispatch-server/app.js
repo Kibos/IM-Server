@@ -32,14 +32,6 @@ router.get('/getNode', function(req, res, search) {
     }
 });
 
-router.post('/monitor', function(req, res, NodeInfo) {
-    if (!NodeInfo.ip || !NodeInfo.port) {
-        ret403(req, res, 'NodeInfo is wrong, For example: 10.21.3.63:4001');
-    }
-
-    require('../node-server/data/monitor').MonitorPub(res, NodeInfo);
-});
-
 //notification(POST)
 router.post('/notification', function(req, res, json) {
     var ip = req.headers['x-forwarded-for'] ||

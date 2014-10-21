@@ -14,7 +14,7 @@ var mongoConnect = require('../../connect/mongo');
  */
 exports.sta = function(obj, callback) {
     if (!obj.messageId || !obj.touser || !obj.poster) {
-        callback('[msgsave][sta]obj is necessary');
+        if (callback) callback('[msgsave][sta]obj is necessary');
         return false;
     }
     var msgData = {
@@ -30,7 +30,7 @@ exports.sta = function(obj, callback) {
     } else {
         // msgData.touser = parseInt(obj.touser);
         console.log('[msgsave.js] wrong type if obj.touser');
-        callback('[msgsave][sta]obj touser type is unnormal.');
+        if (callback) callback('[msgsave][sta]obj touser type is unnormal.');
         return false;
     }
 
@@ -38,9 +38,9 @@ exports.sta = function(obj, callback) {
         mongoC.db(mg2.dbname).collection('MsgSta').insert(msgData, function(err) {
             if (err) {
                 console.log('[msgsave][insert] is false. err is ', err);
-                callback(err);
+                if (callback) callback(err);
             }
-            callback(null);
+            if (callback) callback(null);
         });
     }, {ip: mg2.ip, port: mg2.port, name: 'insert_MsgSta_save'});
 };
