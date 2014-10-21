@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b9e29e66-3a99-4489-b220-5984d39ac981" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tool/msg/msgsave.js" afterPath="$PROJECT_DIR$/tool/msg/msgsave.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dispatch-server/data/notification.js" afterPath="$PROJECT_DIR$/dispatch-server/data/notification.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tool/msg/offline.js" afterPath="$PROJECT_DIR$/tool/msg/offline.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ybmp.iws" />
@@ -46,10 +46,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="offline.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="offline.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tool/msg/offline.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="256" column="29" selection-start="8121" selection-end="8141" vertical-scroll-proportion="0.022704838" vertical-offset="5865" max-vertical-offset="8579">
+            <state line="14" column="13" selection-start="284" selection-end="284" vertical-scroll-proportion="0.0" vertical-offset="322" max-vertical-offset="8579">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app_4001.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/node-server/app_4001.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="97" column="46" selection-start="2703" selection-end="2703" vertical-scroll-proportion="0.0" vertical-offset="2231" max-vertical-offset="4761">
               <folding />
             </state>
           </provider>
@@ -64,10 +73,28 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="notification.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="notification.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/dispatch-server/data/notification.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="258" column="20" selection-start="6512" selection-end="6512" vertical-scroll-proportion="0.0" vertical-offset="6394" max-vertical-offset="7935">
+            <state line="270" column="18" selection-start="6815" selection-end="6815" vertical-scroll-proportion="0.24185587" vertical-offset="5965" max-vertical-offset="8786">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="msgsave.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tool/msg/msgsave.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="14" column="8" selection-start="501" selection-end="501" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1909">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data-mining-server/app.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="25" column="21" selection-start="894" selection-end="916" vertical-scroll-proportion="0.0" vertical-offset="575" max-vertical-offset="6003">
               <folding />
             </state>
           </provider>
@@ -85,7 +112,7 @@
       <file leaf-file-name="socket.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/node_modules/socket.io-client/lib/socket.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="141" column="57" selection-start="3227" selection-end="3227" vertical-scroll-proportion="0.0" vertical-offset="3058" max-vertical-offset="13455">
+            <state line="451" column="21" selection-start="10357" selection-end="10357" vertical-scroll-proportion="0.0" vertical-offset="10019" max-vertical-offset="13455">
               <folding />
             </state>
           </provider>
@@ -94,7 +121,7 @@
       <file leaf-file-name="msgsend.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tool/msg/msgsend.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="59" column="67" selection-start="1639" selection-end="1707" vertical-scroll-proportion="0.0" vertical-offset="797" max-vertical-offset="4324">
+            <state line="94" column="39" selection-start="2682" selection-end="2682" vertical-scroll-proportion="0.0" vertical-offset="1992" max-vertical-offset="4324">
               <folding />
             </state>
           </provider>
@@ -119,8 +146,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/node-server/app_4001.js" />
-        <option value="$PROJECT_DIR$/data-mining-server/app.js" />
         <option value="$PROJECT_DIR$/tool/msg/msgsend.js" />
         <option value="$PROJECT_DIR$/node-server/app_4251.js" />
         <option value="$PROJECT_DIR$/conf/config.js" />
@@ -134,7 +159,9 @@
         <option value="$PROJECT_DIR$/group-server/app_4101.js" />
         <option value="$PROJECT_DIR$/node-server/data/reg.js" />
         <option value="$PROJECT_DIR$/tool/msg/offline.js" />
+        <option value="$PROJECT_DIR$/test.js" />
         <option value="$PROJECT_DIR$/dispatch-server/data/notification.js" />
+        <option value="$PROJECT_DIR$/tool/msg/msgsave.js" />
       </list>
     </option>
   </component>
@@ -170,6 +197,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -230,24 +258,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="tool" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="hash" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ybmp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ybmp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="node_modules" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -292,9 +302,36 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ybmp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ybmp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ybmp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ybmp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="data-mining-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -427,10 +464,10 @@
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23076923" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3875" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2423077" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.13333334" sideWeight="0.8153846" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.13333334" sideWeight="0.75769234" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30673078" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
@@ -458,18 +495,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/connect/redis.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="72" column="9" selection-start="2448" selection-end="2448" vertical-scroll-proportion="-0.009871668" vertical-offset="1666" max-vertical-offset="3174" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/conf/config.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="8" selection-start="266" selection-end="266" vertical-scroll-proportion="0.31786773" vertical-offset="0" max-vertical-offset="4393">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dispatch-server/data/group.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="30" column="42" selection-start="714" selection-end="714" vertical-scroll-proportion="0.0" vertical-offset="486" max-vertical-offset="2070" />
@@ -478,13 +503,6 @@
     <entry file="file://$PROJECT_DIR$/dispatch-server/app_4201.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="55" column="28" selection-start="1974" selection-end="1974" vertical-scroll-proportion="0.0" vertical-offset="946" max-vertical-offset="4761">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node-server/app_4001.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="142" column="31" selection-start="4167" selection-end="4167" vertical-scroll-proportion="0.1786772" vertical-offset="3085" max-vertical-offset="4761">
           <folding />
         </state>
       </provider>
@@ -508,13 +526,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tool/msg/msgsave.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="8" selection-start="501" selection-end="501" vertical-scroll-proportion="0.31786773" vertical-offset="0" max-vertical-offset="1771">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tool/id.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="47" column="8" selection-start="916" selection-end="916" vertical-scroll-proportion="0.79565644" vertical-offset="275" max-vertical-offset="1288" />
@@ -527,13 +538,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tool/msg/msgsend.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="59" column="67" selection-start="1639" selection-end="1707" vertical-scroll-proportion="0.0" vertical-offset="797" max-vertical-offset="4324">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tool/monitor.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2737">
@@ -541,23 +545,51 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/socket.io-client/lib/socket.js">
+    <entry file="file://$PROJECT_DIR$/node-server/app_4001.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="141" column="57" selection-start="3227" selection-end="3227" vertical-scroll-proportion="0.0" vertical-offset="3058" max-vertical-offset="13455">
+        <state line="97" column="46" selection-start="2703" selection-end="2703" vertical-scroll-proportion="0.0" vertical-offset="1843" max-vertical-offset="4761">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dispatch-server/data/notification.js">
+    <entry file="file://$PROJECT_DIR$/node_modules/socket.io-client/lib/socket.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="258" column="20" selection-start="6512" selection-end="6512" vertical-scroll-proportion="0.0" vertical-offset="5359" max-vertical-offset="7935">
+        <state line="451" column="21" selection-start="10357" selection-end="10357" vertical-scroll-proportion="0.0" vertical-offset="10019" max-vertical-offset="13455">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data-mining-server/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="21" selection-start="894" selection-end="916" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="6003">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tool/msg/offline.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="256" column="29" selection-start="8121" selection-end="8141" vertical-scroll-proportion="0.022704838" vertical-offset="5865" max-vertical-offset="8579">
+        <state line="14" column="13" selection-start="284" selection-end="284" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="8579">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tool/msg/msgsend.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="94" column="39" selection-start="2682" selection-end="2682" vertical-scroll-proportion="0.0" vertical-offset="2170" max-vertical-offset="4324">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tool/msg/msgsave.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="8" selection-start="501" selection-end="501" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1909">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dispatch-server/data/notification.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="270" column="18" selection-start="6815" selection-end="6815" vertical-scroll-proportion="0.24185587" vertical-offset="5965" max-vertical-offset="8786">
           <folding />
         </state>
       </provider>
