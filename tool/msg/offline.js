@@ -154,8 +154,7 @@ exports.offlineSave = function(message, touser, poster, option, callback) {
             upsert: true
         }, function(err, res) {
             if (err) {
-                console.log("[offline][offlineSave] update false");
-                return false;
+                console.error("[offline][offlineSave] update false");
             }
             // console.log(err, res);
             if (callback) callback(err, res);

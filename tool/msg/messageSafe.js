@@ -27,12 +27,24 @@ function isFriend(poster, receiver, token, option, callback) {
                     if (callback) callback(true);
                 } else {
                     getFriend(token, function(members) {
-                        judge(members);
-                        client.del(setName, function() {
-                            client.sadd(setName, members, function() {
-
-                            });
+                        if (!members) {
+                            console.error('[messageSafe][ifFriend] getFriend members is ', members);
+                            callback(false);
+                        }
+                        client.del(setName, function(err) {
+                            if (!err) {
+                                client.sadd(setName, members, function(err) {
+                                    if (err) {
+                                        console.error('[messageSafe][ifFriend] redis sadd false.');
+                                        callback(false);
+                                    }
+                                });
+                            } else {
+                                console.error('[messageSafe][ifFriend] redis del false.');
+                                callback(false);
+                            }
                         });
+                        judge(members);
                     });
                 }
             });
