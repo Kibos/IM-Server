@@ -194,7 +194,7 @@ io.sockets.on('connection', function(socket) {
 
 process.on('uncaughtException', function(exception) {
     //handle or ignore error
-    console.log('exception number is ', ++count);
+    console.log('exception is ', exception);
 });
 
 console.log('   [ NodeServer ] start at ' + appInfo.ip + ':' + appInfo.port);
