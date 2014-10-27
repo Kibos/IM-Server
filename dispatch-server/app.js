@@ -83,7 +83,7 @@ router.post('/friendChange', function(req, res, json) {
 
 //blacklist(POST)
 router.post('/blacklist', function(req, res, json) {
-    require('./dispatch_block').block(req, res, json);
+    require('./data/block').block(req, res, json);
 });
 
 //messages(POST)
