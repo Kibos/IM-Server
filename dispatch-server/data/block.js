@@ -20,7 +20,7 @@ function block(req, res, json) {
         ret403(req, res, 'action is necessary!');
     }
 
-    require('../msg/msgsend').sys(json.touser, json);
+    require('../../tool/msg/msgsend').sys(json.touser, json);
 
     //delete the touser's friend cache
     //
