@@ -96,6 +96,12 @@ exports.NodeInfo = {
         ip: appIp,
         port: 4998
     },
+    MNode : {
+        ip: appIp,
+        port: 4202,
+        type: 'MNode',
+        id: 'mn_' + appIp + '_' + 4202
+    },
     PNode : {
         ip: appIp,
         port: 4001,
