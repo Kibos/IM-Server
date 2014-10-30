@@ -87,6 +87,42 @@ function group(req, res, json) {
 
 }
 
+function messageSysGroup(req, res, json) {
+
+    if (!json.togroup) {
+        ret404(req, res, 'togroup is necessary');
+        return false;
+    }
+
+    if (!json.action) {
+        ret404(req, res, 'action is necessary');
+        return false;
+    }
+
+    if (!json.group_type) {
+        ret404(req, res, 'group_type is necessary');
+        return false;
+    }
+
+    if (!json.groupname) {
+        ret404(req, res, 'groupname is necessary');
+        return false;
+    }
+
+    json.order = 'SYS';
+    json.type = '1';
+    json.text = '由于本群人数众多，为保障各位各位成员能够及时收到官方信息，故本群将不再支持聊天，敬请谅解';
+
+    console.log('[notification][messageSysGroup] json is ', json, 'togroup', json.togroup);
+    msgsend.group(json);
+
+    var retjson = {
+        'response': '200',
+        'message': '请求成功'
+    };
+    retJSON(req, res, JSON.stringify(retjson));
+}
+
 /**
  *   share information to group(s)
  */
@@ -270,5 +306,6 @@ function person(req, res, json) {
  *
  **/
 exports.group = group;
+exports.messageSysGroup = messageSysGroup;
 exports.person = person;
 exports.shareGroup = shareGroup;

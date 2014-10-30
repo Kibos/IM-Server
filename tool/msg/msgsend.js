@@ -7,7 +7,9 @@ var offline = require('./offline');
 var id = require('../id');
 var safe = require('./messageSafe');
 var msgSave = require('./msgsave');
-var mg1 = require('../../conf/config').mongodb.mg1;
+var config = require('../../conf/config');
+var mg1 = config.mongodb.mg1;
+var async = require('async');
 
 // var logs = require('../logs/logs');
 
@@ -59,7 +61,7 @@ exports.sendToPerson = function(msg, touser, poster, socket) {
         client.sismember('online', touser, function(err, isOnline) {
             console.log('person-->', touser, 'isOnline', isOnline);
             if (!isOnline) {
-                console.log(touser + 'is offline');
+                console.log(touser + ' is offline');
                 //offline.setMsg(msg, touser, poster);
                 offline.pushMessage(msg, touser, poster);
             }
@@ -106,30 +108,82 @@ exports.group = function(rec, socket) {
     var groupRedis = hash.getHash('GRedis', groupServer.id.toString());
     var room = 'Group.' + groupServer.id;
 
-
-    redisConnect.connect(groupRedis.port, groupRedis.ip, function(client) {
-
-        console.log('group ready', groupRedis.port, groupRedis.ip, room);
-        client.publish(room, JSON.stringify(rec));
-
-        if (socket) socket.emit('ybmp', rec);
-    });
-
-    //log it to server (group msg)
-    var msgData = {
-        'type': 1,
-        'from': parseInt(rec.poster),
-        'to': parseInt(rec.togroup),
-        'content': rec,
-        'time': time,
-        'messageId': rec.messageId
-    };
-
-    mongoConnect.connect(function(mongoC) {
-        mongoC.db(mg1.dbname).collection('Message').insert(msgData, function() {
-            //Message insert success
+    //Common Platform privilege
+    if (!(rec.action == 'sendSysMessageToGroup')) {
+        async.waterfall([
+            function(cb) {
+                isChat(cb);
+            }
+        ], function (err, res) {
+            if (err) {
+                console.error('[msgsend][group] async isChat is false. err is ', err);
+            }
+            if (res) {
+                sendGroupMessage();
+            }
         });
-    }, {ip: mg1.ip, port: mg1.port, name: 'insert_msgSend_Group'});
+    } else {
+        var redisPort = config.sta.redis.cache.port;
+        var redisIp = config.sta.redis.cache.ip;
+        redisConnect.connect(redisPort, redisIp, function(client) {
+            var groupKey = 'group:' + rec.togroup + ':users';
+            client.hmset(groupKey, 'isChat', false, function(err, res) {
+                if (err || res !== 'OK') {
+                    console.error('[msgsend][group] hmset is false, err is ', err);
+                }
+                console.log('Settings can not talk success.');
+            });
+        });
+        sendGroupMessage();
+    }
+
+    function isChat(callback) {
+        var redisPort = config.sta.redis.cache.port;
+        var redisIp = config.sta.redis.cache.ip;
+        redisConnect.connect(redisPort, redisIp, function(client) {
+            var groupKey = 'group:' + rec.togroup + ':users';
+            client.HGET(groupKey, 'isChat', function(err, res) {
+                if (err) {
+                    console.error('[msgsend][group] HGET isChat false. err is ', err);
+                    callback(err);
+                }
+                if (!JSON.parse(res)) {
+                    rec.status = 100;
+                    rec.msg = '此群组不可聊天，请与群组管理员联系';
+                    if (socket) socket.emit('ybmp', rec);
+                    callback(null, false);
+                } else {
+                    callback(null, true);
+                }
+            });
+        });
+    }
+
+    function sendGroupMessage() {
+        redisConnect.connect(groupRedis.port, groupRedis.ip, function(client) {
+
+            console.log('group ready', groupRedis.port, groupRedis.ip, room);
+            client.publish(room, JSON.stringify(rec));
+
+            if (socket) socket.emit('ybmp', rec);
+        });
+
+        //log it to server (group msg)
+        var msgData = {
+            'type': 1,
+            'from': parseInt(rec.poster),
+            'to': parseInt(rec.togroup),
+            'content': rec,
+            'time': time,
+            'messageId': rec.messageId
+        };
+
+        mongoConnect.connect(function(mongoC) {
+            mongoC.db(mg1.dbname).collection('Message').insert(msgData, function() {
+                //Message insert success
+            });
+        }, {ip: mg1.ip, port: mg1.port, name: 'insert_msgSend_Group'});
+    }
 };
 
 exports.sys = function(touser, msg) {

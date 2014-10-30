@@ -53,6 +53,9 @@ router.post('/notification', function(req, res, json) {
         notification.person(req, res, json);
     } else if (json.noti_type == 'friend') {
         friend.friend(req, res, json);
+    } else if (json.noti_type == 'message_group') {
+        //group sys message
+        notification.messageSysGroup(req, res, json);
     } else {
         ret403(req, res, 'noti_type is wrong, more information : http://10.21.118.240/wiki/doku.php?id=notification#推送群组通知_notification');
     }
