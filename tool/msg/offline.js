@@ -1,11 +1,19 @@
 'use strict';
+var redisConnect = require('../../connect/redis');
 var mongoConnect = require('../../connect/mongo');
-var mongodb = require('../../conf/config').mongodb;
+var conf = require('../../conf/config');
+var async = require('async');
+var redisPort = conf.sta.redis.cache.port;
+var redisIp = conf.sta.redis.cache.ip;
+var select = conf.sta.redis.cache.select;
+var mongodb = conf.mongodb;
 
 var mg1 = mongodb.mg1;
 var mg2 = mongodb.mg2;
 var mg3 = mongodb.mg3;
 
+var start = 0;
+var end = 19;
 
 /**
  * push message
@@ -127,7 +135,7 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
     //deal with the message push , the touser can be like this 1,2,3 (multi)
     for (var i = 0, len = toUserArray.length; i < len; i++) {
         //save to offline
-        exports.offlineSave(message, toUserArray[i], poster);
+        exports.offlineSave(message.messageId, toUserArray[i], poster);
     }
 };
 
@@ -135,32 +143,36 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
  * save to offline
  * @param {[type]} [varname] [description]
  */
-exports.offlineSave = function(message, touser, poster, option, callback) {
+exports.offlineSave = function(messageId, touser, poster) {
 
-    mongoConnect.connect(function(mongoC) {
-        var Offline = mongoC.db(mg1.dbname).collection('Offline');
-        var updateSql = {};
-        updateSql.$push = {};
-        updateSql.$inc = {};
-        updateSql.$push[poster + '.messages'] = {
-            $each: [message.messageId],
-            $slice: -20
-        };
-        updateSql.$inc[poster + '.total'] = 1;
+    var message = poster + ':' + messageId;
+    redisConnect.connect(redisPort, redisIp, function(client) {
+        client.select(select, function () {
+            client.LPUSH (touser, message, function (err, res) {
+                if (err) {
+                    console.error('[offline][offlineSave] LPUSH is false, err is ', err);
+                    return false;
+                }
+                if (res > 20) {
+                    client.LTRIM(touser, start, end, function(err, res) {
+                        if (err) {
+                            console.error('[offline][offlineSave] LTRIM is false, err is ', err);
+                            return false;
+                        }
+                        console.log('[offline][LTRIM] ', touser, 'result is ', res);
+                    });
+                }
 
-        Offline.update({
-            'userid': parseInt(touser)
-        }, updateSql, {
-            upsert: true
-        }, function(err, res) {
-            if (err) {
-                console.error("[offline][offlineSave] update false");
-            }
-            // console.log(err, res);
-            if (callback) callback(err, res);
-
+                client.LRANGE(touser, 0, -1, function(err, res) {
+                    if (err) {
+                        console.error('[offline][offlineSave] LRANGE is false, err is ', err);
+                        return false;
+                    }
+                    console.log(touser, 'offline lists : ', res);
+                });
+            });
         });
-    }, {ip: mg1.ip, port: mg1.port, name: 'update_offline_save'});
+    });
 };
 
 /**
@@ -175,50 +187,91 @@ exports.offlineSave = function(message, touser, poster, option, callback) {
  *   },...]
  */
 exports.getMsg = function(userid, callback) {
+
     userid = parseInt(userid);
     var result = [];
-    var totalUser = 0;
-    var loadUser = 0;
-    mongoConnect.connect(function(mongoC) {
-        var Offline = mongoC.db(mg1.dbname).collection('Offline');
-        Offline.find({
-            'userid': userid
-        }).toArray(function(err, res) {
-            if (err || res.length <= 0) {
-                if (callback) callback(result);
-            } else {
-                for (var i in res[0]) {
-                    if (!res[0][i].total || !res[0][i].messages) continue;
-                    getByPerson(i, res[0][i]);
-                }
-            }
+    var array = [];
 
-            Offline.remove({
-                'userid': userid
-            }, function(err) {
-                if (err) {
-                    console.log("[offline][getMsg] remove false");
+    var temp = {};
+    var poster = null;
+    var messageId = null;
+
+    redisConnect.connect(redisPort, redisIp, function(client) {
+        client.select(select, function () {
+            client.LRANGE(userid, 0, -1, function (err, res) {
+                if (err || !res) {
+                    console.error('[offline][getMsg] LRANGE is false, err is ', err);
+                    if (callback) callback(err || []);
                     return false;
+                }
+
+                for (var item in res) {
+                    poster = res[item].split(':', 2)[0];
+                    messageId = res[item].split(':', 2)[1];
+                    if(!temp[poster]) {
+                        temp[poster] = {};
+                        temp[poster].messageIds = [];
+                    }
+                    temp[poster].messageIds.push(messageId);
+                }
+
+                for (var i in temp) {
+                    array.push({poster: i, msgs:temp[i].messageIds});
+                }
+
+                async.waterfall([
+                    function(cb) {
+                        pushRes(cb);
+                    }
+                ], function(err) {
+                    if (err) {
+                        console.error('[offline][getMsg] pushRes is false. err is ', err);
+                        if (callback) callback(err);
+                    }
+                    if (callback) callback(result);
+                    console.log("return client result is ", result);
+                });
+
+                function pushRes(callback) {
+                    async.eachSeries(array, function(message, callback) {
+                        async.waterfall([
+                            function(cb) {
+                                getRealMsg(message.msgs, userid, cb);
+                            }
+                        ], function(err, res) {
+                            if (err) {
+                                console.error('[offline][getMsg] getRealMsg is false. err is ', err);
+                            }
+                            var theObj = {
+                                userid: message.poster,
+                                length: message.msgs.length,
+                                msg: res
+                            };
+                            theObj.msg = res;
+                            result.push(theObj);
+                            callback();
+                        });
+                    }, function(err) {
+                        if (err) {
+                            console.error('[offline][getMsg] getRealMsg is false. err is ', err);
+                            if (callback) callback(err);
+                        }
+                        if (callback) callback(null);
+                    });
+                }
+
+                for (var i = 0; i < res.length; i ++) {
+                    client.RPOP(userid, function(err, result) {
+                        if (err) {
+                            console.error('[offline][getMsg] RPOP is false, err is ', err);
+                            if (callback) callback(err);
+                        }
+                        console.log('[lists] delete  ', result);
+                    });
                 }
             });
         });
-    }, {ip: mg1.ip, port: mg1.port, name: 'Offline_getmsg'});
-
-    function getByPerson(i, res) {
-        totalUser++;
-        var theObj = {
-            userid: i,
-            length: res.total
-        };
-
-        getRealMsg(res.messages, userid, function(res) {
-            theObj.msg = res;
-            result.push(theObj);
-            if (++loadUser >= totalUser) {
-                if (callback) callback(result);
-            }
-        });
-    }
+    });
 
     //remove the push count
     mongoConnect.connect(function(MongoConn) {
@@ -245,10 +298,11 @@ function getRealMsg(messageIds, uid, callback) {
         }).toArray(function(err, res) {
                 if (err) {
                     console.log("[offline][getRealMsg] find false");
+                    if (callback) callback(err);
                     return false;
                 }
             notificationCallback(res, uid);
-            if (callback) callback(res);
+            if (callback) callback(null, res);
         });
     }, {ip: mg1.ip, port: mg1.port, name: 'find_message_real'});
 }

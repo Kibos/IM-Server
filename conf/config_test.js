@@ -25,7 +25,8 @@ exports.sta = {
         },
         'cache': {
             ip: '10.21.3.42',
-            port: '6390'
+            port: '6390',
+            select: '3'
         }
     },
     group: {

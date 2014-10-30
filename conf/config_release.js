@@ -28,7 +28,8 @@ exports.sta = {
         },
         'cache': {
             ip: 'session.1.redis',
-            port: '6379'
+            port: '6379',
+            select: '3'
         }
     },
     group: {
