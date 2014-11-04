@@ -162,6 +162,7 @@ var group = function() {
      * @param groupInfo[groupid][userid].name {String}
      */
     exp.groupMessageSend = function(groupInfo, msg) {
+        console.log('[group server][groupMessageSend] groupInfo is ', groupInfo);
         var userIds = groupInfo.usersId.split(',');
         //cache redis
         var redisStack = {};
