@@ -4,8 +4,15 @@ var hash = require('../../tool/hash/hash.js');
 var redisC = require('../../connect/redis');
 var mongoClient = require('../../connect/mongo');
 var msgsend = require('../../tool/msg/msgsend');
+var msgSave = require('../../tool/msg/msgsave');
+var offline = require('../../tool/msg/offline');
+var async = require('async');
+
 var id = require('../../tool/id');
 var conf = require('../../conf/config');
+var mg1 = conf.mongodb.mg1;
+var mg3 = conf.mongodb.mg3;
+
 
 /**
  *
@@ -74,10 +81,46 @@ function group(req, res, json) {
 
     var retjson = {
         'response': '200',
-        'message': '����ɹ�'
+        'message': '请求成功'
     };
     retJSON(req, res, JSON.stringify(retjson));
 
+}
+
+function messageSysGroup(req, res, json) {
+
+    if (!json.togroup) {
+        ret404(req, res, 'togroup is necessary');
+        return false;
+    }
+
+    if (!json.action) {
+        ret404(req, res, 'action is necessary');
+        return false;
+    }
+
+    if (!json.group_type) {
+        ret404(req, res, 'group_type is necessary');
+        return false;
+    }
+
+    if (!json.groupname) {
+        ret404(req, res, 'groupname is necessary');
+        return false;
+    }
+
+    json.order = 'SYS';
+    json.type = '1';
+    json.text = '由于本群人数众多，为保障各位各位成员能够及时收到官方信息，故本群将不再支持聊天，敬请谅解';
+
+    console.log('[notification][messageSysGroup] json is ', json, 'togroup', json.togroup);
+    msgsend.group(json);
+
+    var retjson = {
+        'response': '200',
+        'message': '请求成功'
+    };
+    retJSON(req, res, JSON.stringify(retjson));
 }
 
 /**
@@ -111,7 +154,7 @@ function shareGroup(req, res, json) {
 
     var retjson = {
         'response': '200',
-        'message': '����ɹ�'
+        'message': '请求成功'
     };
     retJSON(req, res, JSON.stringify(retjson));
 }
@@ -120,84 +163,115 @@ function shareGroup(req, res, json) {
  *  person notification
  */
 
-
 function person(req, res, json) {
-    //TODO: use msgsend.sendToPerson
-    var redisStack = {};
-    var totaluser = 0;
+
     var received = [];
     var unreceived = [];
-    var i, redisHost;
+    var redisHost, room;
 
-    //sendToPerson  msg, touser, poster
-
-    if (json.tousers) {
-        var users = json.tousers.split(',');
-        json.type = '7';
-        json.order = 'MSG';
-        json.status = 200;
-        json.time = +new Date();
-        json.messageId = id.id();
-        //get redis srever
-
-        var len = users.length;
-        for (i = 0; i < len; i++) {
-            totaluser++;
-            redisHost = hash.getHash('PRedis', users[i]);
-            var tag = redisHost.port + redisHost.ip;
-            //stack the redis
-            redisStack[tag] = redisStack[tag] || {};
-            redisStack[tag].host = redisHost;
-            redisStack[tag].ids = redisStack[tag].ids || [];
-            redisStack[tag].ids.push(users[i]);
-        }
-
-        for (i in redisStack) {
-            redisHost = redisStack[i].host;
-            var ids = redisStack[i].ids;
-
-            pushmessage(redisHost, ids, json);
-
-        }
-
-        var retjson = {
-            'response': '200',
-            'message': '����ɹ�'
-        };
-        retJSON(req, res, JSON.stringify(retjson));
-    } else {
+    if (!json.tousers) {
         ret404(req, res, 'tousers is necessary!');
     }
 
-    function pushmessage(redisHost, ids, json) {
-        redisC.connect(redisHost.port, redisHost.ip, function(client) {
-            for (var j = 0, len = ids.length; j < len; j++) {
-                push(client, ids[j]);
-            }
-        });
+    var users = json.tousers.split(',');
+    json.type = '7';
+    json.order = 'MSG';
+    json.status = 200;
+    json.time = +new Date();
 
-        function push(client, user) {
-            client.sismember('online', user, function(err, isOnline) {
-                if (isOnline === 1) {
-                    var room = 'Room.' + user;
-
-                    json.touser = user;
-
-                    client.publish(room, JSON.stringify(json));
-                    received.push(user);
-                } else {
-                    unreceived.push(user);
-                }
-                if (--totaluser <= 0) {
-                    result(json.msgid);
-                }
-            });
+    async.eachSeries(users, function(user, callback) {
+        pushmessage(user, json, callback);
+    }, function(err) {
+        if (err) {
+            console.log('[notification][person] async.eachSeries is false. err is ', err);
+            return false;
         }
+        doUpdate();
+        var retjson = {
+            'response': '200',
+            'message': '请求成功'
+        };
+        retJSON(req, res, JSON.stringify(retjson));
+    });
+
+    function pushmessage(touser, json, callback) {
+        async.waterfall([
+            function(cb) {
+                doPushArr(cb);
+            }, function(cb) {
+                insertMsg(cb);
+            }, function(cb) {
+                saveSta(cb);
+            }
+        ], function(err) {
+            if (err) {
+                console.error('[notification][pushmessage] is false. err is ', err);
+                callback(err);
+            }
+            callback(null);
+        });
+        function doPushArr(callback) {
+            redisHost = hash.getHash('PRedis', touser);
+
+            redisC.connect(redisHost.port, redisHost.ip, function(client) {
+                json.touser = touser;
+                json.messageId = id.id();
+                room = 'Room.' + touser;
+
+                client.publish(room, JSON.stringify(json));
+
+                client.sismember('online', touser, function(err, isOnline) {
+                    if (isOnline) {
+                        received.push(parseInt(touser));
+                        console.log('person-->', touser, 'isOnline');
+                    } else {
+                        unreceived.push(parseInt(touser));
+                        console.log(touser + ' is offline');
+                        offline.pushMessage(json, touser, json.poster);
+                    }
+                });
+            });
+            callback(null);
+        }
+
+        function insertMsg(callback) {
+            //save the message log & save the message status
+            var msgData = {
+                'type': 7,
+                'from': parseInt(json.poster),
+                'to': parseInt(json.touser),
+                'content': json,
+                'time': json.time,
+                'messageId': json.messageId
+            };
+            mongoClient.connect(function(mongoC) {
+                mongoC.db(mg1.dbname).collection('Message').insert(msgData, function(err) {
+                    if (err) {
+                        console.error('[notification][insert msg] is false. err is ', err);
+                        callback(err);
+                    }
+                    callback(null);
+                    //success
+                });
+            }, {ip: mg1.ip, port: mg1.port, name: 'insert_msgSend_person'});
+        }
+
+        function saveSta(callback) {
+            //save msg statu to mongodb
+            msgSave.sta({
+                'messageId': json.messageId,
+                'touser': [parseInt(json.touser)],
+                'poster': parseInt(json.poster),
+                'type': 7,
+                'time': json.time
+            }, callback);
+        }
+
     }
 
-    function result(msgid) {
+    function doUpdate() {
         mongoClient.connect(function(mongoConnect) {
-            var collection = mongoConnect.db(conf.mongodb.mg3.dbname).collection('Notices');
+            var collection = mongoConnect.db(mg3.dbname).collection('Notices');
 
             var setVal = {};
             setVal['tousers.hasrecieved'] = {
@@ -208,7 +282,7 @@ function person(req, res, json) {
             };
 
             collection.update({
-                '_id': parseInt(msgid)
+                '_id': parseInt(json.msgid)
             }, {
                 $push: setVal,
                 $set: {
@@ -216,20 +290,22 @@ function person(req, res, json) {
                 }
             }, {
                 'upsert': true
-            }, function() {
-                console.log('[dispatch_notification.js update success]-->', msgid, setVal);
+            }, function(err) {
+                if (err) {
+                    console.log("[notification][Notices] update false", err);
+                    return false;
+                }
+                console.log('[dispatch_notification.js update success]-->', json.msgid, setVal);
             });
 
-        }, {ip: conf.mongodb.mg3.ip, port: conf.mongodb.mg3.port, name: 'update_dispatch_notification'});
+        }, {ip: mg3.ip, port: mg3.port, name: 'update_dispatch_notification'});
     }
 }
-
 
 /**
  *
  **/
 exports.group = group;
+exports.messageSysGroup = messageSysGroup;
 exports.person = person;
 exports.shareGroup = shareGroup;
-
-/////

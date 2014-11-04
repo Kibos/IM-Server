@@ -32,14 +32,6 @@ router.get('/getNode', function(req, res, search) {
     }
 });
 
-router.post('/monitor', function(req, res, NodeInfo) {
-    if (!NodeInfo.ip || !NodeInfo.port) {
-        ret403(req, res, 'NodeInfo is wrong, For example: 10.21.3.63:4001');
-    }
-
-    require('../node-server/data/monitor').MonitorPub(res, NodeInfo);
-});
-
 //notification(POST)
 router.post('/notification', function(req, res, json) {
     var ip = req.headers['x-forwarded-for'] ||
@@ -61,6 +53,9 @@ router.post('/notification', function(req, res, json) {
         notification.person(req, res, json);
     } else if (json.noti_type == 'friend') {
         friend.friend(req, res, json);
+    } else if (json.noti_type == 'message_group') {
+        //group sys message
+        notification.messageSysGroup(req, res, json);
     } else {
         ret403(req, res, 'noti_type is wrong, more information : http://10.21.118.240/wiki/doku.php?id=notification#推送群组通知_notification');
     }
@@ -91,7 +86,7 @@ router.post('/friendChange', function(req, res, json) {
 
 //blacklist(POST)
 router.post('/blacklist', function(req, res, json) {
-    require('./dispatch_block').block(req, res, json);
+    require('./data/block').block(req, res, json);
 });
 
 //messages(POST)

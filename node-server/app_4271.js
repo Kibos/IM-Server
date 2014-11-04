@@ -92,7 +92,7 @@ brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port, function() {
 });
 
 //Monitoring Communications (subscribe)
-require('../data/monitor').MonitorSub(appInfo);
+require('../tool/monitor').MonitorSub(appInfo);
 
 //
 io.sockets.on('connection', function(socket) {
@@ -120,7 +120,11 @@ io.sockets.on('connection', function(socket) {
         if (rec.order == 'REG') {
 
             reg.reg(rec, users, socket, function(data) {
-                if (!data) console.log('[node][app]client reg false');
+                if (!data) {
+                    console.log('[node][app]client reg false');
+                    socket.emit('ybmp', 'wrong data format : ', data);
+                    return false;
+                }
                 host = data.host;
                 divice = data.divice;
             });
@@ -173,24 +177,25 @@ io.sockets.on('connection', function(socket) {
             rec.userid = rec.userid || host;
             sysMsg.sys(rec);
         } else {
-            console.log('###############' + new Date() + " socket io is falsed");
+            console.error('###############' + new Date() + " socket io is falsed");
         }
     });
 
     socket.on('disconnect', function(data) {
-        if (host) console.log(host, ' disa ', data);
+        if (!host) {
+            console.log('[nodeServer][socket disconnect] userid: ', host);
+            return false;
+        }
+        console.log('[nodeServer][socket disconnect] userid: ', host, ' dis reason: ', data);
 
         if (users[host] && users[host][divice]) {
             delete users[host][divice];
         }
 
-        if (host) {
-            var PRedis = hash.getHash('PRedis', host);
-            redisConnect.connect(PRedis.port, PRedis.ip, function(client) {
-                client.srem('online', host);
-            });
-        }
-
+        var PRedis = hash.getHash('PRedis', host);
+        redisConnect.connect(PRedis.port, PRedis.ip, function(client) {
+            client.srem('online', host);
+        });
     });
 });
 

@@ -7,7 +7,12 @@ var offline = require('./offline');
 var id = require('../id');
 var safe = require('./messageSafe');
 var msgSave = require('./msgsave');
-var mg1 = require('../../conf/config').mongodb.mg1;
+var config = require('../../conf/config');
+var mg1 = config.mongodb.mg1;
+var async = require('async');
+var restful = require('../restful');
+var redisPort = config.sta.redis.cache.port;
+var redisIp = config.sta.redis.cache.ip;
 
 // var logs = require('../logs/logs');
 
@@ -53,13 +58,12 @@ exports.sendToPerson = function(msg, touser, poster, socket) {
         msg.status = 200;
 
         client.publish(room, JSON.stringify(msg));
-
         if (socket) socket.emit('ybmp', msg);
 
         client.sismember('online', touser, function(err, isOnline) {
             console.log('person-->', touser, 'isOnline', isOnline);
             if (!isOnline) {
-                console.log(touser + 'is offline');
+                console.log(touser + ' is offline');
                 //offline.setMsg(msg, touser, poster);
                 offline.pushMessage(msg, touser, poster);
             }
@@ -93,7 +97,6 @@ exports.sendToPerson = function(msg, touser, poster, socket) {
 
 
 exports.group = function(rec, socket) {
-
     var groupServer = hash.getHash('GNode', rec.togroup);
     if (!groupServer) {
         console.log('can not find groupServer', rec.togroup, 'hash', hash._hash());
@@ -106,30 +109,176 @@ exports.group = function(rec, socket) {
     var groupRedis = hash.getHash('GRedis', groupServer.id.toString());
     var room = 'Group.' + groupServer.id;
 
+    async.waterfall([
+        function(cb) {
+            //group info isExist in redis
+            async.waterfall([
+                function(cb) {
+                    isExist(cb);
+                },
+                function(res, cb) {
+                    if (!res) {
+                        getGroupMember(rec.togroup, cb);
+                    } else {
+                        cb(null, true);
+                    }
+                }
+            ], function(err, res) {
+                if (err) {
+                    console.error('[msgsend][group] async isExist is false. err is ', err);
+                    cb(err);
+                }
+                if (res.members && res.chat) {
+                    saveToRedis(rec.togroup, res.members, res.chat, cb);
+                } else {
+                    cb(null, true);
+                }
+            });
+        }
+    ], function(err, res) {
+        if (err) {
+            console.error('[msgsend][group] async isExist is false ! err is ', err);
+        }
+        //Common Platform privilege
+        if (rec.action == 'sendSysMessageToGroup') {
 
-    redisConnect.connect(groupRedis.port, groupRedis.ip, function(client) {
-
-        console.log('group ready', groupRedis.port, groupRedis.ip, room);
-        client.publish(room, JSON.stringify(rec));
-
-        if (socket) socket.emit('ybmp', rec);
+            redisConnect.connect(redisPort, redisIp, function(client) {
+                var groupKey = 'group:' + rec.togroup + ':users';
+                client.hmset(groupKey, 'isChat', false, function(err, res) {
+                    if (err || res !== 'OK') {
+                        console.error('[msgsend][group] hmset is false, err is ', err);
+                    }
+                    console.log('Settings group ', rec.togroup, 'can not talk success.');
+                });
+            });
+            sendGroupMessage();
+        } else {
+            async.waterfall([
+                function(cb) {
+                    isChat(cb);
+                }
+            ], function (err, res) {
+                if (err) {
+                    console.error('[msgsend][group] async isChat is false. err is ', err);
+                }
+                if (res) {
+                    console.log('[msgsend][group] group ',rec.togroup,' is allow chat.', res);
+                    sendGroupMessage();
+                } else {
+                    console.log('[msgsend][group] group ',rec.togroup,' is not allow chat.');
+                }
+            });
+        }
     });
 
-    //log it to server (group msg)
-    var msgData = {
-        'type': 1,
-        'from': parseInt(rec.poster),
-        'to': parseInt(rec.togroup),
-        'content': rec,
-        'time': time,
-        'messageId': rec.messageId
-    };
+    function isExist(callback) {
 
-    mongoConnect.connect(function(mongoC) {
-        mongoC.db(mg1.dbname).collection('Message').insert(msgData, function() {
-            //Message insert success
+        redisConnect.connect(redisPort, redisIp, function(client) {
+            var groupKey = 'group:' + rec.togroup + ':users';
+
+            client.select('0', function(){
+                client.HGETALL(groupKey, function(err, res) {
+                    if (err) {
+                        console.error('[msgsend][group] HGET isChat false. err is ', err);
+                        callback(err);
+                    }
+                    if (res) {
+                        callback(null, true);
+                    } else {
+                        callback(null, false);
+                    }
+                });
+            });
         });
-    }, {ip: mg1.ip, port: mg1.port, name: 'insert_msgSend_Group'});
+    }
+
+    function getGroupMember(gid, callback) {
+        var options = {
+            'hostname': config.sta.group.api.ip,
+            'port': config.sta.group.api.port,
+            'path': '/api/v1/talks/' + gid + '/memberids?internal_secret=cf7be73c856c99c0fe02a78a562375c5',
+            'callback': function(Jdata) {
+                var data = {};
+                try {
+                    data = JSON.parse(Jdata);
+                } catch (e) {
+                    console.log('group data error', Jdata);
+                    if (callback) callback(null, data);
+                    return false;
+                }
+                console.log('[API group] got data from server', data, '!got data from server');
+                if (data.response == 100) {
+                    if (callback) callback(null, data.data);
+                } else {
+                    console.log('    [API requerst error]', data.response, data.message);
+                    if (callback) callback(null, false);
+                }
+            }
+        };
+        restful.get(options);
+        console.log('[API requerst ]', options.hostname + options.path);
+    }
+
+    function saveToRedis(gid, usersId, isChat, callback) {
+
+        redisConnect.connect(redisPort, redisIp, function(client) {
+            var groupKey = 'group:' + gid + ':users';
+            //delete old data
+            client.del(groupKey, function() {
+                //insert
+                client.hmset(groupKey, 'usersId', usersId, 'isChat', isChat, function() {
+                    if (callback) callback(null, true);
+                });
+            });
+
+        });
+    }
+
+    function isChat(callback) {
+
+        redisConnect.connect(redisPort, redisIp, function(client) {
+            var groupKey = 'group:' + rec.togroup + ':users';
+            client.HGET(groupKey, 'isChat', function(err, chat) {
+                if (err) {
+                    console.error('[msgsend][group] HGET isChat false. err is ', err);
+                    callback(err);
+                }
+                if (!JSON.parse(chat)) {
+                    rec.status = 100;
+                    rec.msg = '此群组不可聊天，请与群组管理员联系';
+                    if (socket) socket.emit('ybmp', rec);
+                    callback(null, false);
+                } else {
+                    callback(null, true);
+                }
+            });
+        });
+    }
+
+    function sendGroupMessage() {
+        redisConnect.connect(groupRedis.port, groupRedis.ip, function(client) {
+            console.log('group ready', groupRedis.port, groupRedis.ip, room);
+            client.publish(room, JSON.stringify(rec));
+
+            if (socket) socket.emit('ybmp', rec);
+        });
+
+        //log it to server (group msg)
+        var msgData = {
+            'type': 1,
+            'from': parseInt(rec.poster),
+            'to': parseInt(rec.togroup),
+            'content': rec,
+            'time': time,
+            'messageId': rec.messageId
+        };
+
+        mongoConnect.connect(function(mongoC) {
+            mongoC.db(mg1.dbname).collection('Message').insert(msgData, function() {
+                //Message insert success
+            });
+        }, {ip: mg1.ip, port: mg1.port, name: 'insert_msgSend_Group'});
+    }
 };
 
 exports.sys = function(touser, msg) {

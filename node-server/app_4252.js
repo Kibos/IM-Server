@@ -92,7 +92,7 @@ brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port, function() {
 });
 
 //Monitoring Communications (subscribe)
-require('../data/monitor').MonitorSub(appInfo);
+require('../tool/monitor').MonitorSub(appInfo);
 
 //
 io.sockets.on('connection', function(socket) {
@@ -120,7 +120,11 @@ io.sockets.on('connection', function(socket) {
         if (rec.order == 'REG') {
 
             reg.reg(rec, users, socket, function(data) {
-                if (!data) console.log('[node][app]client reg false');
+                if (!data) {
+                    console.log('[node][app]client reg false');
+                    socket.emit('ybmp', 'wrong data format : ', data);
+                    return false;
+                }
                 host = data.host;
                 divice = data.divice;
             });
@@ -160,38 +164,37 @@ io.sockets.on('connection', function(socket) {
                 });
             }
         } else if (rec.order == 'DIS') {
-//            var ret = {
-//                 'order': 'DIS',
-//                 'status': 200,
-//                 'code': 300,
-//                 'msg': '用户主动离线'
-//            };
-//            socket.emit('ybmp', ret);
             console.log(host, '用户主动离线');
             socket.disconnect();
         } else if (rec.order == 'SYS') {
             rec.userid = rec.userid || host;
             sysMsg.sys(rec);
         } else {
-            console.log('###############' + new Date() + " socket io is falsed");
+            console.error('###############' + new Date() + " socket io is falsed");
         }
     });
 
     socket.on('disconnect', function(data) {
-        if (host) console.log(host, ' disa ', data);
+        if (!host) {
+            console.log('[nodeServer][socket disconnect] userid: ', host);
+            return false;
+        }
+        console.log('[nodeServer][socket disconnect] userid: ', host, ' dis reason: ', data);
 
         if (users[host] && users[host][divice]) {
             delete users[host][divice];
         }
 
-        if (host) {
-            var PRedis = hash.getHash('PRedis', host);
-            redisConnect.connect(PRedis.port, PRedis.ip, function(client) {
-                client.srem('online', host);
-            });
-        }
-
+        var PRedis = hash.getHash('PRedis', host);
+        redisConnect.connect(PRedis.port, PRedis.ip, function(client) {
+            client.srem('online', host);
+        });
     });
+});
+
+process.on('uncaughtException', function(exception) {
+    //handle or ignore error
+    console.log('exception is ', exception);
 });
 
 console.log('   [ NodeServer ] start at ' + appInfo.ip + ':' + appInfo.port);

@@ -1,6 +1,4 @@
 exports.mongodb = {
-    // the defaulte mongodb
-    //TODO develop
     mg1: {
         port: 27017,
         ip: '10.21.3.64',
@@ -16,22 +14,6 @@ exports.mongodb = {
         ip: '10.21.3.64',
         dbname: 'larvel'
     }
-    //TODO grow system
-//    mg1: {
-//        port: 27019,
-//        ip: '10.21.3.44',
-//        dbname: 'larvel'
-//    },
-//    mg2: {
-//        port: 27019,
-//        ip: '10.21.3.44',
-//        dbname: 'larvel'
-//    },
-//    mg3: {
-//        port: 27019,
-//        ip: '10.21.3.44',
-//        dbname: 'larvel'
-//    }
 };
 
 exports.sta = {
@@ -43,8 +25,9 @@ exports.sta = {
         },
          'cache': {
             ip: '10.21.3.59',
-            port: '6379'
-        }
+            port: '6379',
+            select: '3'
+         }
     },
     group: {
         'api': {
@@ -66,6 +49,10 @@ exports.Server = {
         'pr1': {
             'ip': '10.21.3.66', //gmsg.1.redis
             'port': '6379'
+        },
+        'pr2': {
+            'ip': '10.21.3.66', //gmsg.1.redis
+            'port': '6380'
         }
     },
     GRedis: {
@@ -79,6 +66,8 @@ exports.Server = {
 };
 
 exports.redisPwd = {
+    '10.21.3.66': 'development',
+
     '10.21.67.115': 'mobile_master$%*115',
     'msg.1.redis': 'mobile_master$%*115',
     '10.21.67.116': 'mobile_master$%*116',
@@ -102,12 +91,12 @@ exports.legalIP = {
 
 exports.users = {};
 
-var appIp = require('os').networkInterfaces().eth0[0].address;
-//var appIp = '10.21.3.63';
+//var appIp = require('os').networkInterfaces().eth0[0].address;
+var appIp = '10.21.3.63';
 
 exports.NodeInfo = {
     Brain : {
-        ip: '10.21.67.200',
+        ip: appIp,
         port: 4999
     },
     BNode : {
@@ -117,6 +106,18 @@ exports.NodeInfo = {
     BNode2 : {
         ip: appIp,
         port: 4998
+    },
+    MNode : {
+        ip: appIp,
+        port: 4202,
+        type: 'MNode',
+        id: 'mn_' + appIp + '_' + 4202
+    },
+    PNode1 : {
+        ip: appIp,
+        port: 4001,
+        type: 'PNode',
+        id: 'pn_' + appIp + '_' + 4001
     },
     PNode : {
         ip: appIp,

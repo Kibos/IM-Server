@@ -7,7 +7,7 @@ var ObjectID = require('mongodb').ObjectID;
 var conf = require('../conf/config');
 var redisInfo = conf.sta.redis.cache;
 var mongodb = conf.mongodb;
-var time = new Date(2014, 9, 8);
+var time = new Date(2014, 9, 8);//month - 1
 
 
 //connect to the redis and mongodb
@@ -205,7 +205,7 @@ function groupMsg(mongo, msg, callback) {
                 product: 'yiban4_0',
                 platform: 'mobile',
                 module: 'message',
-                action: 'group',
+                action: 'person',
                 description: '用户群组聊天发送文本',
                 time: (msg.time || (+new Date())).toString().substr(0, 10),
                 src_obj: src_obj,
@@ -242,7 +242,10 @@ var client = {
 
 //send to the server
 function sendLog(data, callback) {
-    if (!data) callback(true);//send sys message
+    if (!data) {
+        callback(true);
+        return false;
+    }//send sys message
     if (client.connected) {
         console.log(JSON.stringify(data));
         client.id.write(JSON.stringify(data));

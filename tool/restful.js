@@ -13,7 +13,7 @@ function send(options) {
         });
         res.on('end', function() {
             options.callback && options.callback(returnData);
-        })
+        });
         res.on('error', function(data) {
             console.log('[error restful.js] connect ' + options.hostname + options.path + ' error');
         });
