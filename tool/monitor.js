@@ -2,6 +2,7 @@ var redis = require('redis');
 var PRedis = require('../conf/config').Server.PRedis;
 var redisPwd = require('../conf/config').redisPwd;
 var exec = require('child_process').exec;
+var hash = require('./hash/hash.js');
 
 var PredisArr = [];
 
@@ -54,7 +55,8 @@ function MonitorPub(res, NodeInfo) {
     var ip, port;
     var temp = {
         'nodeToRedis': [],
-        'onlineInfo': null
+        'onlineInfo': null,
+        'serverList': hash._hash() || null
     };
     var time = {};
 

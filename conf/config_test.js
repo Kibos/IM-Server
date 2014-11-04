@@ -25,7 +25,8 @@ exports.sta = {
         },
         'cache': {
             ip: '10.21.3.42',
-            port: '6390'
+            port: '6390',
+            select: '3'
         }
     },
     group: {
@@ -94,6 +95,12 @@ exports.NodeInfo = {
     BNode2 : {
         ip: appIp,
         port: 4998
+    },
+    MNode : {
+        ip: appIp,
+        port: 4202,
+        type: 'MNode',
+        id: 'mn_' + appIp + '_' + 4202
     },
     PNode : {
         ip: appIp,

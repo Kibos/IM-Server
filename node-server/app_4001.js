@@ -164,13 +164,6 @@ io.sockets.on('connection', function(socket) {
                 });
             }
         } else if (rec.order == 'DIS') {
-//            var ret = {
-//                 'order': 'DIS',
-//                 'status': 200,
-//                 'code': 300,
-//                 'msg': '用户主动离线'
-//            };
-//            socket.emit('ybmp', ret);
             console.log(host, '用户主动离线');
             socket.disconnect();
         } else if (rec.order == 'SYS') {
@@ -197,6 +190,11 @@ io.sockets.on('connection', function(socket) {
             client.srem('online', host);
         });
     });
+});
+
+process.on('uncaughtException', function(exception) {
+    //handle or ignore error
+    console.log('exception is ', exception);
 });
 
 console.log('   [ NodeServer ] start at ' + appInfo.ip + ':' + appInfo.port);

@@ -2,6 +2,9 @@
 var http = require('http');
 var router = require('../dispatch-server/data/router');
 var monitorInfo = require('../conf/config').NodeInfo.MNode;
+var brain = require('../tool/brain.js');
+
+brain.add(monitorInfo.type, monitorInfo.id, monitorInfo.ip, monitorInfo.port);
 
 router.get('/monitor', function(req, res, NodeInfo) {
     if (!NodeInfo.ip || !NodeInfo.port) {

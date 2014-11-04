@@ -40,7 +40,7 @@ var group = function() {
             } else if (info.order == 'SYS') {
                 info.group = info.togroup;
                 if (info.action == 'groupChange' || info.action == 'GMemberAdd' || info.action == 'GMemberRemove' || info.action == 'GCreaterChange') {
-                    //remove cache frist the send the message
+                    //remove cache first the send the message
 
                     delete exp.conf.group[info.group];
                     //
@@ -92,17 +92,8 @@ var group = function() {
                         exp.conf.groupName[gId] = {};
                         exp.conf.groupName[gId].groupname = memberInfo.groupName || '';
 
-                        //prepare
-                        var meb = {};
-                        var members = memberInfo.members;
-                        for (var i = 0, len = members.length; i < len; i++) {
-                            //var thisMember = members[i];
-                            //meb[thisMember.user_id] = thisMember.username;
-                            var memberid = members[i];
-                            meb[memberid] = null;
-                        }
                         //exp.saveToRedis
-                        exp.saveToRedis(gId, meb, function() {
+                        exp.saveToRedis(gId, memberInfo.members, memberInfo.chat, function() {
                             exp.conf.msgStack[gId].sta = 'ok';
                             //run the stack MSG
                             var stackMsg = exp.conf.msgStack[gId].list;
@@ -134,7 +125,7 @@ var group = function() {
         var redisIp = conf.sta.redis.cache.ip;
         var groupKey = 'group:' + gid + ':users';
         redisConnect.connect(redisPort, redisIp, function(client) {
-            client.hgetall(groupKey, function(err, res) {
+            client.HGETALL(groupKey, function(err, res) {
                 if (err) {
                     console.log('[group server][getFromRedis] is false');
                 }
@@ -148,7 +139,7 @@ var group = function() {
      * @package members {id:name,id:name}
      * @return {Null}
      */
-    exp.saveToRedis = function(gid, members, callback) {
+    exp.saveToRedis = function(gid, usersId, isChat, callback) {
         var redisPort = conf.sta.redis.cache.port;
         var redisIp = conf.sta.redis.cache.ip;
         redisConnect.connect(redisPort, redisIp, function(client) {
@@ -156,7 +147,7 @@ var group = function() {
             //delete old data
             client.del(groupKey, function() {
                 //insert
-                client.hmset(groupKey, members, function() {
+                client.hmset(groupKey, 'usersId', usersId, 'isChat', isChat, function() {
                     if (callback) callback();
                 });
             });
@@ -171,15 +162,17 @@ var group = function() {
      * @param groupInfo[groupid][userid].name {String}
      */
     exp.groupMessageSend = function(groupInfo, msg) {
+        console.log('[group server][groupMessageSend] groupInfo is ', groupInfo);
+        var userIds = groupInfo.usersId.split(',');
         //cache redis
         var redisStack = {};
-        for (var i in groupInfo) {
-            var redis = hash.getHash('PRedis', i);
+        for (var i in userIds) {
+            var redis = hash.getHash('PRedis', userIds[i]);
             var pRedisId = redis.id;
             redisStack[pRedisId] = redisStack[pRedisId] || {};
             redisStack[pRedisId].redis = redisStack[pRedisId].redis || redis;
             redisStack[pRedisId].users = redisStack[pRedisId].users || [];
-            redisStack[pRedisId].users.push(i);
+            redisStack[pRedisId].users.push(userIds[i]);
         }
         for (var j in redisStack) {
             exp.sendByRedis(redisStack[j], msg);
