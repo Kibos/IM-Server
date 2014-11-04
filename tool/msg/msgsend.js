@@ -97,7 +97,6 @@ exports.sendToPerson = function(msg, touser, poster, socket) {
 
 
 exports.group = function(rec, socket) {
-
     var groupServer = hash.getHash('GNode', rec.togroup);
     if (!groupServer) {
         console.log('can not find groupServer', rec.togroup, 'hash', hash._hash());
@@ -127,6 +126,7 @@ exports.group = function(rec, socket) {
             ], function(err, res) {
                 if (err) {
                     console.error('[msgsend][group] async isExist is false. err is ', err);
+                    cb(err);
                 }
                 if (res.members && res.chat) {
                     saveToRedis(rec.togroup, res.members, res.chat, cb);
@@ -155,7 +155,6 @@ exports.group = function(rec, socket) {
         } else {
             async.waterfall([
                 function(cb) {
-
                     isChat(cb);
                 }
             ], function (err, res) {
@@ -163,7 +162,6 @@ exports.group = function(rec, socket) {
                     console.error('[msgsend][group] async isChat is false. err is ', err);
                 }
                 if (res) {
-
                     console.log('[msgsend][group] group ',rec.togroup,' is allow chat.', res);
                     sendGroupMessage();
                 } else {
