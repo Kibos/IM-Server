@@ -144,11 +144,13 @@ exports.group = function(rec, socket) {
 
             redisConnect.connect(redisPort, redisIp, function(client) {
                 var groupKey = 'group:' + rec.togroup + ':users';
-                client.hmset(groupKey, 'isChat', false, function(err, res) {
-                    if (err || res !== 'OK') {
-                        console.error('[msgsend][group] hmset is false, err is ', err);
-                    }
-                    console.log('Settings group ', rec.togroup, 'can not talk success.');
+                client.select('0', function(){
+                    client.hmset(groupKey, 'isChat', false, function(err, res) {
+                        if (err || res !== 'OK') {
+                            console.error('[msgsend][group] hmset is false, err is ', err);
+                        }
+                        console.log('Settings group ', rec.togroup, 'can not talk success.');
+                    });
                 });
             });
             sendGroupMessage();
@@ -175,7 +177,6 @@ exports.group = function(rec, socket) {
 
         redisConnect.connect(redisPort, redisIp, function(client) {
             var groupKey = 'group:' + rec.togroup + ':users';
-
             client.select('0', function(){
                 client.HGETALL(groupKey, function(err, res) {
                     if (err) {
@@ -223,14 +224,15 @@ exports.group = function(rec, socket) {
 
         redisConnect.connect(redisPort, redisIp, function(client) {
             var groupKey = 'group:' + gid + ':users';
-            //delete old data
-            client.del(groupKey, function() {
-                //insert
-                client.hmset(groupKey, 'usersId', usersId, 'isChat', isChat, function() {
-                    if (callback) callback(null, true);
+            client.select('0', function(){
+                //delete old data
+                client.del(groupKey, function() {
+                    //insert
+                    client.hmset(groupKey, 'usersId', usersId, 'isChat', isChat, function() {
+                        if (callback) callback(null, true);
+                    });
                 });
             });
-
         });
     }
 
@@ -238,19 +240,21 @@ exports.group = function(rec, socket) {
 
         redisConnect.connect(redisPort, redisIp, function(client) {
             var groupKey = 'group:' + rec.togroup + ':users';
-            client.HGET(groupKey, 'isChat', function(err, chat) {
-                if (err) {
-                    console.error('[msgsend][group] HGET isChat false. err is ', err);
-                    callback(err);
-                }
-                if (!JSON.parse(chat)) {
-                    rec.status = 100;
-                    rec.msg = '此群组不可聊天，请与群组管理员联系';
-                    if (socket) socket.emit('ybmp', rec);
-                    callback(null, false);
-                } else {
-                    callback(null, true);
-                }
+            client.select('0', function(){
+                    client.HGET(groupKey, 'isChat', function(err, chat) {
+                    if (err) {
+                        console.error('[msgsend][group] HGET isChat false. err is ', err);
+                        callback(err);
+                    }
+                    if (!JSON.parse(chat)) {
+                        rec.status = 100;
+                        rec.msg = '此群组不可聊天，请与群组管理员联系';
+                        if (socket) socket.emit('ybmp', rec);
+                        callback(null, false);
+                    } else {
+                        callback(null, true);
+                    }
+                });
             });
         });
     }

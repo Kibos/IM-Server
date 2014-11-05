@@ -125,11 +125,13 @@ var group = function() {
         var redisIp = conf.sta.redis.cache.ip;
         var groupKey = 'group:' + gid + ':users';
         redisConnect.connect(redisPort, redisIp, function(client) {
-            client.HGETALL(groupKey, function(err, res) {
-                if (err) {
-                    console.log('[group server][getFromRedis] is false');
-                }
-                callback(res);
+            client.select('0', function(){
+                client.HGETALL(groupKey, function(err, res) {
+                    if (err) {
+                        console.log('[group server][getFromRedis] is false');
+                    }
+                    callback(res);
+                });
             });
         });
     };

@@ -111,9 +111,8 @@ function messageSysGroup(req, res, json) {
 
     json.order = 'SYS';
     json.type = '1';
-    json.text = '由于本群人数众多，为保障各位各位成员能够及时收到官方信息，故本群将不再支持聊天，敬请谅解';
 
-    console.log('[notification][messageSysGroup] json is ', json, 'togroup', json.togroup);
+    console.log('[notification][messageSysGroup] json is ', json);
     msgsend.group(json);
 
     var retjson = {
