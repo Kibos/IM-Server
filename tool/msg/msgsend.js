@@ -154,6 +154,9 @@ exports.group = function(rec, socket) {
                 });
             });
             sendGroupMessage();
+        } else if (typeof socket === "number") {
+            //shared group
+            sendGroupMessage();
         } else {
             async.waterfall([
                 function(cb) {
@@ -248,7 +251,7 @@ exports.group = function(rec, socket) {
                     }
                     if (!JSON.parse(chat)) {
                         rec.status = 100;
-                        rec.msg = '此群组不可聊天，请与群组管理员联系';
+                        rec.msg = '由于本群人数众多，为保障各位成员能及时收到官方信息，故本群将不再支持聊天，敬请谅解';
                         if (socket) socket.emit('ybmp', rec);
                         callback(null, false);
                     } else {
@@ -264,7 +267,7 @@ exports.group = function(rec, socket) {
             console.log('group ready', groupRedis.port, groupRedis.ip, room);
             client.publish(room, JSON.stringify(rec));
 
-            if (socket) socket.emit('ybmp', rec);
+            if (socket && typeof socket != "number") socket.emit('ybmp', rec);
         });
 
         //log it to server (group msg)

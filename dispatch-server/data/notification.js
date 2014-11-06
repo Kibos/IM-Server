@@ -148,7 +148,7 @@ function shareGroup(req, res, json) {
         json.togroup = gid;
         json.poster = json.userid;
         //send to group
-        msgsend.group(json);
+        msgsend.group(json, 1);// 1:flag
     }
 
     var retjson = {
