@@ -230,7 +230,8 @@ var client = {
         client.connected = true;
 
     });
-    clientConnect.on('error', function() {
+    clientConnect.on('error', function(err) {
+        console.error('net connect err, result is ', err);
         client.connected = false;
         client.id = null;
         setTimeout(function() {
