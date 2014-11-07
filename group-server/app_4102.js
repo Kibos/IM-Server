@@ -208,7 +208,7 @@ var group = function() {
                 } else if (res == 'offline') {
                     offlineU.push(parseInt(user));
                 } else {
-
+                    console.log('[group server][sendToPerson] is falsed. err is res not exist.');
                 }
                 pushNum++;
                 if (pushNum == userLen) {
@@ -216,8 +216,6 @@ var group = function() {
                     msg.offline = offlineU;
                     // msg.type = msg.type;
                     exp.messagePushResult(msg, onlineU, offlineU);
-                    onlineU = null;
-                    offlineU = null;
                 }
             }
         });
