@@ -75,7 +75,7 @@ function group(req, res, json) {
         }
         json.togroup = gid;
         json.poster = json.userid;
-        msgsend.group(json);
+        msgsend.group(json, 1);
 
     }
 

@@ -146,7 +146,7 @@ io.sockets.on('connection', function(socket) {
             } else {
                 rec.status = 100;
                 rec.msg = 'token error, please reconnect socket';
-                console.log('[node server][send msg]token err, haveToken is ', haveToken);
+                console.error('[node server][send msg]token err, haveToken is ', haveToken);
                 socket.emit('ybmp', rec);
             }
         } else if (rec.order == 'OFL') {
