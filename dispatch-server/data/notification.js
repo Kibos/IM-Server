@@ -13,7 +13,6 @@ var conf = require('../../conf/config');
 var mg1 = conf.mongodb.mg1;
 var mg3 = conf.mongodb.mg3;
 
-
 /**
  *
  */
@@ -61,30 +60,24 @@ function group(req, res, json) {
     json.status = 200;
     json.order = 'MSG';
     json.time = +new Date();
+    json.poster = json.userid;
 
     console.log(json, toGroup);
-    for (var i = 0, len = toGroup.length; i < len; i++) {
-        json.groupname = json.groupNames[toGroup[i]] || '';
 
-        pushGroup(toGroup[i], json);
-    }
-
-    function pushGroup(gid, json) {
-        if (!gid || !json) {
-            return false;
+    async.eachSeries(toGroup, function(item, cb) {
+        json.groupname = json.groupNames[item] || '';
+        json.togroup = item;
+        msgsend.dispatchGroup(json, cb);
+    }, function(err) {
+        if (err) {
+            console.error('[dispatch server][group] is false. err is ', err);
         }
-        json.togroup = gid;
-        json.poster = json.userid;
-        msgsend.group(json, 1);
-
-    }
-
-    var retjson = {
-        'response': '200',
-        'message': '请求成功'
-    };
-    retJSON(req, res, JSON.stringify(retjson));
-
+        var retjson = {
+            'response': '200',
+            'message': '请求成功'
+        };
+        retJSON(req, res, JSON.stringify(retjson));
+    });
 }
 
 function messageSysGroup(req, res, json) {
@@ -113,7 +106,7 @@ function messageSysGroup(req, res, json) {
     json.type = '1';
 
     console.log('[notification][messageSysGroup] json is ', json);
-    msgsend.group(json);
+    msgsend.dispatchGroup(json);
 
     var retjson = {
         'response': '200',
@@ -137,25 +130,24 @@ function shareGroup(req, res, json) {
     json.status = 200;
     json.order = 'MSG';
     json.time = +new Date();
-    for (var i = 0, len = toGroup.length; i < len; i++) {
-        pushGroup(toGroup[i], json);
-    }
+    json.poster = json.userid;
 
-    function pushGroup(gid, json) {
-        if (!gid || !json) {
-            return false;
+    console.log(json, toGroup);
+
+    async.eachSeries(toGroup, function(item, cb) {
+        json.groupname = json.groupNames[item] || '';
+        json.togroup = item;
+        msgsend.dispatchGroup(json, cb);
+    }, function(err) {
+        if (err) {
+            console.error('[dispatch server][group] is false. err is ', err);
         }
-        json.togroup = gid;
-        json.poster = json.userid;
-        //send to group
-        msgsend.group(json, 1);// 1:flag
-    }
-
-    var retjson = {
-        'response': '200',
-        'message': '请求成功'
-    };
-    retJSON(req, res, JSON.stringify(retjson));
+        var retjson = {
+            'response': '200',
+            'message': '请求成功'
+        };
+        retJSON(req, res, JSON.stringify(retjson));
+    });
 }
 
 /**

@@ -216,7 +216,9 @@ exports.getMsg = function(userid, callback) {
                 }
 
                 for (var i in temp) {
-                    array.push({poster: i, msgs:temp[i].messageIds});
+                    array.push({
+                        poster: i,
+                        msgs:temp[i].messageIds});
                 }
 
                 async.waterfall([
@@ -247,7 +249,6 @@ exports.getMsg = function(userid, callback) {
                                 length: message.msgs.length,
                                 msg: res
                             };
-                            theObj.msg = res;
                             result.push(theObj);
                             callback();
                         });
@@ -279,7 +280,7 @@ exports.getMsg = function(userid, callback) {
             'touser': parseInt(userid)
         }, function(err) {
             if (err) {
-                console.log("[offline][getMsg] remove false");
+                console.error("[offline][getMsg] remove false");
                 return false;
             }
         });
@@ -343,9 +344,10 @@ function notificationCallback(messages, toUser) {
             $pull: pullObj
         }, function(err, res) {
             if (err) {
-                console.log("[offline][notificationCallback] update false", err);
+                console.error("[offline][notificationCallback] update false, err is ", err);
                 return false;
             }
+            console.log('[offline][notificationCallback] update success ,effect line is ', res);
         });
     }
 }
