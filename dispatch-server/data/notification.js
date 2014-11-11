@@ -135,7 +135,6 @@ function shareGroup(req, res, json) {
     console.log(json, toGroup);
 
     async.eachSeries(toGroup, function(item, cb) {
-        json.groupname = json.groupNames[item] || '';
         json.togroup = item;
         msgsend.dispatchGroup(json, cb);
     }, function(err) {
