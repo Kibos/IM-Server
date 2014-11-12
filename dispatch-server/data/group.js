@@ -1,7 +1,6 @@
 'use strict';
 
 var hash = require('../../tool/hash/hash.js');
-var redisConnect = require('../../connect/redis');
 var msgsend = require('../../tool/msg/msgsend');
 
 exports.add = function() {};

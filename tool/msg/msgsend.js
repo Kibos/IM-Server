@@ -62,7 +62,6 @@ exports.sendToPerson = function(msg, touser, poster, socket) {
             console.log('person-->', touser, 'isOnline', isOnline);
             if (!isOnline) {
                 console.log(touser + ' is offline');
-                //offline.setMsg(msg, touser, poster);
                 offline.pushMessage(msg, touser, poster);
             }
         });

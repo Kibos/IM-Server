@@ -9,6 +9,7 @@ var mongoClient = require('../connect/mongo');
 var restful = require('../tool/restful');
 var offline = require('../tool/msg/offline');
 var msgSave = require('../tool/msg/msgsave');
+var async = require('async');
 
 //add to brain
 brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port);
@@ -128,7 +129,7 @@ var group = function() {
             client.select('0', function(){
                 client.HGETALL(groupKey, function(err, res) {
                     if (err) {
-                        console.log('[group server][getFromRedis] is false');
+                        console.error('[group server][getFromRedis] is false. err is ', err);
                     }
                     callback(res);
                 });
@@ -187,37 +188,25 @@ var group = function() {
      * @param redisInfo[pRedisId].redis {object} redis info
      * @param redisInfo[pRedisId].users {Array} user info
      */
+
     exp.sendByRedis = function(redisInfo, msg) {
         var host = redisInfo.redis;
+        var users = redisInfo.users || [];
+
         redisConnect.connect(host.port, host.ip, function(client) {
-            var users = redisInfo.users || [];
-            var userLen = users.length;
-            var pushNum = 0;
-            var onlineU = [];
-            var offlineU = [];
+            msg.online = [];
+            msg.offline = [];
 
             client.select('0', function() {
-                for (var j = 0, len = userLen; j < len; j++) {
-                    exp.sendToPerson(users[j], client, msg, msgSended);
-                }
+                async.eachSeries(users, function (item, callback) {
+                    exp.sendToPerson(item, client, msg, callback);
+                }, function (err) {
+                    if (err) {
+                        console.error('[group server][sendByRedis] sendToPerson is false. err is ', err);
+                    }
+                    exp.messagePushResult(msg, msg.onlineU, msg.offlineU);
+                });
             });
-
-            function msgSended(res, user) {
-                if (res == 'online') {
-                    onlineU.push(parseInt(user));
-                } else if (res == 'offline') {
-                    offlineU.push(parseInt(user));
-                } else {
-                    console.log('[group server][sendToPerson] is falsed. err is res not exist.');
-                }
-                pushNum++;
-                if (pushNum == userLen) {
-                    msg.online = onlineU;
-                    msg.offline = offlineU;
-                    // msg.type = msg.type;
-                    exp.messagePushResult(msg, onlineU, offlineU);
-                }
-            }
         });
     };
 
@@ -229,15 +218,20 @@ var group = function() {
      */
     exp.sendToPerson = function(user, client, msg, callback) {
         client.sismember('online', user, function(err, res) {
+            if (err) {
+                console.error('[group server][sendToPerson] sismember is false. err is ', err);
+                callback(err);
+            }
             if (res === 1) {
                 //scoket is online
                 client.publish('Room.' + user, JSON.stringify(msg));
-                if (callback) callback('online', user);
+                msg.online.push(parseInt(user));
+                if (callback) callback();
             } else {
                 //socket is offline
-                msg.togroupuser = user;
-                //offline.setMsg(msg, user, msg.poster);
-                if (callback) callback('offline', user);
+                //msg.togroupuser = user;
+                msg.offline.push(parseInt(user));
+                if (callback) callback();
             }
         });
     };
@@ -280,7 +274,9 @@ var group = function() {
      */
     exp.messagePushResult = function(msg, onlineUser, offlineUser) {
         //group push
-        offline.pushMessage(msg, offlineUser.join(','), msg.poster);
+        if (offlineUser) {
+            offline.pushMessage(msg, offlineUser.join(','), msg.poster);
+        }
         //save the message status to mongodb
         msgSave.sta({
             'messageId': msg.messageId,
