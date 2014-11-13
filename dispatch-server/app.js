@@ -8,7 +8,12 @@ var group = require('./data/group');
 var notification = require('./data/notification');
 var friend = require('./data/friend');
 var router = require('./data/router');
-var disInfo = require('../conf/config').NodeInfo.DNode;
+var disInfo = {
+    ip: process.argv[2],
+    port: process.argv[3],
+    type: 'DNode',
+    id: 'dn_' + process.argv[2] + '_' + process.argv[3]
+};
 
 //getNode(GET)
 router.get('/getNode', function(req, res, search) {

@@ -1,0 +1,22 @@
+[
+  //dispatch server
+  {
+    "name"      : "dispatchServer:4201",
+    "script"    : "../dispatch-server/app.js",
+    "args"      : "['10.21.4.84', '4201']",
+    "exec_mode" : "fork_mode"
+  },
+  //logs server
+  {
+    "name"      : "logsServer",
+    "script"    : "../data-mining-server/app.js",
+    "exec_mode" : "fork_mode"
+  },
+  //node server
+  {
+    "name"      : "nodeServer:4001",
+    "script"    : "../node-server/app.js",
+    "args"      : "['10.21.4.84', '4001']",
+    "exec_mode" : "fork_mode"
+  }
+]

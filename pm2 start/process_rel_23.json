@@ -1,0 +1,9 @@
+[
+  //dispatch server
+  {
+    "name"      : "dispatchServer:4202",
+    "script"    : "../dispatch-server/app.js",
+    "args"      : "['10.21.67.23', '4202']",
+    "exec_mode" : "fork_mode"
+  }
+]
