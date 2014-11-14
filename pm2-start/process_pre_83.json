@@ -1,0 +1,20 @@
+[
+  {
+    "name"      : "brainServer:4999",
+    "script"    : "../brain-server/app.js",
+    "args"      : "['10.21.4.83', 4999]",
+    "exec_mode" : "fork_mode"
+  },
+  {
+    "name"      : "monitorServer:4202",
+    "script"    : "../monitor-server/app.js",
+    "args"      : "['10.21.4.83', 4202]",
+    "exec_mode" : "fork_mode"
+  },
+  {
+    "name"      : "groupServer:4101",
+    "script"    : "../group-server/app.js",
+    "args"      : "['10.21.4.83', 4101]",
+    "exec_mode" : "fork_mode"
+  }
+]

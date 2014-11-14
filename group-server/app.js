@@ -1,7 +1,6 @@
 'use strict';
 
 var conf = require('../conf/config');
-var appInfo = conf.NodeInfo.GNode;
 var brain = require('../tool/brain');
 var hash = require('../tool/hash/hash');
 var redisConnect = require('../connect/redis');
@@ -9,6 +8,15 @@ var mongoClient = require('../connect/mongo');
 var restful = require('../tool/restful');
 var offline = require('../tool/msg/offline');
 var msgSave = require('../tool/msg/msgsave');
+var async = require('async');
+var appInfo = {
+    ip: process.argv[2],
+    port: process.argv[3],
+    type: 'GNode',
+    id: 'gn_' + process.argv[2] + '_' + process.argv[3]
+};
+var redisPort = conf.sta.redis.cache.port;
+var redisIp = conf.sta.redis.cache.ip;
 
 //add to brain
 brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port);
@@ -81,14 +89,14 @@ var group = function() {
 
             if (!res || exp.conf.isFirstTime || !exp.conf.msgStack[gId].sta || !exp.conf.group[gId]) {
 
-                //if the group server start frist time 
+                //if the group server start frist time
                 //reload the memberlist from php api not redis
                 exp.conf.isFirstTime = false;
                 exp.conf.msgStack[gId].sta = 'ing';
                 exp.getGroupMember(gId, function(memberInfo) {
                     if (memberInfo.members && memberInfo.members.length > 0) {
                         exp.conf.group[gId] = {};
-                        //save the group name 
+                        //save the group name
                         exp.conf.groupName[gId] = {};
                         exp.conf.groupName[gId].groupname = memberInfo.groupName || '';
 
@@ -121,15 +129,16 @@ var group = function() {
     };
 
     exp.getFromRedis = function(gid, callback) {
-        var redisPort = conf.sta.redis.cache.port;
-        var redisIp = conf.sta.redis.cache.ip;
+
         var groupKey = 'group:' + gid + ':users';
         redisConnect.connect(redisPort, redisIp, function(client) {
-            client.HGETALL(groupKey, function(err, res) {
-                if (err) {
-                    console.log('[group server][getFromRedis] is false');
-                }
-                callback(res);
+            client.select('0', function(){
+                client.HGETALL(groupKey, function(err, res) {
+                    if (err) {
+                        console.error('[group server][getFromRedis] is false. err is ', err);
+                    }
+                    callback(res);
+                });
             });
         });
     };
@@ -140,8 +149,6 @@ var group = function() {
      * @return {Null}
      */
     exp.saveToRedis = function(gid, usersId, isChat, callback) {
-        var redisPort = conf.sta.redis.cache.port;
-        var redisIp = conf.sta.redis.cache.ip;
         redisConnect.connect(redisPort, redisIp, function(client) {
             var groupKey = 'group:' + gid + ':users';
             //delete old data
@@ -185,39 +192,25 @@ var group = function() {
      * @param redisInfo[pRedisId].redis {object} redis info
      * @param redisInfo[pRedisId].users {Array} user info
      */
+
     exp.sendByRedis = function(redisInfo, msg) {
         var host = redisInfo.redis;
+        var users = redisInfo.users || [];
+
         redisConnect.connect(host.port, host.ip, function(client) {
-            var users = redisInfo.users || [];
-            var userLen = users.length;
-            var pushNum = 0;
-            var onlineU = [];
-            var offlineU = [];
+            msg.online = [];
+            msg.offline = [];
 
             client.select('0', function() {
-                for (var j = 0, len = userLen; j < len; j++) {
-                    exp.sendToPerson(users[j], client, msg, msgSended);
-                }
+                async.eachSeries(users, function (item, callback) {
+                    exp.sendToPerson(item, client, msg, callback);
+                }, function (err) {
+                    if (err) {
+                        console.error('[group server][sendByRedis] sendToPerson is false. err is ', err);
+                    }
+                    exp.messagePushResult(msg, msg.online, msg.offline);
+                });
             });
-
-            function msgSended(res, user) {
-                if (res == 'online') {
-                    onlineU.push(parseInt(user));
-                } else if (res == 'offline') {
-                    offlineU.push(parseInt(user));
-                } else {
-
-                }
-                pushNum++;
-                if (pushNum == userLen) {
-                    msg.online = onlineU;
-                    msg.offline = offlineU;
-                    // msg.type = msg.type;
-                    exp.messagePushResult(msg, onlineU, offlineU);
-                    onlineU = null;
-                    offlineU = null;
-                }
-            }
         });
     };
 
@@ -229,15 +222,19 @@ var group = function() {
      */
     exp.sendToPerson = function(user, client, msg, callback) {
         client.sismember('online', user, function(err, res) {
+            if (err) {
+                console.error('[group server][sendToPerson] sismember is false. err is ', err);
+                callback(err);
+            }
             if (res === 1) {
                 //scoket is online
                 client.publish('Room.' + user, JSON.stringify(msg));
-                if (callback) callback('online', user);
+                msg.online.push(parseInt(user));
+                if (callback) callback();
             } else {
                 //socket is offline
-                msg.togroupuser = user;
-                //offline.setMsg(msg, user, msg.poster);
-                if (callback) callback('offline', user);
+                msg.offline.push(parseInt(user));
+                if (callback) callback();
             }
         });
     };
@@ -258,7 +255,7 @@ var group = function() {
                 try {
                     data = JSON.parse(Jdata);
                 } catch (e) {
-                    console.log('group data error', Jdata);
+                    console.error('group data error', Jdata);
                     if (callback) callback(data);
                     return false;
                 }
@@ -266,7 +263,7 @@ var group = function() {
                 if (data.response == 100) {
                     if (callback) callback(data.data);
                 } else {
-                    console.log('    [API requerst error]', data.response, data.message);
+                    console.error('    [API requerst error]', data.response, data.message);
                 }
             }
         };
@@ -280,7 +277,9 @@ var group = function() {
      */
     exp.messagePushResult = function(msg, onlineUser, offlineUser) {
         //group push
-        offline.pushMessage(msg, offlineUser.join(','), msg.poster);
+        if (offlineUser) {
+            offline.pushMessage(msg, offlineUser.join(','), msg.poster);
+        }
         //save the message status to mongodb
         msgSave.sta({
             'messageId': msg.messageId,
@@ -291,24 +290,22 @@ var group = function() {
         });
         //save only type is 6 or 7
         if (!(msg.type == 6 || msg.type == 7)) {
-    	    console.log('[group] 6 ：groupNotification ', msg);
+            console.log('[group] 6 ：groupNotification ', msg);
             return false;
         }
 
         //if the message is group notification we update the database
         mongoClient.connect(function(mongoConnect) {
 
-                var msgId = msg.msgid;
+            var msgId = msg.msgid;
 
-                var setVal = {};
-                setVal['groups.' + msg.togroup + '.hasrecieved'] = {
-                    $each: onlineUser
-                };
-                setVal['groups.' + msg.togroup + '.unrecieved'] = {
-                    $each: offlineUser
-                };
-
-                // { scores: { $each: [ 90, 92, 85 ] } }
+            var setVal = {};
+            setVal['groups.' + msg.togroup + '.hasrecieved'] = {
+                $each: onlineUser
+            };
+            setVal['groups.' + msg.togroup + '.unrecieved'] = {
+                $each: offlineUser
+            };
 
             var collection = mongoConnect.db(conf.mongodb.mg3.dbname).collection('Notices');
             collection.update({
@@ -320,7 +317,7 @@ var group = function() {
                 }
             }, function(err, res) {
                 if (err) {
-                    console.log('[group.js update failed]--->', '\n\t err:', err, setVal);
+                    console.error('[group.js update failed]--->', '\n\t err:', err, setVal);
                     return false;
                 }
                 console.log('[group.js update success]--->', msgId, '\n\t ', setVal, res);

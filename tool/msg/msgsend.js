@@ -14,8 +14,6 @@ var restful = require('../restful');
 var redisPort = config.sta.redis.cache.port;
 var redisIp = config.sta.redis.cache.ip;
 
-// var logs = require('../logs/logs');
-
 /**
  *   method person
  *   send preson message
@@ -26,8 +24,6 @@ var redisIp = config.sta.redis.cache.ip;
  **/
 exports.person = function(rec, socket, options) {
 
-//    exports.sendToPerson(rec, rec.touser, rec.poster, socket);
-//TODO develop
     safe.friend(rec.poster, rec.touser, rec.access_token, {
         'catch': options.user
     }, function(isSafe) {
@@ -64,7 +60,6 @@ exports.sendToPerson = function(msg, touser, poster, socket) {
             console.log('person-->', touser, 'isOnline', isOnline);
             if (!isOnline) {
                 console.log(touser + ' is offline');
-                //offline.setMsg(msg, touser, poster);
                 offline.pushMessage(msg, touser, poster);
             }
         });
@@ -95,26 +90,22 @@ exports.sendToPerson = function(msg, touser, poster, socket) {
     });
 };
 
-
 exports.group = function(rec, socket) {
     var groupServer = hash.getHash('GNode', rec.togroup);
     if (!groupServer) {
-        console.log('can not find groupServer', rec.togroup, 'hash', hash._hash());
+        console.error('can not find groupServer', rec.togroup, 'hash', hash._hash());
         return false;
     }
-    var time = +new Date();
     rec.status = 200;
-    rec.time = time;
+    rec.time = +new Date();
     rec.messageId = id.id();
-    var groupRedis = hash.getHash('GRedis', groupServer.id.toString());
-    var room = 'Group.' + groupServer.id;
 
     async.waterfall([
         function(cb) {
             //group info isExist in redis
             async.waterfall([
                 function(cb) {
-                    isExist(cb);
+                    isExist(rec.togroup, cb);
                 },
                 function(res, cb) {
                     if (!res) {
@@ -139,90 +130,100 @@ exports.group = function(rec, socket) {
         if (err) {
             console.error('[msgsend][group] async isExist is false ! err is ', err);
         }
-        //Common Platform privilege
-        if (rec.action == 'sendSysMessageToGroup') {
-
-            redisConnect.connect(redisPort, redisIp, function(client) {
-                var groupKey = 'group:' + rec.togroup + ':users';
-                client.hmset(groupKey, 'isChat', false, function(err, res) {
-                    if (err || res !== 'OK') {
-                        console.error('[msgsend][group] hmset is false, err is ', err);
-                    }
-                    console.log('Settings group ', rec.togroup, 'can not talk success.');
-                });
-            });
-            sendGroupMessage();
-        } else {
-            async.waterfall([
-                function(cb) {
-                    isChat(cb);
-                }
-            ], function (err, res) {
-                if (err) {
-                    console.error('[msgsend][group] async isChat is false. err is ', err);
-                }
-                if (res) {
-                    console.log('[msgsend][group] group ',rec.togroup,' is allow chat.', res);
-                    sendGroupMessage();
-                } else {
-                    console.log('[msgsend][group] group ',rec.togroup,' is not allow chat.');
-                }
-            });
-        }
+        async.waterfall([
+            function(cb) {
+                isChat(cb);
+            }
+        ], function (err, res) {
+            if (err) {
+                console.error('[msgsend][group] async isChat is false. err is ', err);
+            }
+            if (res) {
+                console.log('[msgsend][group] group ',rec.togroup,' is allow chat.', res);
+                sendGroupMessage(groupServer, rec);
+            } else {
+                console.log('[msgsend][group] group ',rec.togroup,' is not allow chat.');
+            }
+        });
     });
 
-    function isExist(callback) {
+    function isChat(callback) {
 
         redisConnect.connect(redisPort, redisIp, function(client) {
             var groupKey = 'group:' + rec.togroup + ':users';
-
             client.select('0', function(){
-                client.HGETALL(groupKey, function(err, res) {
+                    client.HGET(groupKey, 'isChat', function(err, chat) {
                     if (err) {
                         console.error('[msgsend][group] HGET isChat false. err is ', err);
                         callback(err);
                     }
-                    if (res) {
-                        callback(null, true);
-                    } else {
+                    if (!JSON.parse(chat)) {
+                        rec.status = 100;
+                        rec.msg = '由于本群人数众多，为保障各位成员能及时收到官方信息，故本群将不再支持聊天，敬请谅解';
+                        if (socket) socket.emit('ybmp', rec);
                         callback(null, false);
+                    } else {
+                        callback(null, true);
                     }
                 });
             });
         });
     }
+};
 
-    function getGroupMember(gid, callback) {
-        var options = {
-            'hostname': config.sta.group.api.ip,
-            'port': config.sta.group.api.port,
-            'path': '/api/v1/talks/' + gid + '/memberids?internal_secret=cf7be73c856c99c0fe02a78a562375c5',
-            'callback': function(Jdata) {
-                var data = {};
-                try {
-                    data = JSON.parse(Jdata);
-                } catch (e) {
-                    console.log('group data error', Jdata);
-                    if (callback) callback(null, data);
-                    return false;
+function isExist(togroup, callback) {
+
+    redisConnect.connect(redisPort, redisIp, function(client) {
+        var groupKey = 'group:' + togroup + ':users';
+        client.select('0', function(){
+            client.HGETALL(groupKey, function(err, res) {
+                if (err) {
+                    console.error('[msgsend][group] HGET isChat false. err is ', err);
+                    callback(err);
                 }
-                console.log('[API group] got data from server', data, '!got data from server');
-                if (data.response == 100) {
-                    if (callback) callback(null, data.data);
+                if (res) {
+                    callback(null, true);
                 } else {
-                    console.log('    [API requerst error]', data.response, data.message);
-                    if (callback) callback(null, false);
+                    callback(null, false);
                 }
+            });
+        });
+    });
+}
+
+function getGroupMember(gid, callback) {
+
+    var options = {
+        'hostname': config.sta.group.api.ip,
+        'port': config.sta.group.api.port,
+        'path': '/api/v1/talks/' + gid + '/memberids?internal_secret=cf7be73c856c99c0fe02a78a562375c5',
+        'callback': function(Jdata) {
+            var data = {};
+            try {
+                data = JSON.parse(Jdata);
+            } catch (e) {
+                console.error('group data error', Jdata);
+                if (callback) callback(null, data);
+                return false;
             }
-        };
-        restful.get(options);
-        console.log('[API requerst ]', options.hostname + options.path);
-    }
+            console.log('[API group] got data from server', data, '!got data from server');
+            if (data.response == 100) {
+                if (callback) callback(null, data.data);
+            } else {
+                console.error('    [API requerst error]', data.response, data.message);
+                if (callback) callback(null, false);
+            }
+        }
+    };
+    restful.get(options);
+    console.log('[API requerst ]', options.hostname + options.path);
+}
 
-    function saveToRedis(gid, usersId, isChat, callback) {
+function saveToRedis(gid, usersId, isChat, callback) {
 
-        redisConnect.connect(redisPort, redisIp, function(client) {
-            var groupKey = 'group:' + gid + ':users';
+    redisConnect.connect(redisPort, redisIp, function(client) {
+        var groupKey = 'group:' + gid + ':users';
+        client.select('0', function(){
             //delete old data
             client.del(groupKey, function() {
                 //insert
@@ -230,60 +231,107 @@ exports.group = function(rec, socket) {
                     if (callback) callback(null, true);
                 });
             });
-
         });
+    });
+}
+
+function sendGroupMessage(groupServer, rec, callback) {
+
+    var groupRedis = hash.getHash('GRedis', groupServer.id.toString());
+    var room = 'Group.' + groupServer.id;
+
+    redisConnect.connect(groupRedis.port, groupRedis.ip, function(client) {
+        console.log('group ready', groupRedis.port, groupRedis.ip, room);
+        client.publish(room, JSON.stringify(rec));
+    });
+
+    //log it to server (group msg)
+    var msgData = {
+        'type': 1,
+        'from': parseInt(rec.poster),
+        'to': parseInt(rec.togroup),
+        'content': rec,
+        'time': rec.time,
+        'messageId': rec.messageId
+    };
+
+    mongoConnect.connect(function(mongoC) {
+        mongoC.db(mg1.dbname).collection('Message').insert(msgData, function() {
+            //Message insert success
+            if (callback) callback();
+        });
+    }, {ip: mg1.ip, port: mg1.port, name: 'insert_msgSend_Group'});
+}
+
+
+exports.dispatchGroup = function(rec, callback) {
+    var groupServer = hash.getHash('GNode', rec.togroup);
+    if (!groupServer) {
+        console.error('can not find groupServer', rec.togroup, 'hash', hash._hash());
+        if (callback) callback();
+        return false;
     }
+    rec.status = 200;
+    rec.time = +new Date();
+    rec.messageId = id.id();
 
-    function isChat(callback) {
-
-        redisConnect.connect(redisPort, redisIp, function(client) {
-            var groupKey = 'group:' + rec.togroup + ':users';
-            client.HGET(groupKey, 'isChat', function(err, chat) {
+    async.waterfall([
+        function(cb) {
+            //group info isExist in redis
+            async.waterfall([
+                function(cb) {
+                    isExist(rec.togroup, cb);
+                },
+                function(res, cb) {
+                    if (!res) {
+                        getGroupMember(rec.togroup, cb);
+                    } else {
+                        cb(null, true);
+                    }
+                }
+            ], function(err, res) {
                 if (err) {
-                    console.error('[msgsend][group] HGET isChat false. err is ', err);
-                    callback(err);
+                    console.error('[msgsend][group] async isExist is false. err is ', err);
+                    cb(err);
                 }
-                if (!JSON.parse(chat)) {
-                    rec.status = 100;
-                    rec.msg = '此群组不可聊天，请与群组管理员联系';
-                    if (socket) socket.emit('ybmp', rec);
-                    callback(null, false);
+                if (res.members && res.chat) {
+                    saveToRedis(rec.togroup, res.members, res.chat, cb);
                 } else {
-                    callback(null, true);
+                    cb(null, true);
                 }
             });
-        });
-    }
+        }
+    ], function(err, res) {
+        if (err) {
+            console.error('[msgsend][group] async isExist is false ! err is ', err);
+            if (callback) callback(err);
+        }
+        //Common Platform privilege
+        if (rec.action == 'sendSysMessageToGroup') {
 
-    function sendGroupMessage() {
-        redisConnect.connect(groupRedis.port, groupRedis.ip, function(client) {
-            console.log('group ready', groupRedis.port, groupRedis.ip, room);
-            client.publish(room, JSON.stringify(rec));
-
-            if (socket) socket.emit('ybmp', rec);
-        });
-
-        //log it to server (group msg)
-        var msgData = {
-            'type': 1,
-            'from': parseInt(rec.poster),
-            'to': parseInt(rec.togroup),
-            'content': rec,
-            'time': time,
-            'messageId': rec.messageId
-        };
-
-        mongoConnect.connect(function(mongoC) {
-            mongoC.db(mg1.dbname).collection('Message').insert(msgData, function() {
-                //Message insert success
+            redisConnect.connect(redisPort, redisIp, function(client) {
+                var groupKey = 'group:' + rec.togroup + ':users';
+                client.select('0', function(){
+                    client.hmset(groupKey, 'isChat', false, function(err, res) {
+                        if (err || res !== 'OK') {
+                            console.error('[msgsend][group] hmset is false, err is ', err);
+                            if (callback) callback(err);
+                        }
+                        console.log('Settings group ', rec.togroup, 'can not talk success.');
+                    });
+                });
             });
-        }, {ip: mg1.ip, port: mg1.port, name: 'insert_msgSend_Group'});
-    }
+            sendGroupMessage(groupServer, rec, callback);
+        } else {
+            //shared group
+            sendGroupMessage(groupServer, rec, callback);
+        }
+    });
 };
 
 exports.sys = function(touser, msg) {
     if (!touser) {
-        console.log('touser is necessary');
+        console.error('touser is necessary');
         return false;
     }
     msg.time = +new Date();
@@ -300,7 +348,6 @@ exports.sys = function(touser, msg) {
         client.sismember('online', touser, function(err, isOnline) {
             console.log('sys--->', touser, 'online:', isOnline, 'msg:', msg);
             if (!isOnline) {
-                //offline.setMsg(msg, touser, 'SYS');
                 offline.pushMessage(msg, touser, 'SYS');
             }
         });
@@ -329,4 +376,3 @@ exports.sys = function(touser, msg) {
         'time': msg.time
     });
 };
-//

@@ -7,7 +7,7 @@ var ObjectID = require('mongodb').ObjectID;
 var conf = require('../conf/config');
 var redisInfo = conf.sta.redis.cache;
 var mongodb = conf.mongodb;
-var time = new Date(2014, 9, 8);//month - 1
+var time = new Date(2014, 10, 5);//month - 1
 
 
 //connect to the redis and mongodb
@@ -41,15 +41,18 @@ function main(mongod, redis) {
             delCount++;
 
             if (delCount >= msgCount) {
-                sendLog(data, function() {
-                    setLaseLogId(redis, result[result.length - 1]._id, function(err, res) {
-                        if (err) {
-                            console.log('setLaseLogId false !');
-                            return false;
-                        }
-                        console.log('@@@@@', res);
-                        main(mongod, redis);
-                    });
+                sendLog(data, function(res) {
+                    if (res) {
+                        setLastLogId(redis, result[result.length - 1]._id, function(err, res) {
+                            if (err) {
+                                console.error('setLaseLogId false !');
+                            }
+                            console.log('@@@@@', res);
+                            main(mongod, redis);
+                        });
+                    } else {
+                        console.error('client connect is false, sendLog false.');
+                    }
                 });
             }
         }
@@ -77,7 +80,7 @@ function main(mongod, redis) {
                     doPerson(result, i);
                 } else if (type === 1) {
                     doGroup(result, i);
-                } else if (type === 2) {
+                } else {
                     msgResult();
                 }
             }
@@ -95,7 +98,7 @@ function getLastLogId(redis, callback) {
     redis.get('lastLogId', function(err, res) {
         if (err) {
             console.log('[ log - app][getLastLogId] redis get false!');
-            callback(null);
+            callback(err);
         } else {
             callback(null, res);
         }
@@ -103,17 +106,15 @@ function getLastLogId(redis, callback) {
 }
 
 //set last log id
-function setLaseLogId(redis, value, callback) {
+function setLastLogId(redis, value, callback) {
     if (!value) {
-        console.log('value is empty');
-        callback(null);
-        return false;
+        console.error('[data-mining-server][setLastLogId] last id is empty');
+        callback(null, false);
     }
     redis.set('lastLogId', value, function(err, result) {
         if (err) {
-            console.log('[app][setLaseLogId] set false!');
-            callback(null);
-            return false;
+            console.error('[app][setLaseLogId] set false!');
+            callback(err);
         } else {
             callback(null, result);
         }
@@ -148,11 +149,10 @@ function getMessageRecord(mongoC, lastLogId, callback) {
         time: true
     }).limit(10).toArray(function(err, result) {
             if (err) {
-                console.log('[ log - app][getMessageRecord] find false!');
-                callback(null);
-                return false;
+                console.error('[ log - app][getMessageRecord] find false!');
+                callback(err);
             }
-            callback(null, result);
+            callback(null, result || []);
         });
 }
 
@@ -185,7 +185,6 @@ function groupMsg(mongo, msg, callback) {
     mongo.db(mongodb.mg3.dbname).collection('Talks').find({
         '_id': _id
     }).toArray(function(err, res) {
-            //console.log('!!!!', _id, res, msg);
             var gid = 0,
                 guid = 0;
             if (res.length >= 1) {
@@ -212,7 +211,6 @@ function groupMsg(mongo, msg, callback) {
                 dst_obj: dst_obj
             };
             if (callback) callback(logJson);
-
         });
 }
 
@@ -231,7 +229,8 @@ var client = {
         client.connected = true;
 
     });
-    clientConnect.on('error', function() {
+    clientConnect.on('error', function(err) {
+        console.error('net connect err, result is ', err);
         client.connected = false;
         client.id = null;
         setTimeout(function() {
@@ -242,15 +241,16 @@ var client = {
 
 //send to the server
 function sendLog(data, callback) {
+    //send sys message
     if (!data) {
         callback(true);
-        return false;
-    }//send sys message
-    if (client.connected) {
-        console.log(JSON.stringify(data));
-        client.id.write(JSON.stringify(data));
-        if (callback) callback(client.connected);
     } else {
-        if (callback) callback(client.connected);
+        if (client.connected) {
+            console.log('send to D message is : ', JSON.stringify(data));
+            client.id.write(JSON.stringify(data));
+            callback(true);
+        } else {
+            callback(false);
+        }
     }
 }

@@ -1,6 +1,10 @@
 'use strict';
+
 var net = require('net');
-var appInfo = require('../conf/config.js').NodeInfo.BNode;
+var appInfo = {
+    ip: process.argv[2],
+    port: parseInt(process.argv[3])
+};
 
 var server = {};
 var brain = function() {
@@ -108,7 +112,7 @@ var brain = function() {
             });
 
             sock.on('error', function(data) {
-                console.log('brain error', data);
+                console.error('brain error', data);
             });
 
         }).listen(appInfo.port, appInfo.ip);

@@ -13,7 +13,6 @@ var conf = require('../../conf/config');
 var mg1 = conf.mongodb.mg1;
 var mg3 = conf.mongodb.mg3;
 
-
 /**
  *
  */
@@ -37,7 +36,6 @@ function ret404(req, res, msg) {
  *  group notification
  */
 
-
 function group(req, res, json) {
 
     if (!json.togroup) {
@@ -55,36 +53,32 @@ function group(req, res, json) {
             ret404(req, res, 'groupNames is not json string');
         }
     }
-    //
-    var toGroup = json.togroup.split(',');
-    json.type = '6';
-    json.status = 200;
-    json.order = 'MSG';
-    json.time = +new Date();
 
-    console.log(json, toGroup);
-    for (var i = 0, len = toGroup.length; i < len; i++) {
-        json.groupname = json.groupNames[toGroup[i]] || '';
-
-        pushGroup(toGroup[i], json);
-    }
-
-    function pushGroup(gid, json) {
-        if (!gid || !json) {
-            return false;
-        }
-        json.togroup = gid;
-        json.poster = json.userid;
-        msgsend.group(json);
-
-    }
-
+    //return to php Immediately
     var retjson = {
         'response': '200',
         'message': '请求成功'
     };
     retJSON(req, res, JSON.stringify(retjson));
 
+    var toGroup = json.togroup.split(',');
+    json.type = '6';
+    json.status = 200;
+    json.order = 'MSG';
+    json.time = +new Date();
+    json.poster = json.userid;
+
+    console.log(json, toGroup);
+
+    async.eachSeries(toGroup, function(item, cb) {
+        json.groupname = json.groupNames[item] || '';
+        json.togroup = item;
+        msgsend.dispatchGroup(json, cb);
+    }, function(err) {
+        if (err) {
+            console.error('[dispatch server][group] is false. err is ', err);
+        }
+    });
 }
 
 function messageSysGroup(req, res, json) {
@@ -111,10 +105,9 @@ function messageSysGroup(req, res, json) {
 
     json.order = 'SYS';
     json.type = '1';
-    json.text = '由于本群人数众多，为保障各位各位成员能够及时收到官方信息，故本群将不再支持聊天，敬请谅解';
 
-    console.log('[notification][messageSysGroup] json is ', json, 'togroup', json.togroup);
-    msgsend.group(json);
+    console.log('[notification][messageSysGroup] json is ', json);
+    msgsend.dispatchGroup(json);
 
     var retjson = {
         'response': '200',
@@ -132,31 +125,28 @@ function shareGroup(req, res, json) {
         ret404(req, res, 'togroup is necessary');
         return false;
     }
-    //
-    var toGroup = json.togroup.split(',');
-    json.type = '10';
-    json.status = 200;
-    json.order = 'MSG';
-    json.time = +new Date();
-    for (var i = 0, len = toGroup.length; i < len; i++) {
-        pushGroup(toGroup[i], json);
-    }
-
-    function pushGroup(gid, json) {
-        if (!gid || !json) {
-            return false;
-        }
-        json.togroup = gid;
-        json.poster = json.userid;
-        //send to group
-        msgsend.group(json);
-    }
-
+    //return to php Immediately
     var retjson = {
         'response': '200',
         'message': '请求成功'
     };
     retJSON(req, res, JSON.stringify(retjson));
+
+    var toGroup = json.togroup.split(',');
+    json.type = '10';
+    json.status = 200;
+    json.order = 'MSG';
+    json.time = +new Date();
+    json.poster = json.userid;
+
+    async.eachSeries(toGroup, function(item, cb) {
+        json.togroup = item;
+        msgsend.dispatchGroup(json, cb);
+    }, function(err) {
+        if (err) {
+            console.error('[dispatch server][group] is false. err is ', err);
+        }
+    });
 }
 
 /**
@@ -173,6 +163,13 @@ function person(req, res, json) {
         ret404(req, res, 'tousers is necessary!');
     }
 
+    //return to php Immediately
+    var retjson = {
+        'response': '200',
+        'message': '请求成功'
+    };
+    retJSON(req, res, JSON.stringify(retjson));
+
     var users = json.tousers.split(',');
     json.type = '7';
     json.order = 'MSG';
@@ -183,15 +180,10 @@ function person(req, res, json) {
         pushmessage(user, json, callback);
     }, function(err) {
         if (err) {
-            console.log('[notification][person] async.eachSeries is false. err is ', err);
+            console.error('[notification][person] async.eachSeries is false. err is ', err);
             return false;
         }
         doUpdate();
-        var retjson = {
-            'response': '200',
-            'message': '请求成功'
-        };
-        retJSON(req, res, JSON.stringify(retjson));
     });
 
     function pushmessage(touser, json, callback) {
@@ -292,7 +284,7 @@ function person(req, res, json) {
                 'upsert': true
             }, function(err) {
                 if (err) {
-                    console.log("[notification][Notices] update false", err);
+                    console.error("[notification][Notices] update false, err is ", err);
                     return false;
                 }
                 console.log('[dispatch_notification.js update success]-->', json.msgid, setVal);

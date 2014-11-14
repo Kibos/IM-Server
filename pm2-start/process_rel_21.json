@@ -1,0 +1,8 @@
+[
+  {
+    "name"      : "brainServer:4998",
+    "script"    : "../brain-server/app.js",
+    "args"      : "['10.21.67.21', 4998]",
+    "exec_mode" : "fork_mode"
+  }
+]
