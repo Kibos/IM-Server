@@ -50,7 +50,7 @@ exports.connect = function(callback, data) {
 
             mongoC.open(function(err, mongoclient) {
                 if (err) {
-                    console.log('cant open the mongodb');
+                    console.error('cant open the mongodb');
                     delete dbStack[conId];
                 } else {
                     dbStack[conId].conn = mongoC;

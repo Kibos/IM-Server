@@ -15,7 +15,7 @@ function send(options) {
             options.callback && options.callback(returnData);
         });
         res.on('error', function(data) {
-            console.log('[error restful.js] connect ' + options.hostname + options.path + ' error');
+            console.error('[error restful.js] connect ' + options.hostname + options.path + ' error');
         });
     });
 

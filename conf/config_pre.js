@@ -1,79 +1,88 @@
 exports.mongodb = {
     mg1: {
-        port: 27019,
-        ip: '10.21.3.44',
+        port: 27017,
+        ip: '10.21.4.87',
         dbname: 'larvel'
     },
     mg2: {
-        port: 27019,
-        ip: '10.21.3.44',
+        port: 27017,
+        ip: '10.21.4.87',
         dbname: 'larvel'
     },
     mg3: {
-        port: 27019,
-        ip: '10.21.3.44',
+        port: 27017,
+        ip: '10.21.4.87',
         dbname: 'larvel'
     }
 };
 
+/**
+ * the static host
+ */
 exports.sta = {
     redis: {
         'token': {
-            ip: '10.21.3.42',
-            port: '6391',
+            ip: '10.21.4.85',
+            port: '6379',
             select: '1'
         },
         'cache': {
-            ip: '10.21.3.42',
-            port: '6390',
+            ip: '10.21.4.85',
+            port: '6379',
             select: '3'
         }
     },
     group: {
         'api': {
-            ip: '10.21.3.93',
+            ip: 'api.1.php',
             port: '80'
         }
     },
     friend: {
         'api': {
-            ip: '10.21.3.93',
+            ip: 'api.1.php',
             port: '80'
         }
     }
 };
 
+/**
+ *redis、node server
+ */
 exports.Server = {
     PNode: {},
     PRedis: {
         'pr1': {
-            'ip': '10.21.3.42', //gmsg.1.redis
-            'port': '6391'
+            'ip': '10.21.4.86', //gmsg.1.redis
+            'port': '6380'
         }
     },
     GRedis: {
         'gr1': {
-            'ip': '10.21.3.42', //gmsg.2.redis
-            'port': '6391'
+            'ip': '10.21.4.85', //gmsg.2.redis
+            'port': '6380'
         }
     },
     GSub: {},
     URedis: {}
 };
 
-exports.redisPwd = {};
+exports.redisPwd = {
+    '10.21.4.85': 'premobile_master$%*85',
+    '10.21.4.86': 'premobile_master$%*85'
+};
 
 exports.replicas = 80;
 
 exports.legalIP = {
-    developIp : '10.21.'
+    prepareIp : '10.21.4.'
 };
 
 exports.users = {};
 
 exports.NodeInfo = {
-    BNode : {
-        ip: '10.21.3.92',
+    Brain : {
+        ip: '10.21.4.83',
         port: 4999
     }
 };

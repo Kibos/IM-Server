@@ -22,7 +22,7 @@ var end = 19;
  */
 exports.pushMessage = function(message, touser, poster, option, callback) {
     if (!touser) {
-        console.log('[offline][pushMessage]touser is missing.');
+        console.error('[offline][pushMessage]touser is missing.');
         return false;
     }
     //deal with the message push , the touser can be like this 1,2,3 (multi)
@@ -75,7 +75,7 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
         }).toArray(function(err, res) {
 
             if (err) {
-                console.log('[msgsend][offline] push Cache false');
+                console.error('[msgsend][offline] push Cache false');
                 return false;
             }
             var temp = {};
@@ -91,10 +91,6 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
                 //update the pushCache's count
                 pushUpdate(toUserArray[i]);
             }
-
-            // var total = res[0] ? res[0].total : '0';
-            // total = parseInt(total) + 1;
-            //save to mongodb
 
             var StackObj = {
                 'toUser': toUserArray.join(','),
@@ -125,7 +121,7 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
                 'upsert': true
             }, function(err) {
                 if (err) {
-                    console.log("[offline][pushMessage] update false");
+                    console.error("[offline][pushMessage] update false");
                     return false;
                 }
             });
@@ -216,7 +212,9 @@ exports.getMsg = function(userid, callback) {
                 }
 
                 for (var i in temp) {
-                    array.push({poster: i, msgs:temp[i].messageIds});
+                    array.push({
+                        poster: i,
+                        msgs:temp[i].messageIds});
                 }
 
                 async.waterfall([
@@ -247,7 +245,6 @@ exports.getMsg = function(userid, callback) {
                                 length: message.msgs.length,
                                 msg: res
                             };
-                            theObj.msg = res;
                             result.push(theObj);
                             callback();
                         });
@@ -279,7 +276,7 @@ exports.getMsg = function(userid, callback) {
             'touser': parseInt(userid)
         }, function(err) {
             if (err) {
-                console.log("[offline][getMsg] remove false");
+                console.error("[offline][getMsg] remove false");
                 return false;
             }
         });
@@ -297,7 +294,7 @@ function getRealMsg(messageIds, uid, callback) {
             '_id': 0
         }).toArray(function(err, res) {
                 if (err) {
-                    console.log("[offline][getRealMsg] find false");
+                    console.error("[offline][getRealMsg] find false");
                     if (callback) callback(err);
                     return false;
                 }
@@ -343,9 +340,10 @@ function notificationCallback(messages, toUser) {
             $pull: pullObj
         }, function(err, res) {
             if (err) {
-                console.log("[offline][notificationCallback] update false", err);
+                console.error("[offline][notificationCallback] update false, err is ", err);
                 return false;
             }
+            console.log('[offline][notificationCallback] update success ,effect line is ', res);
         });
     }
 }
@@ -363,7 +361,7 @@ exports.getMoreByPerson = function(userid, sendUserId, limit, callback) {
     return false;
     //
     if (!userid || !sendUserId) {
-        console.log('[offline][getMoreByPerson] parameters error, userId: sendUserId:', userid, sendUserId);
+        console.error('[offline][getMoreByPerson] parameters error, userId: sendUserId:', userid, sendUserId);
         return false;
     }
     limit = parseInt(limit) || 20;
@@ -372,7 +370,6 @@ exports.getMoreByPerson = function(userid, sendUserId, limit, callback) {
         var MsgSta = MongoConn.db(mg2.dbname).collection('MsgSta');
         var findSql = {
             'unreach': parseInt(userid)
-            //'reach': false
         };
 
         if (sendUserId) {
@@ -410,7 +407,7 @@ exports.getMoreByPerson = function(userid, sendUserId, limit, callback) {
                 multi: true
             }, function(err, res) {
                 if (err) {
-                    console.log("[offline][getMoreByPerson] MsgSta update error");
+                    console.error("[offline][getMoreByPerson] MsgSta update error");
                     return false;
                 }
                 console.log('The number of updated documents was %d', res);

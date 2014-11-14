@@ -1,0 +1,14 @@
+[
+  {
+    "name"      : "nodeServer:4261",
+    "script"    : "../node-server/app.js",
+    "args"      : "['10.21.67.26', 4261]",
+    "exec_mode" : "fork_mode"
+  },
+  {
+    "name"      : "nodeServer:4262",
+    "script"    : "../node-server/app.js",
+    "args"      : "['10.21.67.26', 4262]",
+    "exec_mode" : "fork_mode"
+  }
+]

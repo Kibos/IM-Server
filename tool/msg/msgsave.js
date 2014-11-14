@@ -1,4 +1,5 @@
 'use strict';
+
 var mg2 = require('../../conf/config').mongodb.mg2;
 var mongoConnect = require('../../connect/mongo');
 
@@ -20,16 +21,13 @@ exports.sta = function(obj, callback) {
     var msgData = {
         'messageId': obj.messageId,
         'poster': parseInt(obj.poster),
-        //'reach': false,
-        //'read': false,
         'type': obj.type || 0,
         'time': obj.time || (+new Date())
     };
     if (Array.isArray(obj.touser)) {
         msgData.unreach = obj.touser;
     } else {
-        // msgData.touser = parseInt(obj.touser);
-        console.log('[msgsave.js] wrong type if obj.touser');
+        console.error('[msgsave.js] wrong type if obj.touser');
         if (callback) callback('[msgsave][sta]obj touser type is unnormal.');
         return false;
     }
@@ -37,7 +35,7 @@ exports.sta = function(obj, callback) {
     mongoConnect.connect(function(mongoC) {
         mongoC.db(mg2.dbname).collection('MsgSta').insert(msgData, function(err) {
             if (err) {
-                console.log('[msgsave][insert] is false. err is ', err);
+                console.error('[msgsave][insert] is false. err is ', err);
                 if (callback) callback(err);
             }
             if (callback) callback(null);

@@ -93,5 +93,4 @@ function getFriend(token, callback) {
     restful.get(reqData);
 }
 
-//exports.friend = frinedCheck;
 exports.friend = isFriend;

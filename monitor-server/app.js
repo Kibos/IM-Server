@@ -1,8 +1,13 @@
 
 var http = require('http');
 var router = require('../dispatch-server/data/router');
-var monitorInfo = require('../conf/config').NodeInfo.MNode;
 var brain = require('../tool/brain.js');
+var monitorInfo = {
+    ip: process.argv[2],
+    port: parseInt(process.argv[3]),
+    type: 'MNode',
+    id: 'mn_' + process.argv[2] + '_' + process.argv[3]
+};
 
 brain.add(monitorInfo.type, monitorInfo.id, monitorInfo.ip, monitorInfo.port);
 

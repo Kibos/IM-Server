@@ -10,7 +10,7 @@ exports.reg = function(rec, users, socket, callback) {
 
     var host = rec.host;
     if (!host) {
-        console.log('[reg][reg] parameters error, host:', host);
+        console.error('[reg][reg] parameters error, host:', host);
         callback(host);
         return false;
     }
@@ -18,9 +18,6 @@ exports.reg = function(rec, users, socket, callback) {
     var room = 'Room.' + host;
     var PRedis = hash.getHash('PRedis', host);
     var accessToken = rec.access_token;
-
-    //TODO develop
-//    checkSuccess();
 
     checkToken.check(host, accessToken, divice, function(res) {
         if (res) {
@@ -39,7 +36,6 @@ exports.reg = function(rec, users, socket, callback) {
 
     function checkSuccess() {
         //sub it's room
-        //console.log('--->',PRedis.port, PRedis.ip, room)
         redisConnect.sub(PRedis.port, PRedis.ip, room, function(message) {
             if (users[host]) {
                 for (var i in users[host]) {

@@ -1,5 +1,5 @@
 'use strict';
-var appInfo = require('../conf/config.js').NodeInfo.PNode1;
+
 var hash = require('../tool/hash/hash.js');
 var brain = require('../tool/brain.js');
 var redisConnect = require('../connect/redis.js');
@@ -8,6 +8,12 @@ var offline = require('../tool/msg/offline.js');
 var msgsend = require('../tool/msg/msgsend.js');
 var sysMsg = require('../tool/msg/sysMsg.js');
 var redis = require('redis');
+var appInfo = {
+    ip: process.argv[2],
+    port: parseInt(process.argv[3]),
+    type: 'PNode',
+    id: 'pn_' + process.argv[2] + '_' + process.argv[3]
+};
 
 //start the socket.io
 var io = require('socket.io').listen(appInfo.port, {
@@ -49,7 +55,7 @@ var messageCount = {
         flag: 'a'
     }, function(err) {
         if (err) {
-            console.log(arguments);
+            console.error('[node server][saveUserInfo] is false. err is ', err);
         }
     });
 
@@ -121,7 +127,7 @@ io.sockets.on('connection', function(socket) {
 
             reg.reg(rec, users, socket, function(data) {
                 if (!data) {
-                    console.log('[node][app]client reg false');
+                    console.error('[node][app]client reg false');
                     socket.emit('ybmp', 'wrong data format : ', data);
                     return false;
                 }
@@ -146,7 +152,7 @@ io.sockets.on('connection', function(socket) {
             } else {
                 rec.status = 100;
                 rec.msg = 'token error, please reconnect socket';
-                console.log('[node server][send msg]token err, haveToken is ', haveToken);
+                console.error('[node server][send msg]token err, haveToken is ', haveToken);
                 socket.emit('ybmp', rec);
             }
         } else if (rec.order == 'OFL') {
@@ -176,7 +182,7 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('disconnect', function(data) {
         if (!host) {
-            console.log('[nodeServer][socket disconnect] userid: ', host);
+            console.error('[nodeServer][socket disconnect] userid: ', host);
             return false;
         }
         console.log('[nodeServer][socket disconnect] userid: ', host, ' dis reason: ', data);

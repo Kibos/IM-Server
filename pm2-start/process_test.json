@@ -1,0 +1,37 @@
+[
+  {
+    "name"      : "brainServer:4999",
+    "script"    : "../brain-server/app.js",
+    "args"      : "['10.21.3.92', 4999]",
+    "exec_mode" : "fork_mode"
+  },
+  {
+    "name"      : "dispatchServer:4008",
+    "script"    : "../dispatch-server/app.js",
+    "args"      : "['10.21.3.92', 4008]",
+    "exec_mode" : "fork_mode"
+  },
+  {
+    "name"      : "monitorServer:4202",
+    "script"    : "../monitor-server/app.js",
+    "args"      : "['10.21.3.92', 4202]",
+    "exec_mode" : "fork_mode"
+  },
+  {
+    "name"      : "logsServer",
+    "script"    : "../data-mining-server/app.js",
+    "exec_mode" : "fork_mode"
+  },
+  {
+    "name"      : "nodeServer:4001",
+    "script"    : "../node-server/app.js",
+    "args"      : "['10.21.3.92', 4001]",
+    "exec_mode" : "fork_mode"
+  },
+  {
+    "name"      : "groupServer:4101",
+    "script"    : "../group-server/app.js",
+    "args"      : "['10.21.3.92', 4101]",
+    "exec_mode" : "fork_mode"
+  }
+]

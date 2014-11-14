@@ -1,7 +1,6 @@
 'use strict';
 
 var hash = require('../../tool/hash/hash.js');
-var redisConnect = require('../../connect/redis');
 var msgsend = require('../../tool/msg/msgsend');
 
 exports.add = function() {};
@@ -24,8 +23,6 @@ exports.change = function(req, res, group) {
         'message': '请求成功'
     };
     res.end(JSON.stringify(endJson));
-
-
 };
 
 exports.group = function(req, res, json) {
