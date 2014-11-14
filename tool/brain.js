@@ -203,5 +203,6 @@ function isLegalIp(ip) {
     var legalIp = require('../conf/config').legalIP;
 
 //    return ip.match(legalIp.governmentIP);
+//    return ip.match(legalIp.prepareIp);
     return ip.match(legalIp.developIp);
 }

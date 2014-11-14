@@ -15,6 +15,8 @@ var appInfo = {
     type: 'GNode',
     id: 'gn_' + process.argv[2] + '_' + process.argv[3]
 };
+var redisPort = conf.sta.redis.cache.port;
+var redisIp = conf.sta.redis.cache.ip;
 
 //add to brain
 brain.add(appInfo.type, appInfo.id, appInfo.ip, appInfo.port);
@@ -127,8 +129,7 @@ var group = function() {
     };
 
     exp.getFromRedis = function(gid, callback) {
-        var redisPort = conf.sta.redis.cache.port;
-        var redisIp = conf.sta.redis.cache.ip;
+
         var groupKey = 'group:' + gid + ':users';
         redisConnect.connect(redisPort, redisIp, function(client) {
             client.select('0', function(){
@@ -148,8 +149,6 @@ var group = function() {
      * @return {Null}
      */
     exp.saveToRedis = function(gid, usersId, isChat, callback) {
-        var redisPort = conf.sta.redis.cache.port;
-        var redisIp = conf.sta.redis.cache.ip;
         redisConnect.connect(redisPort, redisIp, function(client) {
             var groupKey = 'group:' + gid + ':users';
             //delete old data
