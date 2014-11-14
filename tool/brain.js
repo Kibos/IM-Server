@@ -58,7 +58,7 @@ var brainPort = conf.port;
 
         client.on('error', function() {
             reconnect = true;
-            console.log('[brain.js] client error', new Date());
+            console.error('[brain.js] client error', new Date());
             setTimeout(function() {
                 socketConnect(callback);
             }, 1000);
@@ -155,10 +155,6 @@ var brainPort = conf.port;
         callbacks[id] = change;
         fnStack.add = fnStack.add || {};
         fnStack.add[id] = arguments;
-
-        //exp.add(type, id, ip, port, change)
-        //exp[i].apply(this, fnStack[i][j]);
-
     };
 
     //remove a server

@@ -36,7 +36,6 @@ function ret404(req, res, msg) {
  *  group notification
  */
 
-
 function group(req, res, json) {
 
     if (!json.togroup) {
@@ -54,7 +53,14 @@ function group(req, res, json) {
             ret404(req, res, 'groupNames is not json string');
         }
     }
-    //
+
+    //return to php Immediately
+    var retjson = {
+        'response': '200',
+        'message': '请求成功'
+    };
+    retJSON(req, res, JSON.stringify(retjson));
+
     var toGroup = json.togroup.split(',');
     json.type = '6';
     json.status = 200;
@@ -72,11 +78,6 @@ function group(req, res, json) {
         if (err) {
             console.error('[dispatch server][group] is false. err is ', err);
         }
-        var retjson = {
-            'response': '200',
-            'message': '请求成功'
-        };
-        retJSON(req, res, JSON.stringify(retjson));
     });
 }
 
@@ -124,15 +125,19 @@ function shareGroup(req, res, json) {
         ret404(req, res, 'togroup is necessary');
         return false;
     }
-    //
+    //return to php Immediately
+    var retjson = {
+        'response': '200',
+        'message': '请求成功'
+    };
+    retJSON(req, res, JSON.stringify(retjson));
+
     var toGroup = json.togroup.split(',');
     json.type = '10';
     json.status = 200;
     json.order = 'MSG';
     json.time = +new Date();
     json.poster = json.userid;
-
-    console.log(json, toGroup);
 
     async.eachSeries(toGroup, function(item, cb) {
         json.togroup = item;
@@ -141,11 +146,6 @@ function shareGroup(req, res, json) {
         if (err) {
             console.error('[dispatch server][group] is false. err is ', err);
         }
-        var retjson = {
-            'response': '200',
-            'message': '请求成功'
-        };
-        retJSON(req, res, JSON.stringify(retjson));
     });
 }
 
@@ -163,6 +163,13 @@ function person(req, res, json) {
         ret404(req, res, 'tousers is necessary!');
     }
 
+    //return to php Immediately
+    var retjson = {
+        'response': '200',
+        'message': '请求成功'
+    };
+    retJSON(req, res, JSON.stringify(retjson));
+
     var users = json.tousers.split(',');
     json.type = '7';
     json.order = 'MSG';
@@ -173,15 +180,10 @@ function person(req, res, json) {
         pushmessage(user, json, callback);
     }, function(err) {
         if (err) {
-            console.log('[notification][person] async.eachSeries is false. err is ', err);
+            console.error('[notification][person] async.eachSeries is false. err is ', err);
             return false;
         }
         doUpdate();
-        var retjson = {
-            'response': '200',
-            'message': '请求成功'
-        };
-        retJSON(req, res, JSON.stringify(retjson));
     });
 
     function pushmessage(touser, json, callback) {
@@ -282,7 +284,7 @@ function person(req, res, json) {
                 'upsert': true
             }, function(err) {
                 if (err) {
-                    console.log("[notification][Notices] update false", err);
+                    console.error("[notification][Notices] update false, err is ", err);
                     return false;
                 }
                 console.log('[dispatch_notification.js update success]-->', json.msgid, setVal);

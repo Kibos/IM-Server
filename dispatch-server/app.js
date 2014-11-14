@@ -10,7 +10,7 @@ var friend = require('./data/friend');
 var router = require('./data/router');
 var disInfo = {
     ip: process.argv[2],
-    port: process.argv[3],
+    port: parseInt(process.argv[3]),
     type: 'DNode',
     id: 'dn_' + process.argv[2] + '_' + process.argv[3]
 };
@@ -158,7 +158,7 @@ router.post('/lightApp', {
     safe: true
 }, function(req, res, json) {
     if (!json.touser || !json.appId) {
-        console.log('touser : ', json.touser);
+        console.error('touser : ', json.touser);
         ret403(req, res, 'touser is necessary');
     }
     if (json.action !== 'lightAppNew') {

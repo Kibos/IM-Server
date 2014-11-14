@@ -24,8 +24,6 @@ var redisIp = config.sta.redis.cache.ip;
  **/
 exports.person = function(rec, socket, options) {
 
-//    exports.sendToPerson(rec, rec.touser, rec.poster, socket);
-//TODO develop
     safe.friend(rec.poster, rec.touser, rec.access_token, {
         'catch': options.user
     }, function(isSafe) {
@@ -95,7 +93,7 @@ exports.sendToPerson = function(msg, touser, poster, socket) {
 exports.group = function(rec, socket) {
     var groupServer = hash.getHash('GNode', rec.togroup);
     if (!groupServer) {
-        console.log('can not find groupServer', rec.togroup, 'hash', hash._hash());
+        console.error('can not find groupServer', rec.togroup, 'hash', hash._hash());
         return false;
     }
     rec.status = 200;
@@ -204,7 +202,7 @@ function getGroupMember(gid, callback) {
             try {
                 data = JSON.parse(Jdata);
             } catch (e) {
-                console.log('group data error', Jdata);
+                console.error('group data error', Jdata);
                 if (callback) callback(null, data);
                 return false;
             }
@@ -212,7 +210,7 @@ function getGroupMember(gid, callback) {
             if (data.response == 100) {
                 if (callback) callback(null, data.data);
             } else {
-                console.log('    [API requerst error]', data.response, data.message);
+                console.error('    [API requerst error]', data.response, data.message);
                 if (callback) callback(null, false);
             }
         }
@@ -269,7 +267,7 @@ function sendGroupMessage(groupServer, rec, callback) {
 exports.dispatchGroup = function(rec, callback) {
     var groupServer = hash.getHash('GNode', rec.togroup);
     if (!groupServer) {
-        console.log('can not find groupServer', rec.togroup, 'hash', hash._hash());
+        console.error('can not find groupServer', rec.togroup, 'hash', hash._hash());
         if (callback) callback();
         return false;
     }
@@ -333,7 +331,7 @@ exports.dispatchGroup = function(rec, callback) {
 
 exports.sys = function(touser, msg) {
     if (!touser) {
-        console.log('touser is necessary');
+        console.error('touser is necessary');
         return false;
     }
     msg.time = +new Date();
@@ -350,7 +348,6 @@ exports.sys = function(touser, msg) {
         client.sismember('online', touser, function(err, isOnline) {
             console.log('sys--->', touser, 'online:', isOnline, 'msg:', msg);
             if (!isOnline) {
-                //offline.setMsg(msg, touser, 'SYS');
                 offline.pushMessage(msg, touser, 'SYS');
             }
         });

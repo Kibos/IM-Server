@@ -23,8 +23,6 @@ exports.change = function(req, res, group) {
         'message': '请求成功'
     };
     res.end(JSON.stringify(endJson));
-
-
 };
 
 exports.group = function(req, res, json) {

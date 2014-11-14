@@ -4,7 +4,7 @@ var router = require('../dispatch-server/data/router');
 var brain = require('../tool/brain.js');
 var monitorInfo = {
     ip: process.argv[2],
-    port: process.argv[3],
+    port: parseInt(process.argv[3]),
     type: 'MNode',
     id: 'mn_' + process.argv[2] + '_' + process.argv[3]
 };

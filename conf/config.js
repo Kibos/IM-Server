@@ -77,12 +77,9 @@ exports.legalIP = {
 
 exports.users = {};
 
-var appIp = require('os').networkInterfaces().eth0[0].address;
-//var appIp = '10.21.3.63';
-
 exports.NodeInfo = {
     Brain : {
-        ip: appIp,
+        ip: '10.21.3.63',
         port: 4999
     }
 };

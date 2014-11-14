@@ -71,11 +71,9 @@ exports.legalIP = {
 
 exports.users = {};
 
-var appIp = require('os').networkInterfaces().eth0[0].address;
-
 exports.NodeInfo = {
     BNode : {
-        ip: appIp,
+        ip: '10.21.3.92',
         port: 4999
     }
 };

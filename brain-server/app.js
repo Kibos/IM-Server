@@ -3,7 +3,7 @@
 var net = require('net');
 var appInfo = {
     ip: process.argv[2],
-    port: process.argv[3]
+    port: parseInt(process.argv[3])
 };
 
 var server = {};
@@ -112,7 +112,7 @@ var brain = function() {
             });
 
             sock.on('error', function(data) {
-                console.log('brain error', data);
+                console.error('brain error', data);
             });
 
         }).listen(appInfo.port, appInfo.ip);

@@ -185,7 +185,6 @@ function groupMsg(mongo, msg, callback) {
     mongo.db(mongodb.mg3.dbname).collection('Talks').find({
         '_id': _id
     }).toArray(function(err, res) {
-            //console.log('!!!!', _id, res, msg);
             var gid = 0,
                 guid = 0;
             if (res.length >= 1) {

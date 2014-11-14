@@ -208,7 +208,7 @@ var group = function() {
                     if (err) {
                         console.error('[group server][sendByRedis] sendToPerson is false. err is ', err);
                     }
-                    exp.messagePushResult(msg, msg.onlineU, msg.offlineU);
+                    exp.messagePushResult(msg, msg.online, msg.offline);
                 });
             });
         });
@@ -233,7 +233,6 @@ var group = function() {
                 if (callback) callback();
             } else {
                 //socket is offline
-                //msg.togroupuser = user;
                 msg.offline.push(parseInt(user));
                 if (callback) callback();
             }
@@ -256,7 +255,7 @@ var group = function() {
                 try {
                     data = JSON.parse(Jdata);
                 } catch (e) {
-                    console.log('group data error', Jdata);
+                    console.error('group data error', Jdata);
                     if (callback) callback(data);
                     return false;
                 }
@@ -264,7 +263,7 @@ var group = function() {
                 if (data.response == 100) {
                     if (callback) callback(data.data);
                 } else {
-                    console.log('    [API requerst error]', data.response, data.message);
+                    console.error('    [API requerst error]', data.response, data.message);
                 }
             }
         };
@@ -308,8 +307,6 @@ var group = function() {
                 $each: offlineUser
             };
 
-            // { scores: { $each: [ 90, 92, 85 ] } }
-
             var collection = mongoConnect.db(conf.mongodb.mg3.dbname).collection('Notices');
             collection.update({
                 '_id': parseInt(msgId)
@@ -320,7 +317,7 @@ var group = function() {
                 }
             }, function(err, res) {
                 if (err) {
-                    console.log('[group.js update failed]--->', '\n\t err:', err, setVal);
+                    console.error('[group.js update failed]--->', '\n\t err:', err, setVal);
                     return false;
                 }
                 console.log('[group.js update success]--->', msgId, '\n\t ', setVal, res);

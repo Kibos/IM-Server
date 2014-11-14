@@ -10,7 +10,7 @@ var sysMsg = require('../tool/msg/sysMsg.js');
 var redis = require('redis');
 var appInfo = {
     ip: process.argv[2],
-    port: process.argv[3],
+    port: parseInt(process.argv[3]),
     type: 'PNode',
     id: 'pn_' + process.argv[2] + '_' + process.argv[3]
 };
@@ -55,7 +55,7 @@ var messageCount = {
         flag: 'a'
     }, function(err) {
         if (err) {
-            console.log(arguments);
+            console.error('[node server][saveUserInfo] is false. err is ', err);
         }
     });
 
@@ -127,7 +127,7 @@ io.sockets.on('connection', function(socket) {
 
             reg.reg(rec, users, socket, function(data) {
                 if (!data) {
-                    console.log('[node][app]client reg false');
+                    console.error('[node][app]client reg false');
                     socket.emit('ybmp', 'wrong data format : ', data);
                     return false;
                 }
@@ -182,7 +182,7 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('disconnect', function(data) {
         if (!host) {
-            console.log('[nodeServer][socket disconnect] userid: ', host);
+            console.error('[nodeServer][socket disconnect] userid: ', host);
             return false;
         }
         console.log('[nodeServer][socket disconnect] userid: ', host, ' dis reason: ', data);
