@@ -217,55 +217,42 @@ exports.getMsg = function(userid, callback) {
                         msgs:temp[i].messageIds});
                 }
 
-                async.waterfall([
-                    function(cb) {
-                        pushRes(cb);
-                    }
-                ], function(err) {
-                    if (err) {
-                        console.error('[offline][getMsg] pushRes is false. err is ', err);
-                        if (callback) callback(err);
-                    }
-                    if (callback) callback(result);
-                    console.log("return client result is ", result);
-                });
-
-                function pushRes(callback) {
-                    async.eachSeries(array, function(message, callback) {
-                        async.waterfall([
-                            function(cb) {
-                                getRealMsg(message.msgs, userid, cb);
-                            }
-                        ], function(err, res) {
-                            if (err) {
-                                console.error('[offline][getMsg] getRealMsg is false. err is ', err);
-                            }
-                            var theObj = {
-                                userid: message.poster,
-                                length: message.msgs.length,
-                                msg: res
-                            };
-                            result.push(theObj);
-                            callback();
-                        });
-                    }, function(err) {
+                async.eachSeries(array, function(message, callback) {
+                    async.waterfall([
+                        function(cb) {
+                            getRealMsg(message.msgs, userid, cb);
+                        }
+                    ], function(err, res) {
                         if (err) {
                             console.error('[offline][getMsg] getRealMsg is false. err is ', err);
-                            if (callback) callback(err);
                         }
-                        if (callback) callback(null);
+                        var theObj = {
+                            userid: message.poster,
+                            length: message.msgs.length,
+                            msg: res
+                        };
+                        result.push(theObj);
+                        callback();
                     });
-                }
+                }, function(err) {
+                    if (err) {
+                        console.error('[offline][getMsg] getRealMsg is false. err is ', err);
+                        if (callback) callback(err);
+                    }
+                    //delete offline list from redis
+                    for (var i = 0; i < res.length; i ++) {
+                        client.RPOP(userid, function(err, result) {
+                            if (err) {
+                                console.error('[offline][getMsg] RPOP is false, err is ', err);
+                                if (callback) callback(err);
+                            }
+                            console.log('[lists] delete  ', result);
+                        });
+                    }
 
-                for (var i = 0; i < res.length; i ++) {
-                    client.RPOP(userid, function(err, result) {
-                        if (err) {
-                            console.error('[offline][getMsg] RPOP is false, err is ', err);
-                            if (callback) callback(err);
-                        }
-                        console.log('[lists] delete  ', result);
-                    });
-                }
+                    console.log("return client result is ", result);
+                    if (callback) callback(result);
+                });
             });
         });
     });

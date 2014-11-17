@@ -6,9 +6,9 @@
     "exec_mode" : "fork_mode"
   },
   {
-    "name"      : "dispatchServer:4008",
+    "name"      : "dispatchServer:4201",
     "script"    : "../dispatch-server/app.js",
-    "args"      : "['10.21.3.92', 4008]",
+    "args"      : "['10.21.3.92', 4201]",
     "exec_mode" : "fork_mode"
   },
   {
