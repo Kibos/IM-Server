@@ -235,7 +235,7 @@ function saveToRedis(gid, usersId, isChat, callback) {
     });
 }
 
-function sendGroupMessage(groupServer, rec, callback) {
+function sendGroupMessage(groupServer, rec) {
 
     var groupRedis = hash.getHash('GRedis', groupServer.id.toString());
     var room = 'Group.' + groupServer.id;
@@ -258,7 +258,6 @@ function sendGroupMessage(groupServer, rec, callback) {
     mongoConnect.connect(function(mongoC) {
         mongoC.db(mg1.dbname).collection('Message').insert(msgData, function() {
             //Message insert success
-            if (callback) callback();
         });
     }, {ip: mg1.ip, port: mg1.port, name: 'insert_msgSend_Group'});
 }

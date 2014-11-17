@@ -120,7 +120,6 @@ var group = function() {
 
                 });
             } else {
-
                 msg.groupname = msg.groupname || (exp.conf.groupName[gId] ? (exp.conf.groupName[gId].groupname || '') : '');
                 exp.groupMessageSend(res, msg);
                 delete exp.conf.msgStack[gId].list;
@@ -208,6 +207,8 @@ var group = function() {
                     if (err) {
                         console.error('[group server][sendByRedis] sendToPerson is false. err is ', err);
                     }
+                    console.log('[group server][sendByRedis] msg online is ', msg.online,
+                        'msg offline is ', msg.offline, 'users is ', users);
                     exp.messagePushResult(msg, msg.online, msg.offline);
                 });
             });
@@ -248,7 +249,6 @@ var group = function() {
         var options = {
             'hostname': conf.sta.group.api.ip,
             'port': conf.sta.group.api.port,
-            //'path': '/api/v1/talks/' + gid + '/members?internal_secret=cf7be73c856c99c0fe02a78a562375c5',
             'path': '/api/v1/talks/' + gid + '/memberids?internal_secret=cf7be73c856c99c0fe02a78a562375c5',
             'callback': function(Jdata) {
                 var data = {};
@@ -290,7 +290,9 @@ var group = function() {
         });
         //save only type is 6 or 7
         if (!(msg.type == 6 || msg.type == 7)) {
-            console.log('[group] 6 ：groupNotification ', msg);
+            console.log('message is not notications ...... ');
+            msg.online = [];
+            msg.offline = [];
             return false;
         }
 
@@ -320,6 +322,8 @@ var group = function() {
                     console.error('[group.js update failed]--->', '\n\t err:', err, setVal);
                     return false;
                 }
+                msg.online = [];
+                msg.offline = [];
                 console.log('[group.js update success]--->', msgId, '\n\t ', setVal, res);
             });
         },{ip: conf.mongodb.mg3.ip, port: conf.mongodb.mg3.port, name: 'update_msgPushResult'});
