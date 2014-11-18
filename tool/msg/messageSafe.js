@@ -6,8 +6,7 @@ var sta = require('../../conf/config').sta;
 var redisPort = sta.redis.cache.port;
 var redisIp = sta.redis.cache.ip;
 
-
-function isFriend(poster, receiver, token, option, callback) {
+function isFriend(poster, receiver, token, callback) {
 
     if (!poster || !receiver || !token) {
         if (callback) callback(false);
@@ -19,8 +18,8 @@ function isFriend(poster, receiver, token, option, callback) {
         client.select('2', function() {
             var setName = 'user:' + poster + ':friends';
             client.sismember(setName, receiver, function(err, isMem) {
-           
-                if (isMem) {
+
+                if (!isMem) {
                     if (callback) callback(true);
                 } else {
                     getFriend(token, function(members) {
@@ -28,40 +27,34 @@ function isFriend(poster, receiver, token, option, callback) {
                             console.error('[messageSafe][ifFriend] getFriend members is ', members);
                             callback(false);
                         }
+
+                        if (inMembers(members, receiver.toString())) {
+                            callback(true);
+                        }
+
                         client.del(setName, function(err) {
-                            if (!err) {
-                                client.sadd(setName, members, function(err) {
-                                    if (err) {
-                                        console.error('[messageSafe][ifFriend] redis sadd false.');
-                                        callback(false);
-                                    }
-                                });
-                            } else {
-                                console.error('[messageSafe][ifFriend] redis del false.');
+                            if(err) {
+                                console.error('[isFriend][delete] redis members is false. err is ', err);
                                 callback(false);
                             }
+                            client.sadd(setName, members, function(err) {
+                                if (err) {
+                                    console.error('[messageSafe][ifFriend] redis sadd false.');
+                                    callback(false);
+                                }
+                            });
                         });
-                        judge(members);
                     });
                 }
             });
         });
     });
+}
 
-
-    function judge(member, callback) {
-        if (!member) {
-            if (callback) callback(false);
-            return false;
-        }
-        if (member.indexOf(receiver.toString()) != '-1') {
-            if (callback) callback(true);
-        } else {
-            console.log('[messageSafe]friends List-->', member);
-            if (callback) callback(false);
-        }
-    }
-
+function inMembers(members, touser) {
+    return members.some(function(item) {
+        return item === touser;
+    });
 }
 
 function getFriend(token, callback) {

@@ -141,9 +141,7 @@ io.sockets.on('connection', function(socket) {
             //TODO fix type is 6 or 7
             if ((haveToken && users[host][divice].token == rec.access_token) || rec.type == '6' || rec.type == '7') {
                 if (rec.touser) {
-                    msgsend.person(rec, socket, {
-                        user: users[host]
-                    });
+                    msgsend.person(rec, socket);
                     messageCount.person++;
                 } else if (rec.togroup) {
                     msgsend.group(rec, socket);

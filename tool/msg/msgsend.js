@@ -22,11 +22,9 @@ var redisIp = config.sta.redis.cache.ip;
  *   param options.callback {Object}
  *
  **/
-exports.person = function(rec, socket, options) {
+exports.person = function(rec, socket) {
 
-    safe.friend(rec.poster, rec.touser, rec.access_token, {
-        'catch': options.user
-    }, function(isSafe) {
+    safe.friend(rec.poster, rec.touser, rec.access_token, function(isSafe) {
         if (isSafe) {
             exports.sendToPerson(rec, rec.touser, rec.poster, socket);
         } else {
