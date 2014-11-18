@@ -6,7 +6,6 @@ var sta = require('../../conf/config').sta;
 var redisPort = sta.redis.cache.port;
 var redisIp = sta.redis.cache.ip;
 
-var tempMember = {};
 
 function isFriend(poster, receiver, token, option, callback) {
 
@@ -14,8 +13,6 @@ function isFriend(poster, receiver, token, option, callback) {
         if (callback) callback(false);
         return false;
     }
-
-    tempMember[poster] = tempMember[poster] || {};
 
     redisClient.connect(redisPort, redisIp, function(client) {
 

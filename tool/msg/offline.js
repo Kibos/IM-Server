@@ -62,6 +62,8 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
                 textMsg = message.text;
             } else if (message.image) {
                 textMsg = '发来一张[图片]';
+            } else if (message.video) {
+                textMsg = '发来一条[语音]';
             }
             text = username + ': ' + textMsg;
         }
