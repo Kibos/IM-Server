@@ -42,6 +42,7 @@ function MonitorSub(appInfo) {
                 publisher.auth(redisPwd[ip]);
             }
             publisher.publish(channel2, message + ' is received, cost time ');
+            publisher.quit();
             console.log('received message', message);
         });
     }
@@ -90,6 +91,7 @@ function MonitorPub(res, NodeInfo) {
             temp.nodeToRedis.push(costTime);
 
             redisClient.unsubscribe(channel2);
+            redisClient.quit();
             delete redisClient;
             delete costTime;
         });
