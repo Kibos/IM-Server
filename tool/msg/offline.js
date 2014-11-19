@@ -14,6 +14,7 @@ var mg3 = mongodb.mg3;
 
 var start = 0;
 var end = 19;
+var port = parseInt(redisPort);
 
 /**
  * push message
@@ -22,119 +23,120 @@ var end = 19;
  */
 exports.pushMessage = function(message, touser, poster, option, callback) {
     if (!touser) {
-        console.error('[offline][pushMessage]touser is missing.');
+        console.error('[offline][pushMessage] touser is missing.');
         return false;
     }
-    //deal with the message push , the touser can be like this 1,2,3 (multi)
-    var toUserArray = touser.toString().split(',').map(function(item) {
-        return parseInt(item, 10);
-    });
+
+    if (poster) {
+        // save into redis '3' offline
+        exports.offlineSave(message.messageId, touser, poster);
+    }
+
+    var poster = poster || message.poster;
+    var username = '易班';
+    var textMsg = '你收到了一条消息';
+    var text = '';
+
+    console.log('This is a debug logs : message is ', message, 'poster is ', poster);
+
+    //abandon system message
+    if (poster == 'SYS') {
+        //request join a group
+        if (message.noti_type == 'group' && message.action == 'request') {
+            //wiki http://10.21.118.240/wiki/doku.php?id=ybmp#群组请求
+            text = message.hostname + '申请加入' + message.groupname;
+        } else {
+            console.error('[pushMessage][sys] message.action is ', message.action);
+            return false;
+        }
+    } else if (!isNaN(poster)){
+        if (message.groupname) {
+            username = message.groupname + (message.username ? '(' + message.username + ')' : '');
+        } else if (message.username) {
+            username = message.username;
+        }
+
+        if ((message.noti_type) && (parseInt(message.type) == 6 || parseInt(message.type) == 7)) {
+            textMsg = '发来一条[通知]';
+        } else if (message.text) {
+            textMsg = message.text;
+        } else if (message.image) {
+            textMsg = '发来一张[图片]';
+        } else if (message.video) {
+            textMsg = '发来一条[语音]';
+        }
+        text = username + ': ' + textMsg;
+    } else {
+        console.error('[pushMessage] is false. message is ', message);
+        return false;
+    }
+
+    var StackObj = {
+        'toUser': touser,
+        'groupId': parseInt(message.togroup) || null,
+        'poster': parseInt(poster),
+        'msg': text,
+        'content': message,
+        'time': new Date()
+    };
 
     //message.username,message.groupname
     mongoConnect.connect(function(MongoConn) {
-        var poster = poster || message.poster;
-        var username = '易班';
-        var textMsg = '你收到了一条消息';
-        var text = '';
-        //abandon system message
-        if (poster == 'SYS') {
-            //request join a group
-            if (message.noti_type == 'group' && message.action == 'request') {
-                //wiki http://10.21.118.240/wiki/doku.php?id=ybmp#群组请求
-                text = message.hostname + '申请加入' + message.groupname;
-            } else {
-                return false;
-            }
-        } else {
-            //name
-            if (message.groupname) {
-                username = message.groupname + (message.username ? '(' + message.username + ')' : '');
-            } else if (message.username) {
-                username = message.username;
-            }
-
-            //message
-            if (message.noti_type) {
-                if (message.noti_type == 'group' || parseInt(message.type) == 6) {
-                    textMsg = '发来一条[通知]';
-                }
-            } else if (message.text) {
-                textMsg = message.text;
-            } else if (message.image) {
-                textMsg = '发来一张[图片]';
-            } else if (message.video) {
-                textMsg = '发来一条[语音]';
-            }
-            text = username + ': ' + textMsg;
-        }
         var pushCache = MongoConn.db(mg2.dbname).collection('PushCache');
         var pushStack = MongoConn.db(mg2.dbname).collection('PushStack');
         //get the total number and save to the redis stack
         pushCache.find({
-            'touser': {
-                $in: toUserArray
-            }
+            'touser': parseInt(touser)
         }).toArray(function(err, res) {
-
             if (err) {
-                console.error('[msgsend][offline] push Cache false');
+                console.error('[msgsend][offline] find push Cache false');
                 return false;
             }
-            var temp = {};
-            var counts = [];
-            for (var i = 0, len = res.length; i < len; i++) {
-                var userid = res[i].touser;
-                var total = res[i].total;
-                temp[userid] = total;
-            }
-            for (i = 0, len = toUserArray.length; i < len; i++) {
-                var count = temp[toUserArray[i]] || 0;
-                counts.push(++count);
-                //update the pushCache's count
-                pushUpdate(toUserArray[i]);
-            }
+            StackObj.count = res.total;
 
-            var StackObj = {
-                'toUser': toUserArray.join(','),
-                'groupId': parseInt(message.togroup) || null,
-                'poster': parseInt(poster),
-                'msg': text,
-                'content': message,
-                'time': new Date(),
-                'count': counts.join(',')
-            };
-            pushStack.insert(StackObj, function(err) {
+            //insert into redis
+            redisConnect.connect(port, redisIp, function(client) {
+                if (port >= 6380 && port <= 6383) {
+                    port++;
+                } else {
+                    port = 6380;
+                }
+                client.LPUSH('pushStack', JSON.stringify(StackObj), function (err, res) {
+                    if (err) {
+                        console.error('[offline][LPUSH] is false. err is ', err);
+                    }
+                    console.log('[offline][LPUSH] is success, result is ', res, temps);
+                });
+            });
+
+            //TODO cut
+            //insert into mongodb
+            pushStack.insert(StackObj, function(err, res) {
                 if (err) {
-                    console.error("[offline][pushMessage] insert false");
+                    console.error("[offline][pushMessage] insert false. err is ", err);
                     return false;
                 }
+                console.log('[offline][pushStack] insert into mongodb pushStack is success .res is ', res);
                 if (callback) callback();
             });
-        });
 
-        function pushUpdate(uid) {
             pushCache.update({
-                'touser': parseInt(uid)
+                'touser': parseInt(touser)
             }, {
                 $inc: {
                     'total': 1
                 }
             }, {
                 'upsert': true
-            }, function(err) {
+            }, function(err, res) {
                 if (err) {
                     console.error("[offline][pushMessage] update false");
                     return false;
                 }
+                console.log('[offline][pushCache] insert into mongodb pushCache is success .res is ', res);
             });
-        }
+        });
     }, {ip: mg2.ip, port: mg2.port, name: 'offline_pushMessage'});
-
-    //deal with the message push , the touser can be like this 1,2,3 (multi)
-    for (var i = 0, len = toUserArray.length; i < len; i++) {
-        //save to offline
-        exports.offlineSave(message.messageId, toUserArray[i], poster);
-    }
 };
 
 /**
@@ -324,7 +326,6 @@ function notificationCallback(messages, toUser) {
         collection.update({
             '_id': parseInt(msg.msgid)
         }, {
-            //TODO:if need , don't forget pull out form the unreceived list
             $push: pushObj,
             $pull: pullObj
         }, function(err, res) {

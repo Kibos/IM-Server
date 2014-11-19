@@ -121,7 +121,9 @@ var group = function() {
                 });
             } else {
                 msg.groupname = msg.groupname || (exp.conf.groupName[gId] ? (exp.conf.groupName[gId].groupname || '') : '');
-                exp.groupMessageSend(res, msg);
+                if (msg.action != 'groupChange' && msg.action != 'GMemberAdd' && msg.action != 'GMemberRemove' && msg.action != 'GCreaterChange') {
+                    exp.groupMessageSend(res, msg);
+                }
                 delete exp.conf.msgStack[gId].list;
             }
         });
@@ -278,7 +280,9 @@ var group = function() {
     exp.messagePushResult = function(msg, onlineUser, offlineUser) {
         //group push
         if (offlineUser) {
-            offline.pushMessage(msg, offlineUser.join(','), msg.poster);
+            offlineUser.every(function(user) {
+                offline.pushMessage(msg, user, msg.poster);
+            });
         }
         //save the message status to mongodb
         msgSave.sta({
@@ -319,12 +323,12 @@ var group = function() {
                 }
             }, function(err, res) {
                 if (err) {
-                    console.error('[group.js update failed]--->', '\n\t err:', err, setVal);
+                    console.error('[group server Notices update failed]--->', '\n\t err:', err, setVal);
                     return false;
                 }
                 msg.online = [];
                 msg.offline = [];
-                console.log('[group.js update success]--->', msgId, '\n\t ', setVal, res);
+                console.log('[group server Notices update success]--->', msgId, '\n\t ', setVal, res);
             });
         },{ip: conf.mongodb.mg3.ip, port: conf.mongodb.mg3.port, name: 'update_msgPushResult'});
     };
