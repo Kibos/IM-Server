@@ -221,7 +221,7 @@ var client = {
 
 (function connectServe() {
     var clientConnect = net.connect({
-        host: '10.21.3.89',
+        host: '10.21.67.159',
         port: 5457
     }, function() {
 

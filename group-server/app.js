@@ -121,9 +121,7 @@ var group = function() {
                 });
             } else {
                 msg.groupname = msg.groupname || (exp.conf.groupName[gId] ? (exp.conf.groupName[gId].groupname || '') : '');
-                if (msg.action != 'groupChange' && msg.action != 'GMemberAdd' && msg.action != 'GMemberRemove' && msg.action != 'GCreaterChange') {
-                    exp.groupMessageSend(res, msg);
-                }
+                exp.groupMessageSend(res, msg);
                 delete exp.conf.msgStack[gId].list;
             }
         });

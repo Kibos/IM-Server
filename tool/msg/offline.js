@@ -27,7 +27,19 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
         return false;
     }
 
-    if (poster) {
+    //sys message (groupPull|groupKick)
+    if (!poster) {
+        async.waterfall([
+            function (cb) {
+                exports.offlineSave(message.messageId, touser, poster, cb);
+            }
+        ], function(err) {
+            if (err) {
+                console.error('[offline][offlineSave] is false, err is ', err);
+            }
+            return false;
+        });
+    } else {
         // save into redis '3' offline
         exports.offlineSave(message.messageId, touser, poster);
     }
@@ -84,57 +96,47 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
     mongoConnect.connect(function(MongoConn) {
         var pushCache = MongoConn.db(mg2.dbname).collection('PushCache');
         var pushStack = MongoConn.db(mg2.dbname).collection('PushStack');
-        //get the total number and save to the redis stack
-        pushCache.find({
-            'touser': parseInt(touser)
-        }).toArray(function(err, res) {
+
+        //insert into redis
+        redisConnect.connect(port, redisIp, function(client) {
+            if (port >= 6380 && port <= 6382) {
+                port++;
+            } else {
+                port = 6380;
+            }
+            client.LPUSH('pushStack', JSON.stringify(StackObj), function (err, res) {
+                if (err) {
+                    console.error('[offline][LPUSH] is false. err is ', err);
+                }
+                console.log('[offline][LPUSH] is success, result is ', res);
+            });
+        });
+
+        //TODO cut
+        //insert into mongodb
+        pushStack.insert(StackObj, function(err, res) {
             if (err) {
-                console.error('[msgsend][offline] find push Cache false');
+                console.error("[offline][pushMessage] insert false. err is ", err);
                 return false;
             }
-            StackObj.count = res.total;
+            console.log('[offline][pushStack] insert into mongodb pushStack is success .res is ', res);
+            if (callback) callback();
+        });
 
-            //insert into redis
-            redisConnect.connect(port, redisIp, function(client) {
-                if (port >= 6380 && port <= 6383) {
-                    port++;
-                } else {
-                    port = 6380;
-                }
-                client.LPUSH('pushStack', JSON.stringify(StackObj), function (err, res) {
-                    if (err) {
-                        console.error('[offline][LPUSH] is false. err is ', err);
-                    }
-                    console.log('[offline][LPUSH] is success, result is ', res, temps);
-                });
-            });
-
-            //TODO cut
-            //insert into mongodb
-            pushStack.insert(StackObj, function(err, res) {
-                if (err) {
-                    console.error("[offline][pushMessage] insert false. err is ", err);
-                    return false;
-                }
-                console.log('[offline][pushStack] insert into mongodb pushStack is success .res is ', res);
-                if (callback) callback();
-            });
-
-            pushCache.update({
-                'touser': parseInt(touser)
-            }, {
-                $inc: {
-                    'total': 1
-                }
-            }, {
-                'upsert': true
-            }, function(err, res) {
-                if (err) {
-                    console.error("[offline][pushMessage] update false");
-                    return false;
-                }
-                console.log('[offline][pushCache] insert into mongodb pushCache is success .res is ', res);
-            });
+        pushCache.update({
+            'touser': parseInt(touser)
+        }, {
+            $inc: {
+                'total': 1
+            }
+        }, {
+            'upsert': true
+        }, function(err, res) {
+            if (err) {
+                console.error("[offline][pushMessage] update false");
+                return false;
+            }
+            console.log('[offline][pushCache] insert into mongodb pushCache is success .res is ', res);
         });
     }, {ip: mg2.ip, port: mg2.port, name: 'offline_pushMessage'});
 };
@@ -143,7 +145,7 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
  * save to offline
  * @param {[type]} [varname] [description]
  */
-exports.offlineSave = function(messageId, touser, poster) {
+exports.offlineSave = function(messageId, touser, poster, callback) {
 
     var message = poster + ':' + messageId;
     redisConnect.connect(redisPort, redisIp, function(client) {
@@ -151,7 +153,7 @@ exports.offlineSave = function(messageId, touser, poster) {
             client.LPUSH (touser, message, function (err, res) {
                 if (err) {
                     console.error('[offline][offlineSave] LPUSH is false, err is ', err);
-                    return false;
+                    if (callback) callback(err);
                 }
                 if (res > 20) {
                     client.LTRIM(touser, start, end, function(err, res) {
@@ -160,6 +162,7 @@ exports.offlineSave = function(messageId, touser, poster) {
                             return false;
                         }
                         console.log('[offline][LTRIM] ', touser, 'result is ', res);
+                        if (callback) callback(null);
                     });
                 }
 
@@ -169,6 +172,7 @@ exports.offlineSave = function(messageId, touser, poster) {
                         return false;
                     }
                     console.log(touser, 'offline lists : ', res);
+                    if (callback) callback(null);
                 });
             });
         });

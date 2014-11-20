@@ -78,6 +78,7 @@ function group(req, res, json) {
         if (err) {
             console.error('[dispatch server][group] is false. err is ', err);
         }
+        console.log('[notifications][group] is success.')
     });
 }
 
