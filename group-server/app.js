@@ -278,7 +278,7 @@ var group = function() {
     exp.messagePushResult = function(msg, onlineUser, offlineUser) {
         //group push
         if (offlineUser) {
-            offlineUser.every(function(user) {
+            offlineUser.forEach(function(user) {
                 offline.pushMessage(msg, user, msg.poster);
             });
         }

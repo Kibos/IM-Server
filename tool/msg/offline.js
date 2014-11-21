@@ -27,22 +27,8 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
         return false;
     }
 
-    //sys message (groupPull|groupKick)
-    if (!poster) {
-        async.waterfall([
-            function (cb) {
-                exports.offlineSave(message.messageId, touser, poster, cb);
-            }
-        ], function(err) {
-            if (err) {
-                console.error('[offline][offlineSave] is false, err is ', err);
-            }
-            return false;
-        });
-    } else {
-        // save into redis '3' offline
-        exports.offlineSave(message.messageId, touser, poster);
-    }
+    // save into redis '3' offline
+    exports.offlineSave(message.messageId, touser, poster);
 
     var poster = poster || message.poster;
     var username = '易班';
@@ -79,6 +65,7 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
         }
         text = username + ': ' + textMsg;
     } else {
+        //poster === undefined means message.action = GMemberAdd or GMemberRemove or GCreaterChange
         console.error('[pushMessage] is false. message is ', message);
         return false;
     }
