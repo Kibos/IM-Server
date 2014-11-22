@@ -11,7 +11,7 @@ var msgSave = require('../tool/msg/msgsave');
 var async = require('async');
 var appInfo = {
     ip: process.argv[2],
-    port: process.argv[3],
+    port: parseInt(process.argv[3]),
     type: 'GNode',
     id: 'gn_' + process.argv[2] + '_' + process.argv[3]
 };
