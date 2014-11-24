@@ -84,32 +84,41 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
         var pushCache = MongoConn.db(mg2.dbname).collection('PushCache');
         var pushStack = MongoConn.db(mg2.dbname).collection('PushStack');
 
-        //insert into redis
-        redisConnect.connect(port, redisIp, function(client) {
-            if (port >= 6380 && port <= 6382) {
-                port++;
-            } else {
-                port = 6380;
-            }
-            client.LPUSH('pushStack', JSON.stringify(StackObj), function (err, res) {
-                if (err) {
-                    console.error('[offline][LPUSH] is false. err is ', err);
-                }
-                console.log('[offline][LPUSH] is success, result is ', res);
-            });
-        });
-
-        //TODO cut
-        //insert into mongodb
-        pushStack.insert(StackObj, function(err, res) {
+        //get the total number and save to the redis stack
+        pushCache.find({
+            'touser': parseInt(touser)
+        }).toArray(function(err, res) {
             if (err) {
-                console.error("[offline][pushMessage] insert false. err is ", err);
+                console.error('[msgsend][offline] find push Cache false');
                 return false;
             }
-            console.log('[offline][pushStack] insert into mongodb pushStack is success .res is ', res);
-            if (callback) callback();
-        });
+            StackObj.count = res.total;
+            //insert into redis
+            redisConnect.connect(port, redisIp, function (client) {
+                if (port >= 6380 && port <= 6382) {
+                    port++;
+                } else {
+                    port = 6380;
+                }
+                client.LPUSH('pushStack', JSON.stringify(StackObj), function (err, res) {
+                    if (err) {
+                        console.error('[offline][LPUSH] is false. err is ', err);
+                    }
+                    console.log('[offline][LPUSH] is success, result is ', res);
+                });
+            });
 
+            //TODO cut
+            //insert into mongodb
+            pushStack.insert(StackObj, function (err, res) {
+                if (err) {
+                    console.error("[offline][pushMessage] insert false. err is ", err);
+                    return false;
+                }
+                console.log('[offline][pushStack] insert into mongodb pushStack is success .res is ', res);
+                if (callback) callback();
+            });
+        });
         pushCache.update({
             'touser': parseInt(touser)
         }, {

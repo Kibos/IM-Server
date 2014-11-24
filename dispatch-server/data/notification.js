@@ -177,7 +177,7 @@ function person(req, res, json) {
     json.status = 200;
     json.time = +new Date();
 
-    async.eachSeries(users, function(user, callback) {
+    async.each(users, function(user, callback) {
         pushmessage(user, json, callback);
     }, function(err) {
         if (err) {
