@@ -197,19 +197,19 @@ var group = function() {
         var users = redisInfo.users || [];
 
         redisConnect.connect(host.port, host.ip, function(client) {
-            msg.online = [];
-            msg.offline = [];
+            var onlineArr = [];
+            var offlineArr = [];
 
             client.select('0', function() {
-                async.eachSeries(users, function (item, callback) {
-                    exp.sendToPerson(item, client, msg, callback);
+                async.each(users, function (item, callback) {
+                    exp.sendToPerson(item, client, msg, onlineArr, offlineArr, callback);
                 }, function (err) {
                     if (err) {
                         console.error('[group server][sendByRedis] sendToPerson is false. err is ', err);
                     }
-                    console.log('[group server][sendByRedis] msg online is ', msg.online,
-                        'msg offline is ', msg.offline, 'users is ', users);
-                    exp.messagePushResult(msg, msg.online, msg.offline);
+                    console.log('[group server][sendByRedis] msg online is ', onlineArr,
+                        'msg offline is ', offlineArr, 'users is ', users);
+                    exp.messagePushResult(msg, onlineArr, offlineArr);
                 });
             });
         });
@@ -221,20 +221,20 @@ var group = function() {
      * @param client
      * @param msg
      */
-    exp.sendToPerson = function(user, client, msg, callback) {
+    exp.sendToPerson = function(user, client, msg, onlineArr, offlineArr, callback) {
         client.sismember('online', user, function(err, res) {
             if (err) {
                 console.error('[group server][sendToPerson] sismember is false. err is ', err);
                 callback(err);
             }
             if (res === 1) {
-                //scoket is online
+                //socket is online
                 client.publish('Room.' + user, JSON.stringify(msg));
-                msg.online.push(parseInt(user));
+                onlineArr.push(parseInt(user));
                 if (callback) callback();
             } else {
                 //socket is offline
-                msg.offline.push(parseInt(user));
+                offlineArr.push(parseInt(user));
                 if (callback) callback();
             }
         });
@@ -293,8 +293,8 @@ var group = function() {
         //save only type is 6 or 7
         if (!(msg.type == 6 || msg.type == 7)) {
             console.log('message is not notications ...... ');
-            msg.online = [];
-            msg.offline = [];
+            onlineUser = [];
+            offlineUser = [];
             return false;
         }
 
@@ -324,8 +324,8 @@ var group = function() {
                     console.error('[group server Notices update failed]--->', '\n\t err:', err, setVal);
                     return false;
                 }
-                msg.online = [];
-                msg.offline = [];
+                onlineUser = [];
+                offlineUser = [];
                 console.log('[group server Notices update success]--->', msgId, '\n\t ', setVal, res);
             });
         },{ip: conf.mongodb.mg3.ip, port: conf.mongodb.mg3.port, name: 'update_msgPushResult'});
