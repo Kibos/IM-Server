@@ -19,3 +19,15 @@ deal with third party
 Monitor Server
 ----
 monitor all server status
+Start
+----
+- cd ./pm2-start/
+- pm2 start process_dev.json
+
+like this
+
+![image](https://github.com/haozxuan/chat/raw/master/images/server_list.png)
+
+    or
+- cd ./node-server
+- node app.js (only can person chat)

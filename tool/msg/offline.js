@@ -7,14 +7,16 @@ var redisPort = conf.sta.redis.cache.port;
 var redisIp = conf.sta.redis.cache.ip;
 var select = conf.sta.redis.cache.select;
 var mongodb = conf.mongodb;
-
 var mg1 = mongodb.mg1;
 var mg2 = mongodb.mg2;
 var mg3 = mongodb.mg3;
 
+var nutcrackerConnect = require('../../connect/nutcracker');
+var pushPort = conf.Server.NRedis.pr1.port;
+var pushIp = conf.Server.NRedis.pr1.ip;
+
 var start = 0;
 var end = 19;
-var port = parseInt(redisPort);
 
 /**
  * push message
@@ -60,7 +62,7 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
             textMsg = message.text;
         } else if (message.image) {
             textMsg = '发来一张[图片]';
-        } else if (message.video) {
+        } else if (message.audio) {
             textMsg = '发来一条[语音]';
         }
         text = username + ': ' + textMsg;
@@ -94,13 +96,10 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
             }
             StackObj.count = res.total;
             //insert into redis
-            redisConnect.connect(port, redisIp, function (client) {
-                if (port >= 6380 && port <= 6382) {
-                    port++;
-                } else {
-                    port = 6380;
-                }
-                client.LPUSH('pushStack', JSON.stringify(StackObj), function (err, res) {
+
+            nutcrackerConnect.connect(pushPort, pushIp, function (client) {
+                var key = 'pushStack' + new Date()%4;
+                client.RPUSH(key, JSON.stringify(StackObj), function (err, res) {
                     if (err) {
                         console.error('[offline][LPUSH] is false. err is ', err);
                     }
