@@ -243,16 +243,13 @@ exports.getMsg = function(userid, callback) {
                         if (callback) callback(err);
                     }
                     //delete offline list from redis
-                    for (var i = 0; i < res.length; i ++) {
-                        client.RPOP(userid, function(err, result) {
-                            if (err) {
-                                console.error('[offline][getMsg] RPOP is false, err is ', err);
-                                if (callback) callback(err);
-                            }
-                            console.log('[lists] delete  ', result);
-                        });
-                    }
-
+                    client.DEL(userid, function(err, result) {
+                        if (err) {
+                            console.error('[offline][getMsg] DEL is false, err is ', err);
+                            if (callback) callback(err);
+                        }
+                        console.log('[', userid, ' lists] is delete, result is  ', result);
+                    });
                     console.log("return client result is ", result);
                     if (callback) callback(result);
                 });

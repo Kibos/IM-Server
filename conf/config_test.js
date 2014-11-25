@@ -51,6 +51,12 @@ exports.Server = {
             'port': '6391'
         }
     },
+    NRedis: {
+        'pr1': {
+            'ip': '10.21.X.X', //pushStack redis
+            'port': 'X'
+        }
+    },
     GRedis: {
         'gr1': {
             'ip': '10.21.3.42', //gmsg.2.redis
