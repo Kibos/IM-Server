@@ -154,8 +154,8 @@ io.sockets.on('connection', function(socket) {
                 socket.emit('ybmp', rec);
             }
         } else if (rec.order == 'OFL') {
-            if (rec.action == "person") {
-                offline.getMoreByPerson(rec.userid, rec.poster, rec.limit, function(data) {
+            if (rec.action) {
+                offline.getMoreMsg(rec.userid, rec.poster, rec.limit, rec.action, function(data) {
                     rec.data = data;
                     rec.status = 200;
                     socket.emit('ybmp', rec);

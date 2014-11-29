@@ -253,10 +253,9 @@ function person(req, res, json) {
             //save msg statu to mongodb
             msgSave.sta({
                 'messageId': json.messageId,
-                'touser': [parseInt(json.touser)],
-                'poster': parseInt(json.poster),
-                'type': 7,
-                'time': json.time
+                'touser': json.touser,
+                'poster': json.poster,
+                'type': 7
             }, callback);
         }
 

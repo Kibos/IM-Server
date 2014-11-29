@@ -17,6 +17,7 @@ var pushIp = conf.Server.NRedis.pr1.ip;
 
 var start = 0;
 var end = 19;
+var pushListNum = 10;
 
 /**
  * push message
@@ -96,14 +97,13 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
             }
             StackObj.count = res.total;
             //insert into redis
-
             nutcrackerConnect.connect(pushPort, pushIp, function (client) {
-                var key = 'pushStack' + new Date()%4;
+                var key = 'pushStack' + new Date()%pushListNum;
                 client.RPUSH(key, JSON.stringify(StackObj), function (err, res) {
                     if (err) {
                         console.error('[offline][LPUSH] is false. err is ', err);
                     }
-                    console.log('[offline][LPUSH] is success, result is ', res);
+                    console.log('[offline][RPUSH] is success, result is ', res);
                 });
             });
 
@@ -341,64 +341,56 @@ function notificationCallback(messages, toUser) {
  * @param  {Number} limit      home many per time
  * @return {[type]}            [description]
  */
-exports.getMoreByPerson = function(userid, sendUserId, limit, callback) {
 
-    // TODO BUG
-    return false;
-    //
-    if (!userid || !sendUserId) {
-        console.error('[offline][getMoreByPerson] parameters error, userId: sendUserId:', userid, sendUserId);
+exports.getMoreMsg = function(userid, poster, limit, action, callback) {
+    if (!userid || !poster || !action) {
+        console.error('[offline][getMoreByPerson] parameters error, userId: poster: action:', userid, poster, action);
         return false;
     }
     limit = parseInt(limit) || 20;
 
-    mongoConnect.connect(function(MongoConn) {
-        var MsgSta = MongoConn.db(mg2.dbname).collection('MsgSta');
-        var findSql = {
-            'unreach': parseInt(userid)
-        };
+    var redisIp, redisPort;
+    if (rec.action == "person") {
+        redisIp = conf.Server.MRedis.pr1.ip;
+        redisPort = conf.Server.MRedis.pr1.port;
+    } else if (rec.action == "group") {
+        redisIp = conf.Server.MRedis.pr2.ip;
+        redisPort = conf.Server.MRedis.pr2.port;
+    } else {
+        console.log('[offline][getMoreByPerson] parameter action is unnormal, action is ', action);
+        return false;
+    }
 
-        if (sendUserId) {
-            findSql.poster = parseInt(sendUserId);
-        }
-
-        MsgSta.find(findSql).sort({
-            '_id': -1
-        }).limit(limit).toArray(function(err, res) {
-            var mongoIds = [];
-            var ids = [];
-            if (err || res.length < 1) {
+    redisConnect.connect(redisPort, redisIp, function(client) {
+        var key = poster + ':' + userid;
+        client.ZRANGE(key, -limit, -1, function(err, messageIds) {
+            if (err) {
+                console.error('[offline][getMoreByPerson] ZRANGE is false, err is ', err);
+                if (callback) callback(err);
+                return false;
+            }
+            if (messageIds.length < 1) {
                 if (callback) callback([]);
-            } else {
-
-                for (var i = 0, len = res.length; i < len; i++) {
-                    mongoIds.push(res[i]._id);
-                    ids.push(res[i].messageId);
-                }
-                getRealMsg(ids, userid, function(res) {
-                    if (callback) callback(res);
-                });
+                return false;
             }
 
-            //update the message status
-            MsgSta.update({
-                '_id': {
-                    $in: mongoIds
-                }
-            }, {
-                $pull: {
-                    'unreach': parseInt(userid)
-                }
-            }, {
-                multi: true
-            }, function(err, res) {
+            client.ZREMRANGEBYRANK(key, -limit, -1, function(err) {
                 if (err) {
-                    console.error("[offline][getMoreByPerson] MsgSta update error");
+                    console.error('[offline][getMoreByPerson] ZREMRANGEBYRANK is false, err is ', err);
+                    if (callback) callback(err);
                     return false;
                 }
-                console.log('The number of updated documents was %d', res);
+            });
+
+            getRealMsg(messageIds, userid, function(err, res) {
+                if (err) {
+                    console.error('[offline][getMoreByPerson] getRealMsg is false, err is ', err);
+                    if (callback) callback(err);
+                    return false;
+                }
+                if (callback) callback(res);
             });
         });
-    }, {ip: mg2.ip, port: mg2.port, name: 'update_msgsta_more_info'});
 
+    });
 };

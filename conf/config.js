@@ -61,6 +61,16 @@ exports.Server = {
             'port': '22121'
         }
     },
+    MRedis: {
+        'pr1': {
+            'ip': '10.21.3.59', //MsgSta redis(person)
+            'port': '6380'
+        },
+        'pr2': {
+            'ip': '10.21.3.59', //MsgSta redis(group)
+            'port': '6381'
+        }
+    },
     GRedis: {
         'gr1': {
             'ip': '10.21.3.66', //gmsg.2.redis

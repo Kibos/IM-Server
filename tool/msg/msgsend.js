@@ -78,13 +78,12 @@ exports.sendToPerson = function(msg, touser, poster, socket) {
             //success
         });
     }, {ip: mg1.ip, port: mg1.port, name: 'insert_msgSend_Person'});
-    //save msg statu to mongodb
+    //save msg status to redis
     msgSave.sta({
         'messageId': msg.messageId,
-        'touser': [parseInt(msg.touser)],
-        'poster': parseInt(msg.poster),
-        'type': 0,
-        'time': msg.time
+        'touser': msg.touser,
+        'poster': msg.poster,
+        'type': 0
     });
 };
 
@@ -366,12 +365,11 @@ exports.sys = function(touser, msg) {
         });
     }, {ip: mg1.ip, port: mg1.port, name: 'insert_Message_sys'});
 
-    //save msg statu to mongodb
+    //save msg status to redis
     msgSave.sta({
         'messageId': msg.messageId,
-        'touser': [parseInt(touser)],
+        'touser': touser,
         'poster': -999,
-        'type': 2,
-        'time': msg.time
+        'type': 2
     });
 };

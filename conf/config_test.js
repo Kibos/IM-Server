@@ -78,7 +78,7 @@ exports.legalIP = {
 exports.users = {};
 
 exports.NodeInfo = {
-    BNode : {
+    Brain : {
         ip: '10.21.3.92',
         port: 4999
     }

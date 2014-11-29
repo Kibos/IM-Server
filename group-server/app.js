@@ -280,16 +280,15 @@ var group = function() {
         if (offlineUser) {
             offlineUser.forEach(function(user) {
                 offline.pushMessage(msg, user, msg.poster);
+                //save the message status to redis
+                msgSave.sta({
+                    'messageId': msg.messageId,
+                    'poster': msg.togroup,
+                    'touser': user,
+                    'type': 1
+                });
             });
         }
-        //save the message status to mongodb
-        msgSave.sta({
-            'messageId': msg.messageId,
-            'poster': parseInt(msg.poster),
-            'touser': offlineUser,
-            'type': 1,
-            'time': msg.time
-        });
         //save only type is 6 or 7
         if (!(msg.type == 6 || msg.type == 7)) {
             console.log('message is not notications ...... ');
