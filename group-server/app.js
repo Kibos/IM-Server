@@ -94,6 +94,13 @@ var group = function() {
                 exp.conf.isFirstTime = false;
                 exp.conf.msgStack[gId].sta = 'ing';
                 exp.getGroupMember(gId, function(memberInfo) {
+                    if (!Array.isArray(memberInfo.members)) {
+                        var array = [];
+                        for (var i in memberInfo.members) {
+                            array.push(memberInfo.members[i]);
+                        }
+                        memberInfo.members = array;
+                    }
                     if (memberInfo.members && memberInfo.members.length > 0) {
                         exp.conf.group[gId] = {};
                         //save the group name
