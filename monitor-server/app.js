@@ -2,6 +2,7 @@
 var http = require('http');
 var router = require('../dispatch-server/data/router');
 var brain = require('../tool/brain.js');
+var exec = require('child_process').exec;
 var monitorInfo = {
     ip: process.argv[2],
     port: parseInt(process.argv[3]),
@@ -17,6 +18,18 @@ router.get('/monitor', function(req, res, NodeInfo) {
     }
 
     require('../tool/monitor').MonitorPub(res, NodeInfo);
+});
+
+router.get('/monitorLogs', function(req, res) {
+    var cmd = "sh ./monitor_logs.sh";
+
+    exec(cmd, function(err, out, code) {
+        if (err) {
+            console.error('exec is falsed. err is ', code);
+            return false;
+        }
+        res.end(JSON.stringify({"result" : out}));
+    });
 });
 
 function ret403(req, res, msg) {

@@ -285,8 +285,22 @@ var group = function() {
     exp.messagePushResult = function(msg, onlineUser, offlineUser) {
         //group push
         if (offlineUser) {
+            if (offlineUser.length < 200) {
+                offline.pushMessage1(msg, offlineUser, msg.poster);
+            } else {
+                var increment = 200;
+                var temp = {};
+                var start = 0, end = increment;
+                for (var i = 0; i < Math.ceil(offlineUser.length/increment); i ++) {
+                    temp[i] = offlineUser.slice(start, end);
+                    start = end;
+                    end = start + increment;
+                }
+                for (var j in temp) {
+                    offline.pushMessage1(msg, temp[j], msg.poster);
+                }
+            }
             offlineUser.forEach(function(user) {
-                offline.pushMessage(msg, user, msg.poster);
                 //save the message status to redis
                 msgSave.sta({
                     'messageId': msg.messageId,

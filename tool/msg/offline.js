@@ -111,7 +111,7 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
                 var key = 'pushStack' + new Date()%pushListNum;
                 client.RPUSH(key, JSON.stringify(StackObj), function (err, res) {
                     if (err) {
-                        console.error('[offline][LPUSH] is false. err is ', err);
+                        console.error('[offline][RPUSH] is false. err is ', err);
                     }
                     console.log('[offline][RPUSH] is success, result is ', res);
                 });
@@ -145,6 +145,142 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
         });
     }, {ip: mg2.ip, port: mg2.port, name: 'offline_pushMessage'});
 };
+
+exports.pushMessage1 = function(message, touserArr, poster, option, callback) {
+    if (!touserArr.length) {
+        console.error('[offline][pushMessage] touser is missing.');
+        return false;
+    }
+
+    // save into redis '3' offline
+    for(var i in touserArr) {
+        exports.offlineSave(message.messageId, touserArr[i], poster);
+    }
+
+    var poster = poster || message.poster;
+    var username = '易班';
+    var textMsg = '你收到了一条消息';
+    var text = '';
+
+    console.log('This is a debug logs : message is ', message, 'poster is ', poster);
+
+    //abandon system message
+    if (poster == 'SYS') {
+        //request join a group
+        if (message.noti_type == 'group' && message.action == 'request') {
+            //wiki http://10.21.118.240/wiki/doku.php?id=ybmp#群组请求
+            text = message.hostname + '申请加入' + message.groupname;
+        } else {
+            console.error('[pushMessage][sys] message.action is ', message.action);
+            return false;
+        }
+    } else if (!isNaN(poster)){
+        if (message.groupname) {
+            username = message.groupname + (message.username ? '(' + message.username + ')' : '');
+        } else if (message.username) {
+            username = message.username;
+        }
+
+        if (message.noti_type) {
+            if (parseInt(message.type) == 6 || parseInt(message.type) == 7) {
+                textMsg = '发来一条[通知]';
+            } else if (parseInt(message.type) == 10) {
+                textMsg = '发来一条[分享]';
+            }
+        } else if (message.text) {
+            textMsg = message.text;
+        } else if (message.image) {
+            textMsg = '发来一张[图片]';
+        } else if (message.audio) {
+            textMsg = '发来一条[语音]';
+        }
+        text = username + ': ' + textMsg;
+    } else {
+        //poster === undefined means message.action = GMemberAdd or GMemberRemove or GCreaterChange
+        console.error('[pushMessage] is false. message is ', message);
+        return false;
+    }
+
+    var StackObj = {
+        'toUser': touserArr.join(','),
+        'groupId': parseInt(message.togroup) || null,
+        'poster': parseInt(poster),
+        'msg': text,
+        'content': message,
+        'time': new Date(),
+        'count': []
+    };
+
+    //message.username,message.groupname
+    mongoConnect.connect(function(MongoConn) {
+        var pushCache = MongoConn.db(mg2.dbname).collection('PushCache');
+        var pushStack = MongoConn.db(mg2.dbname).collection('PushStack');
+
+        //get the total number and save to the redis stack
+        pushCache.find({
+            'touser': {
+                $in: touserArr
+            }
+        }).toArray(function(err, res) {
+            if (err) {
+                console.error('[msgsend][offline] find push Cache false');
+                return false;
+            }
+
+            var temp = {};
+            for (var i = 0, len = res.length; i < len; i++) {
+                var userid = res[i].touser;
+                var total = res[i].total;
+                temp[userid] = total;
+            }
+            for (i = 0, len = touserArr.length; i < len; i++) {
+                var count = temp[touserArr[i]] || 0;
+                StackObj.count.push(++count);
+                pushUpdate(touserArr[i]);
+            }
+
+            //insert into redis
+            nutcrackerConnect.connect(pushPort, pushIp, function (client) {
+                var key = 'pushStack' + new Date()%pushListNum;
+                client.RPUSH(key, JSON.stringify(StackObj), function (err, res) {
+                    if (err) {
+                        console.error('[offline][RPUSH] is false. err is ', err);
+                    }
+                    console.log('[offline][RPUSH] is success, result is ', res);
+                });
+            });
+            //TODO cut
+            //insert into mongodb
+            pushStack.insert(StackObj, function (err, res) {
+                if (err) {
+                    console.error("[offline][pushMessage] insert false. err is ", err);
+                    return false;
+                }
+                console.log('[offline][pushStack] insert into mongodb pushStack is success .res is ', res);
+                if (callback) callback();
+            });
+        });
+
+        function pushUpdate(touser) {
+            pushCache.update({
+                'touser': parseInt(touser)
+            }, {
+                $inc: {
+                    'total': 1
+                }
+            }, {
+                'upsert': true
+            }, function(err, res) {
+                if (err) {
+                    console.error("[offline][pushMessage] update false");
+                    return false;
+                }
+                console.log('[offline][pushCache] insert into mongodb pushCache is success .res is ', res);
+            });
+        }
+    }, {ip: mg2.ip, port: mg2.port, name: 'offline_pushMessage'});
+};
+
 
 /**
  * save to offline
