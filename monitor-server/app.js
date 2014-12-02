@@ -28,7 +28,7 @@ router.get('/monitorLogs', function(req, res) {
             console.error('exec is falsed. err is ', code);
             return false;
         }
-        res.end(JSON.stringify({"result" : out}));
+        res.end(out);
     });
 });
 
