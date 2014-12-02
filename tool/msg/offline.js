@@ -57,8 +57,12 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
             username = message.username;
         }
 
-        if ((message.noti_type) && (parseInt(message.type) == 6 || parseInt(message.type) == 7)) {
-            textMsg = '发来一条[通知]';
+        if (message.noti_type) {
+            if (parseInt(message.type) == 6 || parseInt(message.type) == 7) {
+                textMsg = '发来一条[通知]';
+            } else if (parseInt(message.type) == 10) {
+                textMsg = '发来一条[分享]';
+            }
         } else if (message.text) {
             textMsg = message.text;
         } else if (message.image) {
@@ -74,7 +78,7 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
     }
 
     var StackObj = {
-        'toUser': touser,
+        'toUser': parseInt(touser),
         'groupId': parseInt(message.togroup) || null,
         'poster': parseInt(poster),
         'msg': text,
@@ -95,7 +99,13 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
                 console.error('[msgsend][offline] find push Cache false');
                 return false;
             }
-            StackObj.count = res.total;
+            if (res.length != 1) {
+                res[0] = {};
+                res[0].total = 1;
+            } else {
+                res[0].total += 1;
+            }
+            StackObj.count = res[0].total;
             //insert into redis
             nutcrackerConnect.connect(pushPort, pushIp, function (client) {
                 var key = 'pushStack' + new Date()%pushListNum;
@@ -198,9 +208,14 @@ exports.getMsg = function(userid, callback) {
     redisConnect.connect(redisPort, redisIp, function(client) {
         client.select(select, function () {
             client.LRANGE(userid, 0, -1, function (err, res) {
-                if (err || !res) {
+                if (err) {
                     console.error('[offline][getMsg] LRANGE is false, err is ', err);
-                    if (callback) callback(err || []);
+                    if (callback) callback(err);
+                    return false;
+                }
+                if (!res.length) {
+                    console.log('user' + userid + 'have not offline message.');
+                    if (callback) callback([]);
                     return false;
                 }
 

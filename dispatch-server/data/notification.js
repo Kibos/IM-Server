@@ -287,6 +287,8 @@ function person(req, res, json) {
                     console.error("[notification][Notices] update false, err is ", err);
                     return false;
                 }
+                received = [];
+                unreceived = [];
                 console.log('[dispatch_notification.js update success]-->', json.msgid, setVal);
             });
 
