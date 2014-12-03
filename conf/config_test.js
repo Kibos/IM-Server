@@ -1,11 +1,11 @@
 exports.mongodb = {
     mg1: {
-        port: 27019,
+        port: 27017,
         ip: '10.21.3.44',
         dbname: 'larvel'
     },
     mg2: {
-        port: 27019,
+        port: 27018,
         ip: '10.21.3.44',
         dbname: 'larvel'
     },

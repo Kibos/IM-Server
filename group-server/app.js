@@ -286,7 +286,7 @@ var group = function() {
         //group push
         if (offlineUser) {
             if (offlineUser.length < 200) {
-                offline.pushMessage1(msg, offlineUser, msg.poster);
+                offline.pushGroupMessage(msg, offlineUser, msg.poster);
             } else {
                 var increment = 200;
                 var temp = {};
@@ -297,7 +297,7 @@ var group = function() {
                     end = start + increment;
                 }
                 for (var j in temp) {
-                    offline.pushMessage1(msg, temp[j], msg.poster);
+                    offline.pushGroupMessage(msg, temp[j], msg.poster);
                 }
             }
             offlineUser.forEach(function(user) {

@@ -146,7 +146,7 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
     }, {ip: mg2.ip, port: mg2.port, name: 'offline_pushMessage'});
 };
 
-exports.pushMessage1 = function(message, touserArr, poster, option, callback) {
+exports.pushGroupMessage = function(message, touserArr, poster) {
     if (!touserArr.length) {
         console.error('[offline][pushMessage] touser is missing.');
         return false;
@@ -248,16 +248,6 @@ exports.pushMessage1 = function(message, touserArr, poster, option, callback) {
                     }
                     console.log('[offline][RPUSH] is success, result is ', res);
                 });
-            });
-            //TODO cut
-            //insert into mongodb
-            pushStack.insert(StackObj, function (err, res) {
-                if (err) {
-                    console.error("[offline][pushMessage] insert false. err is ", err);
-                    return false;
-                }
-                console.log('[offline][pushStack] insert into mongodb pushStack is success .res is ', res);
-                if (callback) callback();
             });
         });
 
