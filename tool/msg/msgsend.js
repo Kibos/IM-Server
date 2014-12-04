@@ -22,11 +22,9 @@ var redisIp = config.sta.redis.cache.ip;
  *   param options.callback {Object}
  *
  **/
-exports.person = function(rec, socket, options) {
+exports.person = function(rec, socket) {
 
-    safe.friend(rec.poster, rec.touser, rec.access_token, {
-        'catch': options.user
-    }, function(isSafe) {
+    safe.friend(rec.poster, rec.touser, rec.access_token, function(isSafe) {
         if (isSafe) {
             exports.sendToPerson(rec, rec.touser, rec.poster, socket);
         } else {
@@ -80,13 +78,12 @@ exports.sendToPerson = function(msg, touser, poster, socket) {
             //success
         });
     }, {ip: mg1.ip, port: mg1.port, name: 'insert_msgSend_Person'});
-    //save msg statu to mongodb
+    //save msg status to redis
     msgSave.sta({
         'messageId': msg.messageId,
-        'touser': [parseInt(msg.touser)],
-        'poster': parseInt(msg.poster),
-        'type': 0,
-        'time': msg.time
+        'touser': msg.touser,
+        'poster': msg.poster,
+        'type': 0
     });
 };
 
@@ -258,6 +255,7 @@ function sendGroupMessage(groupServer, rec, callback) {
     mongoConnect.connect(function(mongoC) {
         mongoC.db(mg1.dbname).collection('Message').insert(msgData, function() {
             //Message insert success
+            console.log('[msgsend][insert into Message] is success.');
             if (callback) callback();
         });
     }, {ip: mg1.ip, port: mg1.port, name: 'insert_msgSend_Group'});
@@ -367,12 +365,11 @@ exports.sys = function(touser, msg) {
         });
     }, {ip: mg1.ip, port: mg1.port, name: 'insert_Message_sys'});
 
-    //save msg statu to mongodb
+    //save msg status to redis
     msgSave.sta({
         'messageId': msg.messageId,
-        'touser': [parseInt(touser)],
+        'touser': touser,
         'poster': -999,
-        'type': 2,
-        'time': msg.time
+        'type': 2
     });
 };

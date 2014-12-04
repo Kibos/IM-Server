@@ -8,6 +8,7 @@
   {
     "name"      : "logsServer",
     "script"    : "../data-mining-server/app.js",
-    "exec_mode" : "fork_mode"
+    "exec_mode" : "fork_mode",
+    "log_date_format" : "YYYY-MM-DD HH:mm:ss"
   }
 ]

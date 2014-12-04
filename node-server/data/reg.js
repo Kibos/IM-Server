@@ -72,9 +72,8 @@ exports.reg = function(rec, users, socket, callback) {
 
 function regOnline(users, rec, host, divice, accessToken, PRedis, socket) {
     var ret;
-
     users[host] = users[host] || {};
-    //TODO develop
+
     if (users[host][divice]) {
         //if this divice is already regiseted,disconected the old one
         var time = new Date();

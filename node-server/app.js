@@ -138,12 +138,10 @@ io.sockets.on('connection', function(socket) {
         } else if (rec.order == 'MSG') {
 
             var haveToken = users[host] && users[host][divice] && users[host][divice].token;
-            //TODO fix type is 6 or 7
+
             if ((haveToken && users[host][divice].token == rec.access_token) || rec.type == '6' || rec.type == '7') {
                 if (rec.touser) {
-                    msgsend.person(rec, socket, {
-                        user: users[host]
-                    });
+                    msgsend.person(rec, socket);
                     messageCount.person++;
                 } else if (rec.togroup) {
                     msgsend.group(rec, socket);
@@ -156,8 +154,8 @@ io.sockets.on('connection', function(socket) {
                 socket.emit('ybmp', rec);
             }
         } else if (rec.order == 'OFL') {
-            if (rec.action == "person") {
-                offline.getMoreByPerson(rec.userid, rec.poster, rec.limit, function(data) {
+            if (rec.action) {
+                offline.getMoreMsg(rec.userid, rec.poster, rec.limit, rec.action, function(data) {
                     rec.data = data;
                     rec.status = 200;
                     socket.emit('ybmp', rec);

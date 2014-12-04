@@ -25,7 +25,6 @@ exports.connect = function(callback, data) {
     if (!data.ip || !data.port || !data.name) {
         console.error('[mongodb connect] parameters error');
     }
-    var callbacks;
     var ip = data.ip;
     var port = data.port;
     var name = data.name || 'default';
@@ -48,7 +47,7 @@ exports.connect = function(callback, data) {
                 native_parser: true
             });
 
-            mongoC.open(function(err, mongoclient) {
+            mongoC.open(function(err) {
                 if (err) {
                     console.error('cant open the mongodb');
                     delete dbStack[conId];

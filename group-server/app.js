@@ -11,7 +11,7 @@ var msgSave = require('../tool/msg/msgsave');
 var async = require('async');
 var appInfo = {
     ip: process.argv[2],
-    port: process.argv[3],
+    port: parseInt(process.argv[3]),
     type: 'GNode',
     id: 'gn_' + process.argv[2] + '_' + process.argv[3]
 };
@@ -94,6 +94,13 @@ var group = function() {
                 exp.conf.isFirstTime = false;
                 exp.conf.msgStack[gId].sta = 'ing';
                 exp.getGroupMember(gId, function(memberInfo) {
+                    if (!Array.isArray(memberInfo.members)) {
+                        var array = [];
+                        for (var i in memberInfo.members) {
+                            array.push(memberInfo.members[i]);
+                        }
+                        memberInfo.members = array;
+                    }
                     if (memberInfo.members && memberInfo.members.length > 0) {
                         exp.conf.group[gId] = {};
                         //save the group name
@@ -120,7 +127,6 @@ var group = function() {
 
                 });
             } else {
-
                 msg.groupname = msg.groupname || (exp.conf.groupName[gId] ? (exp.conf.groupName[gId].groupname || '') : '');
                 exp.groupMessageSend(res, msg);
                 delete exp.conf.msgStack[gId].list;
@@ -198,17 +204,19 @@ var group = function() {
         var users = redisInfo.users || [];
 
         redisConnect.connect(host.port, host.ip, function(client) {
-            msg.online = [];
-            msg.offline = [];
+            var onlineArr = [];
+            var offlineArr = [];
 
             client.select('0', function() {
-                async.eachSeries(users, function (item, callback) {
-                    exp.sendToPerson(item, client, msg, callback);
+                async.each(users, function (item, callback) {
+                    exp.sendToPerson(item, client, msg, onlineArr, offlineArr, callback);
                 }, function (err) {
                     if (err) {
                         console.error('[group server][sendByRedis] sendToPerson is false. err is ', err);
                     }
-                    exp.messagePushResult(msg, msg.online, msg.offline);
+                    console.log('[group server][sendByRedis] msg online is ', onlineArr,
+                        'msg offline is ', offlineArr, 'users is ', users);
+                    exp.messagePushResult(msg, onlineArr, offlineArr);
                 });
             });
         });
@@ -220,20 +228,20 @@ var group = function() {
      * @param client
      * @param msg
      */
-    exp.sendToPerson = function(user, client, msg, callback) {
+    exp.sendToPerson = function(user, client, msg, onlineArr, offlineArr, callback) {
         client.sismember('online', user, function(err, res) {
             if (err) {
                 console.error('[group server][sendToPerson] sismember is false. err is ', err);
                 callback(err);
             }
             if (res === 1) {
-                //scoket is online
+                //socket is online
                 client.publish('Room.' + user, JSON.stringify(msg));
-                msg.online.push(parseInt(user));
+                onlineArr.push(parseInt(user));
                 if (callback) callback();
             } else {
                 //socket is offline
-                msg.offline.push(parseInt(user));
+                offlineArr.push(parseInt(user));
                 if (callback) callback();
             }
         });
@@ -248,7 +256,6 @@ var group = function() {
         var options = {
             'hostname': conf.sta.group.api.ip,
             'port': conf.sta.group.api.port,
-            //'path': '/api/v1/talks/' + gid + '/members?internal_secret=cf7be73c856c99c0fe02a78a562375c5',
             'path': '/api/v1/talks/' + gid + '/memberids?internal_secret=cf7be73c856c99c0fe02a78a562375c5',
             'callback': function(Jdata) {
                 var data = {};
@@ -278,19 +285,36 @@ var group = function() {
     exp.messagePushResult = function(msg, onlineUser, offlineUser) {
         //group push
         if (offlineUser) {
-            offline.pushMessage(msg, offlineUser.join(','), msg.poster);
+            if (offlineUser.length < 200) {
+                offline.pushGroupMessage(msg, offlineUser, msg.poster);
+            } else {
+                var increment = 200;
+                var temp = {};
+                var start = 0, end = increment;
+                for (var i = 0; i < Math.ceil(offlineUser.length/increment); i ++) {
+                    temp[i] = offlineUser.slice(start, end);
+                    start = end;
+                    end = start + increment;
+                }
+                for (var j in temp) {
+                    offline.pushGroupMessage(msg, temp[j], msg.poster);
+                }
+            }
+            offlineUser.forEach(function(user) {
+                //save the message status to redis
+                msgSave.sta({
+                    'messageId': msg.messageId,
+                    'poster': msg.togroup,
+                    'touser': user,
+                    'type': 1
+                });
+            });
         }
-        //save the message status to mongodb
-        msgSave.sta({
-            'messageId': msg.messageId,
-            'poster': parseInt(msg.poster),
-            'touser': offlineUser,
-            'type': 1,
-            'time': msg.time
-        });
         //save only type is 6 or 7
         if (!(msg.type == 6 || msg.type == 7)) {
-            console.log('[group] 6 ：groupNotification ', msg);
+            console.log('message is not notications ...... ');
+            onlineUser = [];
+            offlineUser = [];
             return false;
         }
 
@@ -317,10 +341,12 @@ var group = function() {
                 }
             }, function(err, res) {
                 if (err) {
-                    console.error('[group.js update failed]--->', '\n\t err:', err, setVal);
+                    console.error('[group server Notices update failed]--->', '\n\t err:', err, setVal);
                     return false;
                 }
-                console.log('[group.js update success]--->', msgId, '\n\t ', setVal, res);
+                onlineUser = [];
+                offlineUser = [];
+                console.log('[group server Notices update success]--->', msgId, '\n\t ', setVal, res);
             });
         },{ip: conf.mongodb.mg3.ip, port: conf.mongodb.mg3.port, name: 'update_msgPushResult'});
     };
