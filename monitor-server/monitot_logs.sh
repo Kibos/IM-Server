@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 times1=`/bin/cat /root/.pm2/logs/logsServer-out-7.log |wc -l`
 sleep 5
 times2=`/bin/cat /root/.pm2/logs/logsServer-out-7.log |wc -l`
