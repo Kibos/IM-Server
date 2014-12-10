@@ -26,7 +26,7 @@ Start
 
 like this
 
-![image](https://github.com/haozxuan/chat/raw/master/images/server_list.png)
+![image](https://github.com/haozxuan/chat/raw/master/images/pm2_start.png)
 
     or
 - cd ./node-server
