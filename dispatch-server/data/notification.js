@@ -78,6 +78,7 @@ function group(req, res, json) {
         if (err) {
             console.error('[dispatch server][group] is false. err is ', err);
         }
+        console.log('[notifications][group] is success.')
     });
 }
 
@@ -176,7 +177,7 @@ function person(req, res, json) {
     json.status = 200;
     json.time = +new Date();
 
-    async.eachSeries(users, function(user, callback) {
+    async.each(users, function(user, callback) {
         pushmessage(user, json, callback);
     }, function(err) {
         if (err) {
@@ -252,10 +253,9 @@ function person(req, res, json) {
             //save msg statu to mongodb
             msgSave.sta({
                 'messageId': json.messageId,
-                'touser': [parseInt(json.touser)],
-                'poster': parseInt(json.poster),
-                'type': 7,
-                'time': json.time
+                'touser': json.touser,
+                'poster': json.poster,
+                'type': 7
             }, callback);
         }
 
@@ -287,6 +287,8 @@ function person(req, res, json) {
                     console.error("[notification][Notices] update false, err is ", err);
                     return false;
                 }
+                received = [];
+                unreceived = [];
                 console.log('[dispatch_notification.js update success]-->', json.msgid, setVal);
             });
 

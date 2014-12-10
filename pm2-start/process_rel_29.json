@@ -1,9 +1,10 @@
 [
   //group server
   {
-    "name"      : "groupServer:4102",
-    "script"    : "../group-server/app.js",
-    "args"      : "['10.21.67.29', 4102]",
-    "exec_mode" : "fork_mode"
+    "name"            : "groupServer:4102",
+    "script"          : "../group-server/app.js",
+    "args"            : "['10.21.67.29', 4102]",
+    "log_date_format" : "YYYY-MM-DD HH:mm:ss",
+    "exec_mode"       : "fork_mode"
   }
 ]

@@ -43,7 +43,7 @@ router.post('/notification', function(req, res, json) {
         req.connection.remoteAddress ||
         req.socket.remoteAddress ||
         req.connection.socket.remoteAddress;
-    console.log('notification', json, ip);
+    console.log('notification json is ', json, 'ip is ', ip);
     if (json.noti_type == 'group') {
         if (/^(request|accept|refused|groupPull|groupKick)$/.test(json.action)) {
             //group member info

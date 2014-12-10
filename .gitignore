@@ -19,3 +19,8 @@ node_modules
 npm-debug.log
 node_modules
 *.DS_Store
+/stress-test
+/test
+/view
+/node_modules
+/.idea

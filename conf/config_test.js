@@ -1,11 +1,11 @@
 exports.mongodb = {
     mg1: {
-        port: 27019,
+        port: 27017,
         ip: '10.21.3.44',
         dbname: 'larvel'
     },
     mg2: {
-        port: 27019,
+        port: 27018,
         ip: '10.21.3.44',
         dbname: 'larvel'
     },
@@ -51,6 +51,12 @@ exports.Server = {
             'port': '6391'
         }
     },
+    NRedis: {
+        'pr1': {
+            'ip': '10.21.3.139', //pushStack redis
+            'port': '6581'
+        }
+    },
     GRedis: {
         'gr1': {
             'ip': '10.21.3.42', //gmsg.2.redis
@@ -72,7 +78,7 @@ exports.legalIP = {
 exports.users = {};
 
 exports.NodeInfo = {
-    BNode : {
+    Brain : {
         ip: '10.21.3.92',
         port: 4999
     }

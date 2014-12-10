@@ -7,13 +7,17 @@ var redisPort = conf.sta.redis.cache.port;
 var redisIp = conf.sta.redis.cache.ip;
 var select = conf.sta.redis.cache.select;
 var mongodb = conf.mongodb;
-
 var mg1 = mongodb.mg1;
 var mg2 = mongodb.mg2;
 var mg3 = mongodb.mg3;
 
+var nutcrackerConnect = require('../../connect/nutcracker');
+var pushPort = conf.Server.NRedis.pr1.port;
+var pushIp = conf.Server.NRedis.pr1.ip;
+
 var start = 0;
 var end = 19;
+var pushListNum = 10;
 
 /**
  * push message
@@ -22,124 +26,257 @@ var end = 19;
  */
 exports.pushMessage = function(message, touser, poster, option, callback) {
     if (!touser) {
-        console.error('[offline][pushMessage]touser is missing.');
+        console.error('[offline][pushMessage] touser is missing.');
         return false;
     }
-    //deal with the message push , the touser can be like this 1,2,3 (multi)
-    var toUserArray = touser.toString().split(',').map(function(item) {
-        return parseInt(item, 10);
-    });
+
+    // save into redis '3' offline
+    exports.offlineSave(message.messageId, touser, poster);
+
+    var poster = poster || message.poster;
+    var username = '易班';
+    var textMsg = '你收到了一条消息';
+    var text = '';
+
+    console.log('This is a debug logs : message is ', message, 'poster is ', poster);
+
+    //abandon system message
+    if (poster == 'SYS') {
+        //request join a group
+        if (message.noti_type == 'group' && message.action == 'request') {
+            //wiki http://10.21.118.240/wiki/doku.php?id=ybmp#群组请求
+            text = message.hostname + '申请加入' + message.groupname;
+        } else {
+            console.error('[pushMessage][sys] message.action is ', message.action);
+            return false;
+        }
+    } else if (!isNaN(poster)){
+        if (message.groupname) {
+            username = message.groupname + (message.username ? '(' + message.username + ')' : '');
+        } else if (message.username) {
+            username = message.username;
+        }
+
+        if (message.noti_type) {
+            if (parseInt(message.type) == 6 || parseInt(message.type) == 7) {
+                textMsg = '发来一条[通知]';
+            } else if (parseInt(message.type) == 10) {
+                textMsg = '发来一条[分享]';
+            }
+        } else if (message.text) {
+            textMsg = message.text;
+        } else if (message.image) {
+            textMsg = '发来一张[图片]';
+        } else if (message.audio) {
+            textMsg = '发来一条[语音]';
+        }
+        text = username + ': ' + textMsg;
+    } else {
+        //poster === undefined means message.action = GMemberAdd or GMemberRemove or GCreaterChange
+        console.error('[pushMessage] is false. message is ', message);
+        return false;
+    }
+
+    var StackObj = {
+        'toUser': parseInt(touser),
+        'groupId': parseInt(message.togroup) || null,
+        'poster': parseInt(poster),
+        'msg': text,
+        'content': message,
+        'time': new Date()
+    };
 
     //message.username,message.groupname
     mongoConnect.connect(function(MongoConn) {
-        var poster = poster || message.poster;
-        var username = '易班';
-        var textMsg = '你收到了一条消息';
-        var text = '';
-        //abandon system message
-        if (poster == 'SYS') {
-            //request join a group
-            if (message.noti_type == 'group' && message.action == 'request') {
-                //wiki http://10.21.118.240/wiki/doku.php?id=ybmp#群组请求
-                text = message.hostname + '申请加入' + message.groupname;
-            } else {
-                return false;
-            }
-        } else {
-            //name
-            if (message.groupname) {
-                username = message.groupname + (message.username ? '(' + message.username + ')' : '');
-            } else if (message.username) {
-                username = message.username;
-            }
-
-            //message
-            if (message.noti_type) {
-                if (message.noti_type == 'group' || parseInt(message.type) == 6) {
-                    textMsg = '发来一条[通知]';
-                }
-            } else if (message.text) {
-                textMsg = message.text;
-            } else if (message.image) {
-                textMsg = '发来一张[图片]';
-            }
-            text = username + ': ' + textMsg;
-        }
         var pushCache = MongoConn.db(mg2.dbname).collection('PushCache');
         var pushStack = MongoConn.db(mg2.dbname).collection('PushStack');
+
+        //get the total number and save to the redis stack
+        pushCache.find({
+            'touser': parseInt(touser)
+        }).toArray(function(err, res) {
+            if (err) {
+                console.error('[msgsend][offline] find push Cache false');
+                return false;
+            }
+            if (res.length != 1) {
+                res[0] = {};
+                res[0].total = 1;
+            } else {
+                res[0].total += 1;
+            }
+            StackObj.count = res[0].total;
+            //insert into redis
+            nutcrackerConnect.connect(pushPort, pushIp, function (client) {
+                var key = 'pushStack' + new Date()%pushListNum;
+                client.RPUSH(key, JSON.stringify(StackObj), function (err, res) {
+                    if (err) {
+                        console.error('[offline][RPUSH] is false. err is ', err);
+                    }
+                    console.log('[offline][RPUSH] is success, result is ', res);
+                });
+            });
+
+            //TODO cut
+            //insert into mongodb
+            pushStack.insert(StackObj, function (err, res) {
+                if (err) {
+                    console.error("[offline][pushMessage] insert false. err is ", err);
+                    return false;
+                }
+                console.log('[offline][pushStack] insert into mongodb pushStack is success .res is ', res);
+                if (callback) callback();
+            });
+        });
+        pushCache.update({
+            'touser': parseInt(touser)
+        }, {
+            $inc: {
+                'total': 1
+            }
+        }, {
+            'upsert': true
+        }, function(err, res) {
+            if (err) {
+                console.error("[offline][pushMessage] update false");
+                return false;
+            }
+            console.log('[offline][pushCache] insert into mongodb pushCache is success .res is ', res);
+        });
+    }, {ip: mg2.ip, port: mg2.port, name: 'offline_pushMessage'});
+};
+
+exports.pushGroupMessage = function(message, touserArr, poster) {
+    if (!touserArr.length) {
+        console.error('[offline][pushMessage] touser is missing.');
+        return false;
+    }
+
+    // save into redis '3' offline
+    for(var i in touserArr) {
+        exports.offlineSave(message.messageId, touserArr[i], poster);
+    }
+
+    var poster = poster || message.poster;
+    var username = '易班';
+    var textMsg = '你收到了一条消息';
+    var text = '';
+
+    console.log('This is a debug logs : message is ', message, 'poster is ', poster);
+
+    //abandon system message
+    if (poster == 'SYS') {
+        //request join a group
+        if (message.noti_type == 'group' && message.action == 'request') {
+            //wiki http://10.21.118.240/wiki/doku.php?id=ybmp#群组请求
+            text = message.hostname + '申请加入' + message.groupname;
+        } else {
+            console.error('[pushMessage][sys] message.action is ', message.action);
+            return false;
+        }
+    } else if (!isNaN(poster)){
+        if (message.groupname) {
+            username = message.groupname + (message.username ? '(' + message.username + ')' : '');
+        } else if (message.username) {
+            username = message.username;
+        }
+
+        if (message.noti_type) {
+            if (parseInt(message.type) == 6 || parseInt(message.type) == 7) {
+                textMsg = '发来一条[通知]';
+            } else if (parseInt(message.type) == 10) {
+                textMsg = '发来一条[分享]';
+            }
+        } else if (message.text) {
+            textMsg = message.text;
+        } else if (message.image) {
+            textMsg = '发来一张[图片]';
+        } else if (message.audio) {
+            textMsg = '发来一条[语音]';
+        }
+        text = username + ': ' + textMsg;
+    } else {
+        //poster === undefined means message.action = GMemberAdd or GMemberRemove or GCreaterChange
+        console.error('[pushMessage] is false. message is ', message);
+        return false;
+    }
+
+    var StackObj = {
+        'toUser': touserArr.join(','),
+        'groupId': parseInt(message.togroup) || null,
+        'poster': parseInt(poster),
+        'msg': text,
+        'content': message,
+        'time': new Date(),
+        'count': []
+    };
+
+    //message.username,message.groupname
+    mongoConnect.connect(function(MongoConn) {
+        var pushCache = MongoConn.db(mg2.dbname).collection('PushCache');
+        var pushStack = MongoConn.db(mg2.dbname).collection('PushStack');
+
         //get the total number and save to the redis stack
         pushCache.find({
             'touser': {
-                $in: toUserArray
+                $in: touserArr
             }
         }).toArray(function(err, res) {
-
             if (err) {
-                console.error('[msgsend][offline] push Cache false');
+                console.error('[msgsend][offline] find push Cache false');
                 return false;
             }
+
             var temp = {};
-            var counts = [];
             for (var i = 0, len = res.length; i < len; i++) {
                 var userid = res[i].touser;
                 var total = res[i].total;
                 temp[userid] = total;
             }
-            for (i = 0, len = toUserArray.length; i < len; i++) {
-                var count = temp[toUserArray[i]] || 0;
-                counts.push(++count);
-                //update the pushCache's count
-                pushUpdate(toUserArray[i]);
+            for (i = 0, len = touserArr.length; i < len; i++) {
+                var count = temp[touserArr[i]] || 0;
+                StackObj.count.push(++count);
+                pushUpdate(touserArr[i]);
             }
 
-            var StackObj = {
-                'toUser': toUserArray.join(','),
-                'groupId': parseInt(message.togroup) || null,
-                'poster': parseInt(poster),
-                'msg': text,
-                'content': message,
-                'time': new Date(),
-                'count': counts.join(',')
-            };
-            pushStack.insert(StackObj, function(err) {
-                if (err) {
-                    console.error("[offline][pushMessage] insert false");
-                    return false;
-                }
-                if (callback) callback();
+            //insert into redis
+            nutcrackerConnect.connect(pushPort, pushIp, function (client) {
+                var key = 'pushStack' + new Date()%pushListNum;
+                client.RPUSH(key, JSON.stringify(StackObj), function (err, res) {
+                    if (err) {
+                        console.error('[offline][RPUSH] is false. err is ', err);
+                    }
+                    console.log('[offline][RPUSH] is success, result is ', res);
+                });
             });
         });
 
-        function pushUpdate(uid) {
+        function pushUpdate(touser) {
             pushCache.update({
-                'touser': parseInt(uid)
+                'touser': parseInt(touser)
             }, {
                 $inc: {
                     'total': 1
                 }
             }, {
                 'upsert': true
-            }, function(err) {
+            }, function(err, res) {
                 if (err) {
                     console.error("[offline][pushMessage] update false");
                     return false;
                 }
+                console.log('[offline][pushCache] insert into mongodb pushCache is success .res is ', res);
             });
         }
     }, {ip: mg2.ip, port: mg2.port, name: 'offline_pushMessage'});
-
-    //deal with the message push , the touser can be like this 1,2,3 (multi)
-    for (var i = 0, len = toUserArray.length; i < len; i++) {
-        //save to offline
-        exports.offlineSave(message.messageId, toUserArray[i], poster);
-    }
 };
+
 
 /**
  * save to offline
  * @param {[type]} [varname] [description]
  */
-exports.offlineSave = function(messageId, touser, poster) {
+exports.offlineSave = function(messageId, touser, poster, callback) {
 
     var message = poster + ':' + messageId;
     redisConnect.connect(redisPort, redisIp, function(client) {
@@ -147,7 +284,7 @@ exports.offlineSave = function(messageId, touser, poster) {
             client.LPUSH (touser, message, function (err, res) {
                 if (err) {
                     console.error('[offline][offlineSave] LPUSH is false, err is ', err);
-                    return false;
+                    if (callback) callback(err);
                 }
                 if (res > 20) {
                     client.LTRIM(touser, start, end, function(err, res) {
@@ -156,6 +293,7 @@ exports.offlineSave = function(messageId, touser, poster) {
                             return false;
                         }
                         console.log('[offline][LTRIM] ', touser, 'result is ', res);
+                        if (callback) callback(null);
                     });
                 }
 
@@ -165,6 +303,7 @@ exports.offlineSave = function(messageId, touser, poster) {
                         return false;
                     }
                     console.log(touser, 'offline lists : ', res);
+                    if (callback) callback(null);
                 });
             });
         });
@@ -195,9 +334,14 @@ exports.getMsg = function(userid, callback) {
     redisConnect.connect(redisPort, redisIp, function(client) {
         client.select(select, function () {
             client.LRANGE(userid, 0, -1, function (err, res) {
-                if (err || !res) {
+                if (err) {
                     console.error('[offline][getMsg] LRANGE is false, err is ', err);
-                    if (callback) callback(err || []);
+                    if (callback) callback(err);
+                    return false;
+                }
+                if (!res.length) {
+                    console.log('user' + userid + 'have not offline message.');
+                    if (callback) callback([]);
                     return false;
                 }
 
@@ -217,55 +361,39 @@ exports.getMsg = function(userid, callback) {
                         msgs:temp[i].messageIds});
                 }
 
-                async.waterfall([
-                    function(cb) {
-                        pushRes(cb);
-                    }
-                ], function(err) {
-                    if (err) {
-                        console.error('[offline][getMsg] pushRes is false. err is ', err);
-                        if (callback) callback(err);
-                    }
-                    if (callback) callback(result);
-                    console.log("return client result is ", result);
-                });
-
-                function pushRes(callback) {
-                    async.eachSeries(array, function(message, callback) {
-                        async.waterfall([
-                            function(cb) {
-                                getRealMsg(message.msgs, userid, cb);
-                            }
-                        ], function(err, res) {
-                            if (err) {
-                                console.error('[offline][getMsg] getRealMsg is false. err is ', err);
-                            }
-                            var theObj = {
-                                userid: message.poster,
-                                length: message.msgs.length,
-                                msg: res
-                            };
-                            result.push(theObj);
-                            callback();
-                        });
-                    }, function(err) {
+                async.eachSeries(array, function(message, callback) {
+                    async.waterfall([
+                        function(cb) {
+                            getRealMsg(message.msgs, userid, cb);
+                        }
+                    ], function(err, res) {
                         if (err) {
                             console.error('[offline][getMsg] getRealMsg is false. err is ', err);
-                            if (callback) callback(err);
                         }
-                        if (callback) callback(null);
+                        var theObj = {
+                            userid: message.poster,
+                            length: message.msgs.length,
+                            msg: res
+                        };
+                        result.push(theObj);
+                        callback();
                     });
-                }
-
-                for (var i = 0; i < res.length; i ++) {
-                    client.RPOP(userid, function(err, result) {
+                }, function(err) {
+                    if (err) {
+                        console.error('[offline][getMsg] getRealMsg is false. err is ', err);
+                        if (callback) callback(err);
+                    }
+                    //delete offline list from redis
+                    client.DEL(userid, function(err, result) {
                         if (err) {
-                            console.error('[offline][getMsg] RPOP is false, err is ', err);
+                            console.error('[offline][getMsg] DEL is false, err is ', err);
                             if (callback) callback(err);
                         }
-                        console.log('[lists] delete  ', result);
+                        console.log('[', userid, ' lists] is delete, result is  ', result);
                     });
-                }
+                    console.log("return client result is ", result);
+                    if (callback) callback(result);
+                });
             });
         });
     });
@@ -335,7 +463,6 @@ function notificationCallback(messages, toUser) {
         collection.update({
             '_id': parseInt(msg.msgid)
         }, {
-            //TODO:if need , don't forget pull out form the unreceived list
             $push: pushObj,
             $pull: pullObj
         }, function(err, res) {
@@ -355,64 +482,56 @@ function notificationCallback(messages, toUser) {
  * @param  {Number} limit      home many per time
  * @return {[type]}            [description]
  */
-exports.getMoreByPerson = function(userid, sendUserId, limit, callback) {
 
-    // TODO BUG
-    return false;
-    //
-    if (!userid || !sendUserId) {
-        console.error('[offline][getMoreByPerson] parameters error, userId: sendUserId:', userid, sendUserId);
+exports.getMoreMsg = function(userid, poster, limit, action, callback) {
+    if (!userid || !poster || !action) {
+        console.error('[offline][getMoreByPerson] parameters error, userId: poster: action:', userid, poster, action);
         return false;
     }
     limit = parseInt(limit) || 20;
 
-    mongoConnect.connect(function(MongoConn) {
-        var MsgSta = MongoConn.db(mg2.dbname).collection('MsgSta');
-        var findSql = {
-            'unreach': parseInt(userid)
-        };
+    var redisIp, redisPort;
+    if (rec.action == "person") {
+        redisIp = conf.Server.MRedis.pr1.ip;
+        redisPort = conf.Server.MRedis.pr1.port;
+    } else if (rec.action == "group") {
+        redisIp = conf.Server.MRedis.pr2.ip;
+        redisPort = conf.Server.MRedis.pr2.port;
+    } else {
+        console.log('[offline][getMoreByPerson] parameter action is unnormal, action is ', action);
+        return false;
+    }
 
-        if (sendUserId) {
-            findSql.poster = parseInt(sendUserId);
-        }
-
-        MsgSta.find(findSql).sort({
-            '_id': -1
-        }).limit(limit).toArray(function(err, res) {
-            var mongoIds = [];
-            var ids = [];
-            if (err || res.length < 1) {
+    redisConnect.connect(redisPort, redisIp, function(client) {
+        var key = poster + ':' + userid;
+        client.ZRANGE(key, -limit, -1, function(err, messageIds) {
+            if (err) {
+                console.error('[offline][getMoreByPerson] ZRANGE is false, err is ', err);
+                if (callback) callback(err);
+                return false;
+            }
+            if (messageIds.length < 1) {
                 if (callback) callback([]);
-            } else {
-
-                for (var i = 0, len = res.length; i < len; i++) {
-                    mongoIds.push(res[i]._id);
-                    ids.push(res[i].messageId);
-                }
-                getRealMsg(ids, userid, function(res) {
-                    if (callback) callback(res);
-                });
+                return false;
             }
 
-            //update the message status
-            MsgSta.update({
-                '_id': {
-                    $in: mongoIds
-                }
-            }, {
-                $pull: {
-                    'unreach': parseInt(userid)
-                }
-            }, {
-                multi: true
-            }, function(err, res) {
+            client.ZREMRANGEBYRANK(key, -limit, -1, function(err) {
                 if (err) {
-                    console.error("[offline][getMoreByPerson] MsgSta update error");
+                    console.error('[offline][getMoreByPerson] ZREMRANGEBYRANK is false, err is ', err);
+                    if (callback) callback(err);
                     return false;
                 }
-                console.log('The number of updated documents was %d', res);
+            });
+
+            getRealMsg(messageIds, userid, function(err, res) {
+                if (err) {
+                    console.error('[offline][getMoreByPerson] getRealMsg is false, err is ', err);
+                    if (callback) callback(err);
+                    return false;
+                }
+                if (callback) callback(res);
             });
         });
-    }, {ip: mg2.ip, port: mg2.port, name: 'update_msgsta_more_info'});
 
+    });
 };

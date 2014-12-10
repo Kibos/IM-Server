@@ -12,7 +12,7 @@ exports.change = function(req, res, group) {
     group.action = group.action || group.type || 'groupChange';
     group.togroup = group.group;
     delete group.group;
-    msgsend.group(group);
+    msgsend.dispatchGroup(group);
 
     res.writeHead(200, {
         'charset': 'UTF-8',

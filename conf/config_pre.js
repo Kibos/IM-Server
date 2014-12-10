@@ -6,12 +6,12 @@ exports.mongodb = {
     },
     mg2: {
         port: 27017,
-        ip: '10.21.4.87',
+        ip: '10.21.4.88',
         dbname: 'larvel'
     },
     mg3: {
-        port: 27017,
-        ip: '10.21.4.87',
+        port: 27018,
+        ip: '10.21.4.88',
         dbname: 'larvel'
     }
 };
@@ -55,6 +55,12 @@ exports.Server = {
         'pr1': {
             'ip': '10.21.4.86', //gmsg.1.redis
             'port': '6380'
+        }
+    },
+    NRedis: {
+        'pr1': {
+            'ip': '10.21.4.143', //pushStack redis
+            'port': '26581'
         }
     },
     GRedis: {

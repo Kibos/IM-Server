@@ -28,7 +28,7 @@ function connect(port, ip, callback) {
 
             var client = redis.createClient(port, ip);
             client.on('error', function(err) {
-                console.log('!!!!!!redis connect error', err);
+                console.error('!!!!!!redis connect error', err);
             });
             if (redisPwd[ip]) {
                 client.auth(redisPwd[ip] || '', function(err, res) {
