@@ -1,8 +1,9 @@
 [
   {
-    "name"      : "brainServer:4999",
-    "script"    : "../brain-server/app.js",
-    "args"      : "['10.21.67.20', 4999]",
-    "exec_mode" : "fork_mode"
+    "name"            : "brainServer:4999",
+    "script"          : "../brain-server/app.js",
+    "args"            : "['10.21.67.20', 4999]",
+    "log_date_format" : "YYYY-MM-DD HH:mm:ss",
+    "exec_mode"       : "fork_mode"
   }
 ]
