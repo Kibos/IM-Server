@@ -92,17 +92,11 @@ function getLastLogId(redis, callback) {
 function getMessageRecord(mongoC, lastLogId, callback) {
     var query = {};
     if (lastLogId) {
-        var id;
-        try {
-            id = new ObjectID(lastLogId);
-            query = {
-                _id: {
-                    $gt: id
-                }
-            };
-        } catch (e) {
-
-        }
+        query = {
+            _id: {
+                $gt: new ObjectID(lastLogId)
+            }
+        };
     } else {
         query = {
             time: {

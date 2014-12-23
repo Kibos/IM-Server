@@ -31,6 +31,11 @@ var messageCount = {
 };
 //auto logo sys info
 (function saveUserInfo() {
+    //Statistics daily messageCount
+    if (new Date().getHours() === 0) {
+        messageCount.group = 0;
+        messageCount.person = 0;
+    }
     var fs = require('fs');
     var filename = '/usr/local/app/www/logs/' + appInfo.ip + '_' + appInfo.port + '_pn_' + new Date().toJSON().split('T')[0] + '.txt';
     var total = 0;
