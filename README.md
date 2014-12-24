@@ -2,7 +2,7 @@ a chat server built with node js + mongodb + redis
 
 Chat Of YiBan
 ====
-![image](https://github.com/haozxuan/chat/raw/master/images/server_list.png)
+![image](https://github.com/haozxuan/IM-Server/raw/master/images/server_list.png)
 
 Brain Server
 ----
@@ -26,7 +26,7 @@ Start
 
 like this
 
-![image](https://github.com/haozxuan/chat/raw/master/images/server_list.png)
+![image](https://github.com/haozxuan/IM-Server/raw/master/images/pm2_start.png)
 
     or
 - cd ./node-server

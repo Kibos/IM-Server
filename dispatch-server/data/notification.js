@@ -158,7 +158,7 @@ function person(req, res, json) {
 
     var received = [];
     var unreceived = [];
-    var redisHost, room;
+    var room;
 
     if (!json.tousers) {
         ret404(req, res, 'tousers is necessary!');
@@ -177,22 +177,31 @@ function person(req, res, json) {
     json.status = 200;
     json.time = +new Date();
 
-    async.each(users, function(user, callback) {
-        pushmessage(user, json, callback);
+    var temp = [];
+    for (var i = 0, length = users.length; i < length; i ++) {
+        temp[i] = {};
+        temp[i].user = users[i];
+        temp[i].messageId = id.id();
+        temp[i].redisHost = hash.getHash('PRedis', users[i]);
+    }
+
+    async.each(temp, function(item, callback) {
+        pushmessage(item, callback);
     }, function(err) {
         if (err) {
             console.error('[notification][person] async.eachSeries is false. err is ', err);
             return false;
         }
+        temp = [];
         doUpdate();
     });
 
-    function pushmessage(touser, json, callback) {
-        async.waterfall([
+    function pushmessage(item, callback) {
+        async.parallel([
             function(cb) {
-                doPushArr(cb);
-            }, function(cb) {
                 insertMsg(cb);
+            }, function(cb) {
+                doPushArr(cb);
             }, function(cb) {
                 saveSta(cb);
             }
@@ -203,41 +212,41 @@ function person(req, res, json) {
             }
             callback(null);
         });
+
         function doPushArr(callback) {
-            redisHost = hash.getHash('PRedis', touser);
+            redisC.connect(item.redisHost.port, item.redisHost.ip, function(client) {
+                room = 'Room.' + item.user;
 
-            redisC.connect(redisHost.port, redisHost.ip, function(client) {
-                json.touser = touser;
-                json.messageId = id.id();
-                room = 'Room.' + touser;
-
-                client.publish(room, JSON.stringify(json));
-
-                client.sismember('online', touser, function(err, isOnline) {
-                    if (isOnline) {
-                        received.push(parseInt(touser));
-                        console.log('person-->', touser, 'isOnline');
+                client.sismember('online', json.touser, function(err, isOnline) {
+                    json.touser = item.user;
+                    json.messageId = item.messageId;
+                    if (!isOnline) {
+                        console.log('person-->', json.touser, 'isOnline');
+                        received.push(parseInt(json.touser));
+                        client.publish(room, JSON.stringify(json));
+                        callback(null);
                     } else {
-                        unreceived.push(parseInt(touser));
-                        console.log(touser + ' is offline');
-                        offline.pushMessage(json, touser, json.poster);
+                        console.log('person-->', json.touser, 'isOffline');
+                        unreceived.push(parseInt(json.touser));
+                        offline.pushMessage(json, json.touser, json.poster, callback);
                     }
                 });
             });
-            callback(null);
         }
 
         function insertMsg(callback) {
-            //save the message log & save the message status
-            var msgData = {
-                'type': 7,
-                'from': parseInt(json.poster),
-                'to': parseInt(json.touser),
-                'content': json,
-                'time': json.time,
-                'messageId': json.messageId
-            };
             mongoClient.connect(function(mongoC) {
+                json.touser = item.user;
+                json.messageId = item.messageId;
+                //save the message log & save the message status
+                var msgData = {
+                    'type': 7,
+                    'from': parseInt(json.poster),
+                    'to': parseInt(json.touser),
+                    'content': json,
+                    'time': json.time,
+                    'messageId': json.messageId
+                };
                 mongoC.db(mg1.dbname).collection('Message').insert(msgData, function(err) {
                     if (err) {
                         console.error('[notification][insert msg] is false. err is ', err);
@@ -250,6 +259,8 @@ function person(req, res, json) {
         }
 
         function saveSta(callback) {
+            json.touser = item.user;
+            json.messageId = item.messageId;
             //save msg statu to mongodb
             msgSave.sta({
                 'messageId': json.messageId,
