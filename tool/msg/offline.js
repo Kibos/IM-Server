@@ -24,14 +24,12 @@ var pushListNum = 10;
  * all the offline message going here
  * @return {[type]}
  */
-exports.pushMessage = function(message, touser, poster, option, callback) {
+exports.pushMessage = function(message, touser, poster, callback) {
     if (!touser) {
         console.error('[offline][pushMessage] touser is missing.');
+        if (callback) callback(false);
         return false;
     }
-
-    // save into redis '3' offline
-    exports.offlineSave(message.messageId, touser, poster);
 
     var poster = poster || message.poster;
     var username = '易班';
@@ -86,64 +84,77 @@ exports.pushMessage = function(message, touser, poster, option, callback) {
         'time': new Date()
     };
 
-    //message.username,message.groupname
-    mongoConnect.connect(function(MongoConn) {
-        var pushCache = MongoConn.db(mg2.dbname).collection('PushCache');
-        var pushStack = MongoConn.db(mg2.dbname).collection('PushStack');
+    async.parallel([
+        function (cb) {
+            // save into redis '3' offline
+            exports.offlineSave(message.messageId, touser, poster, cb);
+        }, function (cb) {
+            pushIntoRedis(cb);
+        }, function (cb) {
+            updatePushCache(cb);
+        }
+    ], function (err, res) {
+        if (callback) callback(null);
+    });
 
-        //get the total number and save to the redis stack
-        pushCache.find({
-            'touser': parseInt(touser)
-        }).toArray(function(err, res) {
-            if (err) {
-                console.error('[msgsend][offline] find push Cache false');
-                return false;
-            }
-            if (res.length != 1) {
-                res[0] = {};
-                res[0].total = 1;
-            } else {
-                res[0].total += 1;
-            }
-            StackObj.count = res[0].total;
-            //insert into redis
-            nutcrackerConnect.connect(pushPort, pushIp, function (client) {
-                var key = 'pushStack' + new Date()%pushListNum;
-                client.RPUSH(key, JSON.stringify(StackObj), function (err, res) {
-                    if (err) {
-                        console.error('[offline][RPUSH] is false. err is ', err);
-                    }
-                    console.log('[offline][RPUSH] is success, result is ', res);
-                });
-            });
-
-            //TODO cut
-            //insert into mongodb
-            pushStack.insert(StackObj, function (err, res) {
+    function pushIntoRedis(callback) {
+        mongoConnect.connect(function(MongoConn) {
+            var pushCache = MongoConn.db(mg2.dbname).collection('PushCache');
+            //get the total number and save to the redis stack
+            pushCache.find({
+                'touser': parseInt(touser)
+            }).toArray(function(err, res) {
                 if (err) {
-                    console.error("[offline][pushMessage] insert false. err is ", err);
+                    console.error('[msgsend][offline] find push Cache false');
+                    if (callback) callback(err);
                     return false;
                 }
-                console.log('[offline][pushStack] insert into mongodb pushStack is success .res is ', res);
-                if (callback) callback();
+                if (res.length != 1) {
+                    res[0] = {};
+                    res[0].total = 1;
+                } else {
+                    res[0].total += 1;
+                }
+                StackObj.count = res[0].total;
+                //insert into redis
+                nutcrackerConnect.connect(pushPort, pushIp, function (client) {
+                    var key = 'pushStack' + new Date()%pushListNum;
+                    client.RPUSH(key, JSON.stringify(StackObj), function (err, res) {
+                        if (err) {
+                            console.error('[offline][RPUSH] is false. err is ', err);
+                            if (callback) callback(err);
+                        }
+                        console.log('[offline][RPUSH] is success, result is ', res);
+                        if (callback) callback(null);
+                    });
+                });
             });
-        });
-        pushCache.update({
-            'touser': parseInt(touser)
-        }, {
-            $inc: {
-                'total': 1
-            }
-        }, {
-            'upsert': true
-        }, function(err, res) {
-            if (err) {
-                console.error("[offline][pushMessage] update false");
-                return false;
-            }
-            console.log('[offline][pushCache] insert into mongodb pushCache is success .res is ', res);
-        });
-    }, {ip: mg2.ip, port: mg2.port, name: 'offline_pushMessage'});
+        }, {ip: mg2.ip, port: mg2.port, name: 'offline_pushMessage'});
+    }
+
+    function updatePushCache(callback) {
+        mongoConnect.connect(function(MongoConn) {
+            var pushCache = MongoConn.db(mg2.dbname).collection('PushCache');
+
+            pushCache.update({
+                'touser': parseInt(touser)
+            }, {
+                $inc: {
+                    'total': 1
+                }
+            }, {
+                'upsert': true
+            }, function(err, res) {
+                if (err) {
+                    console.error("[offline][pushMessage] update false");
+                    if (callback) callback(err);
+                    return false;
+                }
+                console.log('[offline][pushCache] insert into mongodb pushCache is success .res is ', res);
+                if (callback) callback(null);
+            });
+        }, {ip: mg2.ip, port: mg2.port, name: 'offline_pushMessage'});
+    }
 };
 
 exports.pushGroupMessage = function(message, touserArr, poster) {
@@ -286,25 +297,43 @@ exports.offlineSave = function(messageId, touser, poster, callback) {
                     console.error('[offline][offlineSave] LPUSH is false, err is ', err);
                     if (callback) callback(err);
                 }
-                if (res > 20) {
-                    client.LTRIM(touser, start, end, function(err, res) {
+                async.parallel([
+                    function (cb) {
+                        ltrim(cb);
+                    }, function (cb) {
+                        lrange(cb);
+                    }
+                ], function (err, res) {
+                    if (callback) callback(null);
+                });
+
+                function ltrim(callback) {
+                    if (res > 20) {
+                        client.LTRIM(touser, start, end, function(err, res) {
+                            if (err) {
+                                console.error('[offline][offlineSave] LTRIM is false, err is ', err);
+                                if (callback) callback(false);
+                                return false;
+                            }
+                            console.log('[offline][LTRIM] ', touser, 'result is ', res);
+                            if (callback) callback(null);
+                        });
+                    } else {
+                        if (callback) callback(null);
+                    }
+                }
+
+                function lrange(callback) {
+                    client.LRANGE(touser, 0, -1, function(err, res) {
                         if (err) {
-                            console.error('[offline][offlineSave] LTRIM is false, err is ', err);
+                            console.error('[offline][offlineSave] LRANGE is false, err is ', err);
+                            if (callback) callback(false);
                             return false;
                         }
-                        console.log('[offline][LTRIM] ', touser, 'result is ', res);
+                        console.log(touser, 'offline lists : ', res);
                         if (callback) callback(null);
                     });
                 }
-
-                client.LRANGE(touser, 0, -1, function(err, res) {
-                    if (err) {
-                        console.error('[offline][offlineSave] LRANGE is false, err is ', err);
-                        return false;
-                    }
-                    console.log(touser, 'offline lists : ', res);
-                    if (callback) callback(null);
-                });
             });
         });
     });
@@ -455,7 +484,7 @@ function notificationCallback(messages, toUser) {
             pushObj['tousers.hasrecieved'] = toUser;
             pullObj['tousers.unrecieved'] = toUser;
         } else {
-            console.err('[offline][notificationCallback] is false.');
+            console.error('[offline][notificationCallback] is false.');
             return false;
         }
 
